@@ -44,11 +44,11 @@ model Content {
   difficulty      Difficulty
   viewCount       Int               @default(0)
   scrapCount      Int               @default(0)
-  ContentAITool   ContentAITool[]
-  ContentCategory ContentCategory[]
-  ContentTag      ContentTag[]
-  EstimatedTime   EstimatedTime?
-  ResultPreview   ResultPreview[]
+  aiTools         ContentAITool[]
+  categories      ContentCategory[]
+  tags            ContentTag[]
+  estimatedTime   EstimatedTime?
+  resultPreviews  ResultPreview[]
 
   @@index([description])
   @@index([difficulty])
@@ -62,8 +62,8 @@ model Content {
 model ContentAITool {
   contentId String
   toolId    String
-  Content   Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
-  AITool    AITool  @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  content   Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  aiTool    AITool  @relation(fields: [toolId], references: [id], onDelete: Cascade)
 
   @@id([contentId, toolId])
   @@index([toolId])
@@ -72,8 +72,8 @@ model ContentAITool {
 model ContentCategory {
   contentId  String
   categoryId String
-  Category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  Content    Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  content    Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
 
   @@id([contentId, categoryId])
   @@index([categoryId])
@@ -82,8 +82,8 @@ model ContentCategory {
 model ContentTag {
   contentId String
   tagId     String
-  Content   Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
-  Tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  content   Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([contentId, tagId])
   @@index([tagId])
@@ -95,7 +95,7 @@ model EstimatedTime {
   type           TimeType
   value          Int
   displayMinutes Int?
-  Content        Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  content        Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
 
   @@index([displayMinutes])
 }
@@ -108,12 +108,12 @@ model NewsletterSubscriber {
 }
 
 model ResultPreview {
-  id        String      @id
-  contentId String
-  order     Int         @default(0)
-  type      PreviewType
-  content   String
-  Content   Content     @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  id          String      @id
+  contentId   String
+  order       Int         @default(0)
+  type        PreviewType
+  contentData String
+  content     Content     @relation(fields: [contentId], references: [id], onDelete: Cascade)
 
   @@index([contentId, order])
 }

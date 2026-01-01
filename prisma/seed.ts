@@ -294,7 +294,7 @@ async function main() {
             id: `preview-${contentData.id}-${index}`,
             order: preview.order,
             type: preview.type,
-            content: preview.content,
+            contentData: preview.content,
           })),
         },
       },
