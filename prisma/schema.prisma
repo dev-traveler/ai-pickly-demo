@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model AITool {
+  id            String          @id
+  name          String          @unique
+  slug          String          @unique
+  websiteUrl    String?
+  logoUrl       String?
+  description   String?
+  ContentAITool ContentAITool[]
+
+  @@index([slug])
+}
+
+model Category {
+  id              String            @id
+  name            String            @unique
+  slug            String            @unique
+  iconUrl         String?
+  ContentCategory ContentCategory[]
+
+  @@index([slug])
+}
+
+model Content {
+  id              String            @id
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  title           String
+  description     String
+  author          String
+  sourceUrl       String
+  publishedAt     DateTime
+  language        Language          @default(KO)
+  thumbnailUrl    String?
+  difficulty      Difficulty
+  viewCount       Int               @default(0)
+  scrapCount      Int               @default(0)
+  ContentAITool   ContentAITool[]
+  ContentCategory ContentCategory[]
+  ContentTag      ContentTag[]
+  EstimatedTime   EstimatedTime?
+  ResultPreview   ResultPreview[]
+
+  @@index([description])
+  @@index([difficulty])
+  @@index([language])
+  @@index([publishedAt])
+  @@index([scrapCount])
+  @@index([title])
+  @@index([viewCount])
+}
+
+model ContentAITool {
+  contentId String
+  toolId    String
+  Content   Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  AITool    AITool  @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@id([contentId, toolId])
+  @@index([toolId])
+}
+
+model ContentCategory {
+  contentId  String
+  categoryId String
+  Category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  Content    Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@id([contentId, categoryId])
+  @@index([categoryId])
+}
+
+model ContentTag {
+  contentId String
+  tagId     String
+  Content   Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  Tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([contentId, tagId])
+  @@index([tagId])
+}
+
+model EstimatedTime {
+  id             String   @id
+  contentId      String   @unique
+  type           TimeType
+  value          Int
+  displayMinutes Int?
+  Content        Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@index([displayMinutes])
+}
+
+model NewsletterSubscriber {
+  id           String   @id
+  email        String   @unique
+  subscribedAt DateTime @default(now())
+  isActive     Boolean  @default(true)
+}
+
+model ResultPreview {
+  id        String      @id
+  contentId String
+  order     Int         @default(0)
+  type      PreviewType
+  content   String
+  Content   Content     @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@index([contentId, order])
+}
+
+model Tag {
+  id         String       @id
+  name       String       @unique
+  slug       String       @unique
+  ContentTag ContentTag[]
+
+  @@index([name])
+  @@index([slug])
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum Language {
+  KO
+  EN
+}
+
+enum PreviewType {
+  IMAGE_URL
+  VIDEO_URL
+  TEXT_DESCRIPTION
+}
+
+enum TimeType {
+  VIDEO
+  TEXT_KO
+  TEXT_EN
+}
