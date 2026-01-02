@@ -1,5 +1,5 @@
 import { getContents } from "@/lib/db/contents";
-import { ContentGrid } from "@/components/ContentGrid";
+import { InfiniteContentGrid } from "@/components/InfiniteContentGrid";
 
 export default async function Home() {
   const contents = await getContents({
@@ -20,8 +20,7 @@ export default async function Home() {
           </p>
         </div>
 
-        {/* Content Grid */}
-        <ContentGrid contents={contents} />
+        <InfiniteContentGrid initialData={contents} />
       </div>
     </div>
   );
