@@ -24,8 +24,12 @@ export function ContentGrid({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {contents.map((content) => (
-        <ContentCard key={content.id} content={content} />
+      {contents.map((content, index) => (
+        <ContentCard
+          key={content.id}
+          content={content}
+          priority={index < 4}
+        />
       ))}
     </div>
   );

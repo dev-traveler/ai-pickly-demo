@@ -1,12 +1,17 @@
+"use client";
+
 import { ContentCardData } from "@/types/content";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, TrendingUp, Link2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import { getOptimizedImageProps } from "@/lib/image-utils";
 
 interface ContentCardProps {
   content: ContentCardData;
+  priority?: boolean;
 }
 
 const difficultyMap = {
@@ -41,7 +46,8 @@ const getSourceName = (url: string) => {
   }
 };
 
-export function ContentCard({ content }: ContentCardProps) {
+export function ContentCard({ content, priority = false }: ContentCardProps) {
+  const [imageError, setImageError] = useState(false);
   const estimatedMinutes = content.estimatedTime?.displayMinutes;
   const sourceName = getSourceName(content.sourceUrl);
 
@@ -50,16 +56,21 @@ export function ContentCard({ content }: ContentCardProps) {
       <Card className="overflow-hidden transition-all hover:shadow-lg">
         {/* Thumbnail */}
         <div className="relative aspect-video bg-muted">
-          {content.thumbnailUrl ? (
+          {content.thumbnailUrl && !imageError ? (
             <Image
               src={content.thumbnailUrl}
               alt={content.title}
               fill
               className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              {...getOptimizedImageProps(content.thumbnailUrl, { priority })}
+              onError={() => setImageError(true)}
             />
           ) : (
-            <div className="w-full h-full bg-muted" />
+            <div className="w-full h-full bg-muted flex items-center justify-center">
+              <span className="text-muted-foreground text-sm">
+                이미지 준비중
+              </span>
+            </div>
           )}
 
           {/* Avatar positioned at bottom right of thumbnail */}
