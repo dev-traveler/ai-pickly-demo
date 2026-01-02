@@ -1,4 +1,4 @@
-import { getContents } from "@/lib/data/contents";
+import { getContents } from "@/lib/db/contents";
 import { ContentGrid } from "@/components/ContentGrid";
 
 export default async function Home() {
