@@ -23,6 +23,15 @@ export function InfiniteContentGrid({
 }: InfiniteContentGridProps) {
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
+  // 필터가 활성화되어 있는지 확인
+  const hasFilters =
+    filters &&
+    Object.keys(filters).length > 0 &&
+    Object.values(filters).some((value) => {
+      if (Array.isArray(value)) return value.length > 0;
+      return value !== undefined && value !== null;
+    });
+
   const {
     data,
     fetchNextPage,
@@ -46,14 +55,16 @@ export function InfiniteContentGrid({
       return allPages.length + 1;
     },
     initialPageParam: 1,
-    initialData: initialData
-      ? {
-          pages: [initialData],
-          pageParams: [1],
-        }
-      : undefined,
-    // 서버에서 받은 초기 데이터를 신뢰하여 불필요한 refetch 방지
-    staleTime: initialData ? 1000 * 60 * 5 : 0, // 5분
+    // 필터가 없을 때만 initialData 사용 (필터 적용 시 서버에서 새로 가져옴)
+    initialData:
+      initialData && !hasFilters
+        ? {
+            pages: [initialData],
+            pageParams: [1],
+          }
+        : undefined,
+    // 필터가 없고 initialData가 있을 때만 캐시 유지
+    staleTime: initialData && !hasFilters ? 1000 * 60 * 5 : 0, // 5분
   });
 
   // Intersection Observer로 무한 스크롤 구현

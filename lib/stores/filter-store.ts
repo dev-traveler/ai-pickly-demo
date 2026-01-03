@@ -21,6 +21,11 @@ interface FilterState {
   toggleAITool: (toolId: string) => void;
   resetFilters: () => void;
 
+  // Bulk update actions (for URL sync)
+  setCategories: (categories: string[]) => void;
+  setAITools: (tools: string[]) => void;
+  setAllFilters: (filters: Partial<FilterState>) => void;
+
   // Computed
   hasActiveFilters: () => boolean;
   getActiveFilterCount: () => number;
@@ -62,6 +67,20 @@ export const useFilterStore = create<FilterState>((set, get) => ({
       selectedDifficulty: null,
       selectedTimeRange: null,
       selectedAITools: [],
+    }),
+
+  // Bulk update actions (URL 동기화용)
+  setCategories: (categories) => set({ selectedCategories: categories }),
+
+  setAITools: (tools) => set({ selectedAITools: tools }),
+
+  setAllFilters: (filters) =>
+    set({
+      searchQuery: filters.searchQuery ?? "",
+      selectedCategories: filters.selectedCategories ?? [],
+      selectedDifficulty: filters.selectedDifficulty ?? null,
+      selectedTimeRange: filters.selectedTimeRange ?? null,
+      selectedAITools: filters.selectedAITools ?? [],
     }),
 
   // Computed

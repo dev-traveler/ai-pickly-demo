@@ -6,9 +6,10 @@ import { ContentCardData } from "@/types/content";
 export interface GetContentsOptions {
   page?: number;
   pageSize?: number;
-  categoryId?: string;
+  categoryIds?: string[];
   difficulty?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
   maxMinutes?: number;
+  aiToolIds?: string[];
 }
 
 /**
@@ -21,20 +22,23 @@ export async function getContents(
   const {
     page = 1,
     pageSize = 20,
-    categoryId,
+    categoryIds,
     difficulty,
     maxMinutes,
+    aiToolIds,
   } = options;
 
   const skip = (page - 1) * pageSize;
 
   const where: any = {};
 
-  // 카테고리 필터
-  if (categoryId) {
+  // 카테고리 필터 (다중 선택, OR 로직)
+  if (categoryIds && categoryIds.length > 0) {
     where.categories = {
       some: {
-        categoryId,
+        categoryId: {
+          in: categoryIds,
+        },
       },
     };
   }
@@ -49,6 +53,17 @@ export async function getContents(
     where.estimatedTime = {
       displayMinutes: {
         lte: maxMinutes,
+      },
+    };
+  }
+
+  // AI Tools 필터 (다중 선택, OR 로직)
+  if (aiToolIds && aiToolIds.length > 0) {
+    where.aiTools = {
+      some: {
+        aiToolId: {
+          in: aiToolIds,
+        },
       },
     };
   }
@@ -133,14 +148,17 @@ export async function getContents(
 export async function getContentsCount(
   options: Omit<GetContentsOptions, "page" | "pageSize"> = {}
 ): Promise<number> {
-  const { categoryId, difficulty, maxMinutes } = options;
+  const { categoryIds, difficulty, maxMinutes, aiToolIds } = options;
 
   const where: any = {};
 
-  if (categoryId) {
+  // 카테고리 필터 (다중 선택, OR 로직)
+  if (categoryIds && categoryIds.length > 0) {
     where.categories = {
       some: {
-        categoryId,
+        categoryId: {
+          in: categoryIds,
+        },
       },
     };
   }
@@ -153,6 +171,17 @@ export async function getContentsCount(
     where.estimatedTime = {
       displayMinutes: {
         lte: maxMinutes,
+      },
+    };
+  }
+
+  // AI Tools 필터 (다중 선택, OR 로직)
+  if (aiToolIds && aiToolIds.length > 0) {
+    where.aiTools = {
+      some: {
+        aiToolId: {
+          in: aiToolIds,
+        },
       },
     };
   }
