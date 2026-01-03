@@ -45,8 +45,8 @@ export const useFilterStore = create<FilterState>((set, get) => ({
   toggleCategory: (categoryId) =>
     set((state) => ({
       selectedCategories: state.selectedCategories.includes(categoryId)
-        ? state.selectedCategories.filter((id) => id !== categoryId)
-        : [...state.selectedCategories, categoryId],
+        ? [] // 이미 선택된 카테고리를 다시 클릭하면 선택 해제
+        : [categoryId], // 새로운 카테고리 하나만 선택 (기존 선택은 자동으로 해제됨)
     })),
 
   setDifficulty: (difficulty) => set({ selectedDifficulty: difficulty }),

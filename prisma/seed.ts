@@ -18,30 +18,39 @@ async function main() {
   // Create categories
   const categories = await Promise.all([
     prisma.category.upsert({
-      where: { slug: 'marketing' },
+      where: { slug: 'text' },
       update: {},
       create: {
-        id: 'cat-1',
-        name: '마케팅',
-        slug: 'marketing',
+        id: 'text',
+        name: '텍스트 생성',
+        slug: 'text',
       },
     }),
     prisma.category.upsert({
-      where: { slug: 'design' },
+      where: { slug: 'image' },
       update: {},
       create: {
-        id: 'cat-2',
-        name: '디자인',
-        slug: 'design',
+        id: 'image',
+        name: '이미지 생성',
+        slug: 'image',
       },
     }),
     prisma.category.upsert({
-      where: { slug: 'document' },
+      where: { slug: 'video' },
       update: {},
       create: {
-        id: 'cat-3',
-        name: '문서 작성',
-        slug: 'document',
+        id: 'video',
+        name: '영상 생성',
+        slug: 'video',
+      },
+    }),
+    prisma.category.upsert({
+      where: { slug: 'code' },
+      update: {},
+      create: {
+        id: 'code',
+        name: '바이브 코딩',
+        slug: 'code',
       },
     }),
   ])
@@ -132,7 +141,7 @@ async function main() {
       publishedAt: new Date('2024-12-15'),
       language: Language.KO,
       difficulty: Difficulty.BEGINNER,
-      categories: [categories[0].id], // 마케팅
+      categories: ['text'], // 텍스트 생성
       tools: [tools[0].id], // ChatGPT
       tags: [tags[0].id, tags[1].id], // 초보자 추천, 생산성
       estimatedTime: {
@@ -163,7 +172,7 @@ async function main() {
       publishedAt: new Date('2024-12-10'),
       language: Language.KO,
       difficulty: Difficulty.INTERMEDIATE,
-      categories: [categories[1].id], // 디자인
+      categories: ['image'], // 이미지 생성
       tools: [tools[1].id], // Midjourney
       tags: [tags[1].id], // 생산성
       estimatedTime: {
@@ -189,7 +198,7 @@ async function main() {
       publishedAt: new Date('2024-12-05'),
       language: Language.KO,
       difficulty: Difficulty.BEGINNER,
-      categories: [categories[2].id], // 문서 작성
+      categories: ['text'], // 텍스트 생성
       tools: [tools[2].id], // Notion AI
       tags: [tags[0].id, tags[1].id, tags[2].id], // 초보자 추천, 생산성, 무료
       estimatedTime: {
@@ -220,7 +229,7 @@ async function main() {
       publishedAt: new Date('2024-11-28'),
       language: Language.KO,
       difficulty: Difficulty.BEGINNER,
-      categories: [categories[2].id], // 문서 작성
+      categories: ['text'], // 텍스트 생성
       tools: [tools[0].id], // ChatGPT
       tags: [tags[0].id, tags[1].id], // 초보자 추천, 생산성
       estimatedTime: {
@@ -246,7 +255,7 @@ async function main() {
       publishedAt: new Date('2024-11-20'),
       language: Language.KO,
       difficulty: Difficulty.ADVANCED,
-      categories: [categories[1].id], // 디자인
+      categories: ['image'], // 이미지 생성
       tools: [tools[1].id], // Midjourney
       tags: [tags[1].id], // 생산성
       estimatedTime: {
@@ -277,7 +286,7 @@ async function main() {
       publishedAt: new Date('2024-11-15'),
       language: Language.KO,
       difficulty: Difficulty.BEGINNER,
-      categories: [categories[0].id], // 마케팅
+      categories: ['text'], // 텍스트 생성
       tools: [tools[0].id], // ChatGPT
       tags: [tags[0].id, tags[1].id], // 초보자 추천, 생산성
       estimatedTime: {
@@ -308,7 +317,7 @@ async function main() {
       publishedAt: new Date('2024-11-12'),
       language: Language.KO,
       difficulty: Difficulty.INTERMEDIATE,
-      categories: [categories[1].id], // 디자인
+      categories: ['image'], // 이미지 생성
       tools: [tools[1].id], // Midjourney
       tags: [tags[1].id], // 생산성
       estimatedTime: {
@@ -334,7 +343,7 @@ async function main() {
       publishedAt: new Date('2024-11-08'),
       language: Language.KO,
       difficulty: Difficulty.BEGINNER,
-      categories: [categories[2].id], // 문서 작성
+      categories: ['text'], // 텍스트 생성
       tools: [tools[2].id], // Notion AI
       tags: [tags[0].id, tags[1].id], // 초보자 추천, 생산성
       estimatedTime: {
@@ -365,7 +374,7 @@ async function main() {
       publishedAt: new Date('2024-11-05'),
       language: Language.KO,
       difficulty: Difficulty.INTERMEDIATE,
-      categories: [categories[2].id], // 문서 작성
+      categories: ['text'], // 텍스트 생성
       tools: [tools[0].id], // ChatGPT
       tags: [tags[1].id], // 생산성
       estimatedTime: {
@@ -391,7 +400,7 @@ async function main() {
       publishedAt: new Date('2024-11-01'),
       language: Language.KO,
       difficulty: Difficulty.ADVANCED,
-      categories: [categories[1].id], // 디자인
+      categories: ['image'], // 이미지 생성
       tools: [tools[1].id], // Midjourney
       tags: [tags[1].id], // 생산성
       estimatedTime: {
@@ -422,7 +431,7 @@ async function main() {
       publishedAt: new Date('2024-10-28'),
       language: Language.KO,
       difficulty: Difficulty.BEGINNER,
-      categories: [categories[0].id], // 마케팅
+      categories: ['text'], // 텍스트 생성
       tools: [tools[0].id], // ChatGPT
       tags: [tags[0].id, tags[1].id, tags[2].id], // 초보자 추천, 생산성, 무료
       estimatedTime: {
@@ -448,7 +457,7 @@ async function main() {
       publishedAt: new Date('2024-10-25'),
       language: Language.KO,
       difficulty: Difficulty.INTERMEDIATE,
-      categories: [categories[2].id], // 문서 작성
+      categories: ['text'], // 텍스트 생성
       tools: [tools[2].id], // Notion AI
       tags: [tags[1].id], // 생산성
       estimatedTime: {
@@ -479,7 +488,7 @@ async function main() {
       publishedAt: new Date('2024-10-20'),
       language: Language.KO,
       difficulty: Difficulty.BEGINNER,
-      categories: [categories[1].id], // 디자인
+      categories: ['image'], // 이미지 생성
       tools: [tools[1].id], // Midjourney
       tags: [tags[0].id, tags[1].id], // 초보자 추천, 생산성
       estimatedTime: {
@@ -505,7 +514,7 @@ async function main() {
       publishedAt: new Date('2024-10-15'),
       language: Language.KO,
       difficulty: Difficulty.BEGINNER,
-      categories: [categories[0].id], // 마케팅
+      categories: ['text'], // 텍스트 생성
       tools: [tools[0].id], // ChatGPT
       tags: [tags[0].id, tags[1].id], // 초보자 추천, 생산성
       estimatedTime: {
@@ -536,7 +545,7 @@ async function main() {
       publishedAt: new Date('2024-10-10'),
       language: Language.KO,
       difficulty: Difficulty.BEGINNER,
-      categories: [categories[2].id], // 문서 작성
+      categories: ['text'], // 텍스트 생성
       tools: [tools[2].id], // Notion AI
       tags: [tags[0].id, tags[1].id, tags[2].id], // 초보자 추천, 생산성, 무료
       estimatedTime: {
@@ -562,7 +571,7 @@ async function main() {
       publishedAt: new Date('2024-10-05'),
       language: Language.KO,
       difficulty: Difficulty.BEGINNER,
-      categories: [categories[2].id], // 문서 작성
+      categories: ['text'], // 텍스트 생성
       tools: [tools[0].id], // ChatGPT
       tags: [tags[0].id, tags[1].id], // 초보자 추천, 생산성
       estimatedTime: {
@@ -593,7 +602,7 @@ async function main() {
       publishedAt: new Date('2024-09-30'),
       language: Language.KO,
       difficulty: Difficulty.ADVANCED,
-      categories: [categories[1].id], // 디자인
+      categories: ['image'], // 이미지 생성
       tools: [tools[1].id], // Midjourney
       tags: [tags[1].id], // 생산성
       estimatedTime: {
@@ -624,7 +633,7 @@ async function main() {
       publishedAt: new Date('2024-09-25'),
       language: Language.KO,
       difficulty: Difficulty.INTERMEDIATE,
-      categories: [categories[0].id], // 마케팅
+      categories: ['text'], // 텍스트 생성
       tools: [tools[0].id], // ChatGPT
       tags: [tags[1].id], // 생산성
       estimatedTime: {
@@ -655,7 +664,7 @@ async function main() {
       publishedAt: new Date('2024-09-20'),
       language: Language.KO,
       difficulty: Difficulty.BEGINNER,
-      categories: [categories[2].id], // 문서 작성
+      categories: ['text'], // 텍스트 생성
       tools: [tools[2].id], // Notion AI
       tags: [tags[0].id, tags[1].id], // 초보자 추천, 생산성
       estimatedTime: {
@@ -681,7 +690,7 @@ async function main() {
       publishedAt: new Date('2024-09-15'),
       language: Language.KO,
       difficulty: Difficulty.INTERMEDIATE,
-      categories: [categories[1].id], // 디자인
+      categories: ['image'], // 이미지 생성
       tools: [tools[1].id], // Midjourney
       tags: [tags[1].id], // 생산성
       estimatedTime: {
@@ -707,7 +716,7 @@ async function main() {
       publishedAt: new Date('2024-09-10'),
       language: Language.KO,
       difficulty: Difficulty.INTERMEDIATE,
-      categories: [categories[0].id], // 마케팅
+      categories: ['text'], // 텍스트 생성
       tools: [tools[0].id], // ChatGPT
       tags: [tags[1].id], // 생산성
       estimatedTime: {
@@ -738,7 +747,7 @@ async function main() {
       publishedAt: new Date('2024-09-05'),
       language: Language.KO,
       difficulty: Difficulty.INTERMEDIATE,
-      categories: [categories[2].id], // 문서 작성
+      categories: ['text'], // 텍스트 생성
       tools: [tools[2].id], // Notion AI
       tags: [tags[1].id], // 생산성
       estimatedTime: {
@@ -769,7 +778,7 @@ async function main() {
       publishedAt: new Date('2024-08-30'),
       language: Language.KO,
       difficulty: Difficulty.BEGINNER,
-      categories: [categories[0].id], // 마케팅
+      categories: ['text'], // 텍스트 생성
       tools: [tools[0].id], // ChatGPT
       tags: [tags[0].id, tags[1].id], // 초보자 추천, 생산성
       estimatedTime: {
@@ -795,7 +804,7 @@ async function main() {
       publishedAt: new Date('2024-08-25'),
       language: Language.KO,
       difficulty: Difficulty.BEGINNER,
-      categories: [categories[1].id], // 디자인
+      categories: ['image'], // 이미지 생성
       tools: [tools[1].id], // Midjourney
       tags: [tags[0].id, tags[1].id], // 초보자 추천, 생산성
       estimatedTime: {
@@ -826,7 +835,7 @@ async function main() {
       publishedAt: new Date('2024-08-20'),
       language: Language.KO,
       difficulty: Difficulty.ADVANCED,
-      categories: [categories[2].id], // 문서 작성
+      categories: ['text'], // 텍스트 생성
       tools: [tools[0].id], // ChatGPT
       tags: [tags[1].id], // 생산성
       estimatedTime: {
