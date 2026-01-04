@@ -35,7 +35,13 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export function SubscribeNewsletterDialog() {
+interface SubscribeNewsletterDialogProps {
+  triggerComponent?: React.ReactNode;
+}
+
+export function SubscribeNewsletterDialog({
+  triggerComponent,
+}: SubscribeNewsletterDialogProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<FormValues>({
@@ -73,9 +79,7 @@ export function SubscribeNewsletterDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">AI 뉴스레터 구독</Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{triggerComponent}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>AI 뉴스레터 구독하기</DialogTitle>

@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { SubscribeNewsletterDialog } from "./SubscribeNewsletterDialog";
 
 export function NewsletterBanner() {
   return (
@@ -15,12 +16,16 @@ export function NewsletterBanner() {
         </div>
 
         {/* CTA 버튼 */}
-        <Button
-          size="lg"
-          className="bg-white text-black hover:bg-gray-100 font-semibold whitespace-nowrap"
-        >
-          무료 AI 뉴스레터 배송받기
-        </Button>
+        <SubscribeNewsletterDialog
+          triggerComponent={
+            <Button
+              size="lg"
+              className="bg-white text-black hover:bg-gray-100 font-semibold whitespace-nowrap"
+            >
+              무료 AI 뉴스레터 배송받기
+            </Button>
+          }
+        />
       </div>
     </div>
   );

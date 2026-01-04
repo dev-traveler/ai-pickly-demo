@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { SearchBar } from "@/components/SearchBar";
 import { SubscribeNewsletterDialog } from "./SubscribeNewsletterDialog";
@@ -15,7 +16,11 @@ export function Header() {
 
         {/* Navigation */}
         <nav className="flex items-center gap-2">
-          <SubscribeNewsletterDialog />
+          <SubscribeNewsletterDialog
+            triggerComponent={
+              <Button variant="outline">AI 뉴스레터 구독</Button>
+            }
+          />
         </nav>
       </div>
     </header>
