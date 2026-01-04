@@ -1,6 +1,6 @@
-import { SearchBar } from "@/components/SearchBar";
-import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
+import { SearchBar } from "@/components/SearchBar";
+import { SubscribeNewsletterDialog } from "./SubscribeNewsletterDialog";
 
 export function Header() {
   return (
@@ -15,13 +15,7 @@ export function Header() {
 
         {/* Navigation */}
         <nav className="flex items-center gap-2">
-          <Button
-            variant="default"
-            size="sm"
-            className="rounded-full bg-gray-900 hover:bg-gray-800 hidden sm:inline-flex"
-          >
-            AI 뉴스레터 구독
-          </Button>
+          <SubscribeNewsletterDialog />
         </nav>
       </div>
     </header>

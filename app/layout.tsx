@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Providers } from "@/components/providers";
+import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
 
@@ -25,6 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${pretendard.className} antialiased`}>
         <Providers>{children}</Providers>
+        <Toaster />
         <SpeedInsights />
       </body>
     </html>
