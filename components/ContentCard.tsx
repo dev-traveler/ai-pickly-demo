@@ -8,14 +8,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { getOptimizedImageProps } from "@/lib/image-utils";
-import clsx from "clsx";
+import { Difficulty } from "@prisma/client";
 
 interface ContentCardProps {
   content: ContentCardData;
   priority?: boolean;
 }
 
-const difficultyMap = {
+const difficultyMap: Record<Difficulty, string> = {
   BEGINNER: "초급",
   INTERMEDIATE: "중급",
   ADVANCED: "고급",
