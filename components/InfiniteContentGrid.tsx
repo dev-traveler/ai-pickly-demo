@@ -2,8 +2,7 @@
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
-import { ContentGrid } from "@/components/ContentGrid";
-import { ContentCardSkeleton } from "@/components/ContentCardSkeleton";
+import { ContentGrid, ContentGridSkeleton } from "@/components/ContentGrid";
 import { getContents, GetContentsOptions } from "@/lib/db/contents";
 
 type Content = Awaited<ReturnType<typeof getContents>>[number];
@@ -99,12 +98,7 @@ export function InfiniteContentGrid({
   if (isLoading) {
     return (
       <div className="space-y-8" role="status" aria-label="콘텐츠 로딩 중">
-        <span className="sr-only">콘텐츠를 불러오는 중입니다...</span>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <ContentCardSkeleton key={`skeleton-${i}`} />
-          ))}
-        </div>
+        <ContentGridSkeleton />
       </div>
     );
   }
@@ -127,28 +121,11 @@ export function InfiniteContentGrid({
 
   return (
     <div className="space-y-8">
-      <ContentGrid
-        contents={allContents}
-        emptyMessage={emptyMessage}
-      />
+      <ContentGrid contents={allContents} emptyMessage={emptyMessage} />
 
       {/* 무한 스크롤 트리거 */}
       <div ref={loadMoreRef} className="py-8 text-center">
-        {isFetchingNextPage ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-8">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <ContentCardSkeleton key={`pagination-skeleton-${i}`} />
-            ))}
-          </div>
-        ) : hasNextPage ? (
-          <p className="text-muted-foreground text-sm">
-            스크롤하여 더 보기
-          </p>
-        ) : allContents.length > 0 ? (
-          <p className="text-muted-foreground text-sm">
-            모든 콘텐츠를 확인했습니다
-          </p>
-        ) : null}
+        {isFetchingNextPage && <ContentGridSkeleton />}
       </div>
     </div>
   );

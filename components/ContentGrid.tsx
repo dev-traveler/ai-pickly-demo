@@ -7,6 +7,9 @@ interface ContentGridProps {
   emptyMessage?: string;
 }
 
+const contentGrid =
+  "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3";
+
 export function ContentGrid({
   contents,
   emptyMessage = "콘텐츠가 없습니다.",
@@ -22,7 +25,7 @@ export function ContentGrid({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+    <div className={contentGrid}>
       {contents.map((content, index) => (
         <ContentCard key={content.id} content={content} priority={index < 4} />
       ))}
@@ -32,7 +35,7 @@ export function ContentGrid({
 
 export function ContentGridSkeleton() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+    <div className={contentGrid}>
       {Array.from({ length: 16 }).map((_, i) => (
         <ContentCardSkeleton key={`loading-skeleton-${i}`} />
       ))}
