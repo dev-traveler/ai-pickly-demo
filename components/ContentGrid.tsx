@@ -8,28 +8,22 @@ interface ContentGridProps {
 
 export function ContentGrid({
   contents,
-  emptyMessage = "콘텐츠가 없습니다."
+  emptyMessage = "콘텐츠가 없습니다.",
 }: ContentGridProps) {
   if (contents.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 px-4">
         <div className="text-center space-y-3">
-          <p className="text-lg text-muted-foreground">
-            {emptyMessage}
-          </p>
+          <p className="text-lg text-muted-foreground">{emptyMessage}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
       {contents.map((content, index) => (
-        <ContentCard
-          key={content.id}
-          content={content}
-          priority={index < 4}
-        />
+        <ContentCard key={content.id} content={content} priority={index < 4} />
       ))}
     </div>
   );

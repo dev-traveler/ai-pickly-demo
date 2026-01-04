@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { getOptimizedImageProps } from "@/lib/image-utils";
+import clsx from "clsx";
 
 interface ContentCardProps {
   content: ContentCardData;
@@ -46,44 +47,73 @@ const getSourceName = (url: string) => {
   }
 };
 
+const getDefaultThumbnail = (categories: ContentCardData["categories"]) => {
+  // 첫 번째 카테고리의 slug를 기준으로 기본 이미지 결정
+  const primaryCategory = categories[0]?.category.slug;
+
+  switch (primaryCategory) {
+    case "code":
+    case "image":
+    case "text":
+    case "video":
+      return `/images/default-thumbnail-${primaryCategory}-category.png`;
+    default:
+      return "/images/default-thumbnail-code-category.png";
+  }
+};
+
+const getAIToolLogo = (toolName: string) => {
+  return `/images/logo-${toolName}.png`;
+};
+
 export function ContentCard({ content, priority = false }: ContentCardProps) {
   const [imageError, setImageError] = useState(false);
   const estimatedMinutes = content.estimatedTime?.displayMinutes;
   const sourceName = getSourceName(content.sourceUrl);
+  const defaultThumbnail = getDefaultThumbnail(content.categories);
 
   return (
     <Link href={`/content/${content.id}`} className="block group">
-      <Card className="overflow-hidden transition-all hover:shadow-lg">
+      <Card className="p-0 gap-4 border-none shadow-none overflow-hidden transition-all">
         {/* Thumbnail */}
-        <div className="relative aspect-video bg-muted">
+        <div className="relative aspect-video transition-transform duration-300 group-hover:-translate-y-2 mt-2">
           {content.thumbnailUrl && !imageError ? (
             <Image
               src={content.thumbnailUrl}
               alt={content.title}
               fill
-              className="object-cover"
+              className="object-cover rounded-2xl "
               {...getOptimizedImageProps(content.thumbnailUrl, { priority })}
               onError={() => setImageError(true)}
             />
           ) : (
-            <div className="w-full h-full bg-muted flex items-center justify-center">
-              <span className="text-muted-foreground text-sm">
-                이미지 준비중
-              </span>
-            </div>
+            <Image
+              src={defaultThumbnail}
+              alt={content.title}
+              fill
+              className="object-cover rounded-2xl"
+            />
           )}
 
           {/* Avatar positioned at bottom right of thumbnail */}
-          <div className="absolute bottom-3 right-3">
-            <div className="w-12 h-12 rounded-full bg-background border-2 border-background overflow-hidden">
-              <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-sm font-medium">
-                {content.author.charAt(0)}
+          {content.aiTools.map((data) => (
+            <div key={data.aiTool.id} className="absolute -bottom-7 right-7">
+              <div className="flex items-center justify-center w-14 h-14 rounded-full bg-background">
+                <div className="w-12 h-12 rounded-full bg-background shadow-lg">
+                  <Image
+                    className="object-cover rounded-full"
+                    src={getAIToolLogo(data.aiTool.id)}
+                    alt={data.aiTool.name}
+                    width={48}
+                    height={48}
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          ))}
         </div>
 
-        <CardContent className="p-4 space-y-3">
+        <CardContent className="px-4 space-y-3">
           {/* Author and Date */}
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>{content.author}</span>
@@ -129,22 +159,14 @@ export function ContentCard({ content, priority = false }: ContentCardProps) {
           <div className="flex flex-wrap gap-2">
             {/* Category Tags */}
             {content.categories.map(({ category }) => (
-              <Badge
-                key={category.id}
-                variant="secondary"
-                className="text-xs"
-              >
+              <Badge key={category.id} variant="secondary" className="text-xs">
                 {category.name}
               </Badge>
             ))}
 
             {/* Regular Tags */}
             {content.tags.map(({ tag }) => (
-              <Badge
-                key={tag.id}
-                variant="outline"
-                className="text-xs"
-              >
+              <Badge key={tag.id} variant="outline" className="text-xs">
                 # {tag.name}
               </Badge>
             ))}

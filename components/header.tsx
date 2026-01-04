@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Bookmark } from "lucide-react";
 import { SearchBar } from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
@@ -8,8 +9,18 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center gap-6">
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
-          <span className="font-bold text-xl">AI PICKLY</span>
+        <Link
+          href="/"
+          className="relative w-38 h-8 flex items-center space-x-2"
+        >
+          <div className="">
+            <Image
+              src="/logo.png"
+              alt="AI Pickly"
+              className="object-center"
+              fill
+            />
+          </div>
         </Link>
 
         {/* Search Bar */}
