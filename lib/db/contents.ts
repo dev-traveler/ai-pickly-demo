@@ -9,6 +9,7 @@ export interface GetContentsOptions {
   pageSize?: number;
   categoryIds?: string[];
   difficulty?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+  minMinutes?: number;
   maxMinutes?: number;
   aiToolIds?: string[];
 }
@@ -25,6 +26,7 @@ export async function getContents(
     pageSize = 20,
     categoryIds,
     difficulty,
+    minMinutes,
     maxMinutes,
     aiToolIds,
   } = options;
@@ -49,11 +51,12 @@ export async function getContents(
     where.difficulty = difficulty;
   }
 
-  // 소요시간 필터
-  if (maxMinutes) {
+  // 소요시간 필터 (범위 기반)
+  if (minMinutes !== undefined || maxMinutes !== undefined) {
     where.estimatedTime = {
       displayMinutes: {
-        lte: maxMinutes,
+        ...(minMinutes !== undefined && { gte: minMinutes }),
+        ...(maxMinutes !== undefined && { lte: maxMinutes }),
       },
     };
   }
@@ -149,7 +152,7 @@ export async function getContents(
 export async function getContentsCount(
   options: Omit<GetContentsOptions, "page" | "pageSize"> = {}
 ): Promise<number> {
-  const { categoryIds, difficulty, maxMinutes, aiToolIds } = options;
+  const { categoryIds, difficulty, minMinutes, maxMinutes, aiToolIds } = options;
 
   const where: Prisma.ContentWhereInput = {};
 
@@ -168,10 +171,12 @@ export async function getContentsCount(
     where.difficulty = difficulty;
   }
 
-  if (maxMinutes) {
+  // 소요시간 필터 (범위 기반)
+  if (minMinutes !== undefined || maxMinutes !== undefined) {
     where.estimatedTime = {
       displayMinutes: {
-        lte: maxMinutes,
+        ...(minMinutes !== undefined && { gte: minMinutes }),
+        ...(maxMinutes !== undefined && { lte: maxMinutes }),
       },
     };
   }

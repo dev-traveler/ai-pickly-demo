@@ -2,18 +2,18 @@ import type { Difficulty, TimeRange } from "@/lib/stores/filter-store";
 import type { GetContentsOptions } from "@/lib/db/contents";
 
 /**
- * TimeRange 값을 maxMinutes로 변환
+ * TimeRange 값을 minMinutes/maxMinutes 범위로 변환
  */
-export function mapTimeRangeToMaxMinutes(
+export function mapTimeRangeToMinutes(
   timeRange: TimeRange | null
-): number | undefined {
-  if (!timeRange) return undefined;
+): { minMinutes?: number; maxMinutes?: number } {
+  if (!timeRange) return {};
 
-  const mapping: Record<TimeRange, number | undefined> = {
-    "5": 5,
-    "10": 10,
-    "30": 30,
-    "30+": undefined, // 30분 이상은 제한 없음
+  const mapping: Record<TimeRange, { minMinutes?: number; maxMinutes?: number }> = {
+    "5": { maxMinutes: 4 }, // 5분 미만 (0-4분)
+    "10": { minMinutes: 5, maxMinutes: 10 }, // 5-10분
+    "30": { minMinutes: 11, maxMinutes: 30 }, // 10-30분 (실제로는 11-30분)
+    "30+": { minMinutes: 31 }, // 30분 이상 (31분+)
   };
 
   return mapping[timeRange];
@@ -40,10 +40,13 @@ export function mapFiltersToOptions(filterState: {
     options.difficulty = filterState.selectedDifficulty;
   }
 
-  // 소요시간
-  const maxMinutes = mapTimeRangeToMaxMinutes(filterState.selectedTimeRange);
-  if (maxMinutes !== undefined) {
-    options.maxMinutes = maxMinutes;
+  // 소요시간 (범위 기반)
+  const timeRangeMinutes = mapTimeRangeToMinutes(filterState.selectedTimeRange);
+  if (timeRangeMinutes.minMinutes !== undefined) {
+    options.minMinutes = timeRangeMinutes.minMinutes;
+  }
+  if (timeRangeMinutes.maxMinutes !== undefined) {
+    options.maxMinutes = timeRangeMinutes.maxMinutes;
   }
 
   // AI Tools (단일 선택을 배열로 변환)
