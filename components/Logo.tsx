@@ -5,7 +5,11 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useFilterStore } from "@/lib/stores/filter-store";
 
-export function Logo() {
+interface LogoProps {
+  darkMode: boolean;
+}
+
+export function Logo({ darkMode }: LogoProps) {
   const router = useRouter();
   const resetFilters = useFilterStore((state) => state.resetFilters);
 
@@ -18,7 +22,12 @@ export function Logo() {
   return (
     <Link href="/" onClick={handleLogoClick}>
       <div className="relative w-38 h-8 flex items-center space-x-2">
-        <Image src="/logo.png" alt="AI Pickly" className="object-center" fill />
+        <Image
+          src={darkMode ? "/logo-black.png" : "/logo-white.png"}
+          alt="AI Pickly"
+          className="object-center"
+          fill
+        />
       </div>
     </Link>
   );
