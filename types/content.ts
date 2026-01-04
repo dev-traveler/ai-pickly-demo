@@ -1,4 +1,4 @@
-import { Difficulty, TimeType } from "@prisma/client";
+import { Difficulty } from "@prisma/client";
 
 export type ContentCardData = {
   id: string;

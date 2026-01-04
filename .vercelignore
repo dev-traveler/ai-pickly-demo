@@ -1,0 +1,10 @@
+# Documentation (배포 불필요)
+/docs
+CLAUDE.md
+
+# Development files (배포 불필요)
+.env.local
+.env.development
+
+# Prisma (매번 재생성됨)
+node_modules/.prisma/
