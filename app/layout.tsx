@@ -24,7 +24,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${pretendard.className} antialiased`}>
+      <body
+        className={`${pretendard.className} antialiased min-h-[calc(100vh+20px)]`}
+      >
         <Providers>{children}</Providers>
         <Toaster />
         <SpeedInsights />
