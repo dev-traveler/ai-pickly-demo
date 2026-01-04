@@ -1,7 +1,6 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -10,27 +9,27 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useFilterStore } from "@/lib/stores/filter-store";
 import {
   CATEGORIES,
   DIFFICULTY_OPTIONS,
   TIME_RANGE_OPTIONS,
-  POPULAR_AI_TOOLS,
 } from "@/lib/constants/filters";
 import { cn } from "@/lib/utils";
+import type { AIToolData } from "@/lib/db/ai-tools";
 
 interface FilterSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  aiTools: AIToolData[];
 }
 
-export function FilterSheet({ open, onOpenChange }: FilterSheetProps) {
+export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
   const {
     selectedCategories,
     selectedDifficulty,
     selectedTimeRange,
-    selectedAITools,
+    selectedAITool,
     toggleCategory,
     setDifficulty,
     setTimeRange,
@@ -90,9 +89,7 @@ export function FilterSheet({ open, onOpenChange }: FilterSheetProps) {
                     variant={isSelected ? "default" : "outline"}
                     size="sm"
                     onClick={() =>
-                      setDifficulty(
-                        isSelected ? null : difficulty.value
-                      )
+                      setDifficulty(isSelected ? null : difficulty.value)
                     }
                     className={cn(
                       "rounded-full flex-1",
@@ -140,8 +137,8 @@ export function FilterSheet({ open, onOpenChange }: FilterSheetProps) {
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-900">AI 툴</h3>
             <div className="flex flex-wrap gap-2">
-              {POPULAR_AI_TOOLS.map((tool) => {
-                const isSelected = selectedAITools.includes(tool.id);
+              {aiTools.map((tool) => {
+                const isSelected = selectedAITool === tool.id;
                 return (
                   <Button
                     key={tool.id}
@@ -155,7 +152,7 @@ export function FilterSheet({ open, onOpenChange }: FilterSheetProps) {
                         : "bg-white hover:bg-gray-50"
                     )}
                   >
-                    {tool.label}
+                    {tool.name}
                   </Button>
                 );
               })}

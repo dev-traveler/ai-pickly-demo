@@ -61,7 +61,7 @@ export async function getContents(
   if (aiToolIds && aiToolIds.length > 0) {
     where.aiTools = {
       some: {
-        aiToolId: {
+        toolId: {
           in: aiToolIds,
         },
       },
@@ -179,7 +179,7 @@ export async function getContentsCount(
   if (aiToolIds && aiToolIds.length > 0) {
     where.aiTools = {
       some: {
-        aiToolId: {
+        toolId: {
           in: aiToolIds,
         },
       },

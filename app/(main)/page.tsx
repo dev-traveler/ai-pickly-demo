@@ -1,11 +1,13 @@
 import { getContents, getContentsCount } from "@/lib/db/contents";
+import { getAITools } from "@/lib/db/ai-tools";
 import { ContentFeedClient } from "@/components/ContentFeedClient";
 
 export default async function Home() {
   // 초기 데이터 병렬 fetch (SSR)
-  const [contents, totalCount] = await Promise.all([
+  const [contents, totalCount, aiTools] = await Promise.all([
     getContents({ page: 1, pageSize: 20 }),
     getContentsCount({}),
+    getAITools(),
   ]);
 
   return (
@@ -15,6 +17,7 @@ export default async function Home() {
         <ContentFeedClient
           initialData={contents}
           initialTotalCount={totalCount}
+          aiTools={aiTools}
         />
       </div>
     </div>

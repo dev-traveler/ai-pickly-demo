@@ -11,7 +11,7 @@ interface FilterState {
   selectedCategories: string[];
   selectedDifficulty: Difficulty | null;
   selectedTimeRange: TimeRange | null;
-  selectedAITools: string[];
+  selectedAITool: string | null;
 
   // Actions
   setSearchQuery: (query: string) => void;
@@ -23,7 +23,7 @@ interface FilterState {
 
   // Bulk update actions (for URL sync)
   setCategories: (categories: string[]) => void;
-  setAITools: (tools: string[]) => void;
+  setAITools: (tools: string | null) => void;
   setAllFilters: (filters: Partial<FilterState>) => void;
 
   // Computed
@@ -37,7 +37,7 @@ export const useFilterStore = create<FilterState>((set, get) => ({
   selectedCategories: [],
   selectedDifficulty: null,
   selectedTimeRange: null,
-  selectedAITools: [],
+  selectedAITool: null,
 
   // Actions
   setSearchQuery: (query) => set({ searchQuery: query }),
@@ -55,9 +55,10 @@ export const useFilterStore = create<FilterState>((set, get) => ({
 
   toggleAITool: (toolId) =>
     set((state) => ({
-      selectedAITools: state.selectedAITools.includes(toolId)
-        ? state.selectedAITools.filter((id) => id !== toolId)
-        : [...state.selectedAITools, toolId],
+      selectedAITool:
+        state.selectedAITool === toolId
+          ? null // 이미 선택된 AI 툴을 다시 클릭하면 선택 해제
+          : toolId, // 새로운 AI 툴 하나만 선택 (기존 선택은 자동으로 해제됨)
     })),
 
   resetFilters: () =>
@@ -66,13 +67,13 @@ export const useFilterStore = create<FilterState>((set, get) => ({
       selectedCategories: [],
       selectedDifficulty: null,
       selectedTimeRange: null,
-      selectedAITools: [],
+      selectedAITool: null,
     }),
 
   // Bulk update actions (URL 동기화용)
   setCategories: (categories) => set({ selectedCategories: categories }),
 
-  setAITools: (tools) => set({ selectedAITools: tools }),
+  setAITools: (tools) => set({ selectedAITool: tools }),
 
   setAllFilters: (filters) =>
     set({
@@ -80,7 +81,7 @@ export const useFilterStore = create<FilterState>((set, get) => ({
       selectedCategories: filters.selectedCategories ?? [],
       selectedDifficulty: filters.selectedDifficulty ?? null,
       selectedTimeRange: filters.selectedTimeRange ?? null,
-      selectedAITools: filters.selectedAITools ?? [],
+      selectedAITool: filters.selectedAITool ?? null,
     }),
 
   // Computed
@@ -90,7 +91,7 @@ export const useFilterStore = create<FilterState>((set, get) => ({
       state.selectedCategories.length > 0 ||
       state.selectedDifficulty !== null ||
       state.selectedTimeRange !== null ||
-      state.selectedAITools.length > 0
+      state.selectedAITool !== null
     );
   },
 
@@ -100,7 +101,7 @@ export const useFilterStore = create<FilterState>((set, get) => ({
     count += state.selectedCategories.length;
     if (state.selectedDifficulty) count++;
     if (state.selectedTimeRange) count++;
-    count += state.selectedAITools.length;
+    if (state.selectedAITool) count++;
     return count;
   },
 }));

@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { FilterChips } from "@/components/FilterChips";
 import { FilterSheet } from "@/components/FilterSheet";
 import { useFilterStore } from "@/lib/stores/filter-store";
+import type { AIToolData } from "@/lib/db/ai-tools";
 
 interface FilterBarProps {
   totalResults?: number;
+  aiTools: AIToolData[];
 }
 
-export function FilterBar({ totalResults = 0 }: FilterBarProps) {
+export function FilterBar({ totalResults = 0, aiTools }: FilterBarProps) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const { getActiveFilterCount } = useFilterStore();
   const activeFilters = getActiveFilterCount();
@@ -23,7 +25,7 @@ export function FilterBar({ totalResults = 0 }: FilterBarProps) {
           <h2 className="text-lg font-semibold text-gray-900">
             결과 <span className="text-gray-500">{totalResults}</span>
           </h2>
-          <FilterChips />
+          <FilterChips aiTools={aiTools} />
         </div>
         <Button
           variant="outline"
@@ -41,7 +43,7 @@ export function FilterBar({ totalResults = 0 }: FilterBarProps) {
         </Button>
       </div>
 
-      <FilterSheet open={sheetOpen} onOpenChange={setSheetOpen} />
+      <FilterSheet open={sheetOpen} onOpenChange={setSheetOpen} aiTools={aiTools} />
     </div>
   );
 }

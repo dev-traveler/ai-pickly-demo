@@ -3,7 +3,10 @@
 import { useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFilterStore } from "@/lib/stores/filter-store";
-import { serializeFiltersToURL, parseFiltersFromURL } from "@/lib/utils/filter-mapper";
+import {
+  serializeFiltersToURL,
+  parseFiltersFromURL,
+} from "@/lib/utils/filter-mapper";
 
 /**
  * Zustand filter store와 URL query params를 양방향 동기화하는 Hook
@@ -44,7 +47,7 @@ export function useFilterSync() {
       selectedCategories: filterStore.selectedCategories,
       selectedDifficulty: filterStore.selectedDifficulty,
       selectedTimeRange: filterStore.selectedTimeRange,
-      selectedAITools: filterStore.selectedAITools,
+      selectedAITool: filterStore.selectedAITool,
     });
 
     const currentUrl = searchParams.toString();
@@ -61,7 +64,7 @@ export function useFilterSync() {
     filterStore.selectedCategories,
     filterStore.selectedDifficulty,
     filterStore.selectedTimeRange,
-    filterStore.selectedAITools,
+    filterStore.selectedAITool,
     router,
     searchParams,
   ]);

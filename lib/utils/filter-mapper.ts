@@ -26,7 +26,7 @@ export function mapFiltersToOptions(filterState: {
   selectedCategories: string[];
   selectedDifficulty: Difficulty | null;
   selectedTimeRange: TimeRange | null;
-  selectedAITools: string[];
+  selectedAITool: string | null;
 }): Omit<GetContentsOptions, "page" | "pageSize"> {
   const options: Omit<GetContentsOptions, "page" | "pageSize"> = {};
 
@@ -46,9 +46,9 @@ export function mapFiltersToOptions(filterState: {
     options.maxMinutes = maxMinutes;
   }
 
-  // AI Tools (빈 배열이면 undefined)
-  if (filterState.selectedAITools.length > 0) {
-    options.aiToolIds = filterState.selectedAITools;
+  // AI Tools (단일 선택을 배열로 변환)
+  if (filterState.selectedAITool) {
+    options.aiToolIds = [filterState.selectedAITool];
   }
 
   return options;
@@ -61,7 +61,7 @@ export function serializeFiltersToURL(filterState: {
   selectedCategories: string[];
   selectedDifficulty: Difficulty | null;
   selectedTimeRange: TimeRange | null;
-  selectedAITools: string[];
+  selectedAITool: string | null;
 }): URLSearchParams {
   const params = new URLSearchParams();
 
@@ -80,9 +80,9 @@ export function serializeFiltersToURL(filterState: {
     params.set("time", filterState.selectedTimeRange);
   }
 
-  // AI Tools (쉼표로 구분)
-  if (filterState.selectedAITools.length > 0) {
-    params.set("tools", filterState.selectedAITools.join(","));
+  // AI Tool
+  if (filterState.selectedAITool) {
+    params.set("tools", filterState.selectedAITool);
   }
 
   return params;
@@ -91,19 +91,17 @@ export function serializeFiltersToURL(filterState: {
 /**
  * URL query params를 FilterState로 파싱
  */
-export function parseFiltersFromURL(
-  searchParams: URLSearchParams
-): Partial<{
+export function parseFiltersFromURL(searchParams: URLSearchParams): Partial<{
   selectedCategories: string[];
   selectedDifficulty: Difficulty;
   selectedTimeRange: TimeRange;
-  selectedAITools: string[];
+  selectedAITool: string | null;
 }> {
   const filters: Partial<{
     selectedCategories: string[];
     selectedDifficulty: Difficulty;
     selectedTimeRange: TimeRange;
-    selectedAITools: string[];
+    selectedAITool: string | null;
   }> = {};
 
   // 카테고리
@@ -130,7 +128,7 @@ export function parseFiltersFromURL(
   // AI Tools
   const tools = searchParams.get("tools");
   if (tools) {
-    filters.selectedAITools = tools.split(",").filter(Boolean);
+    filters.selectedAITool = tools;
   }
 
   return filters;

@@ -7,15 +7,19 @@ import {
   CATEGORIES,
   DIFFICULTY_OPTIONS,
   TIME_RANGE_OPTIONS,
-  POPULAR_AI_TOOLS,
 } from "@/lib/constants/filters";
+import type { AIToolData } from "@/lib/db/ai-tools";
 
-export function FilterChips() {
+interface FilterChipsProps {
+  aiTools: AIToolData[];
+}
+
+export function FilterChips({ aiTools }: FilterChipsProps) {
   const {
     selectedCategories,
     selectedDifficulty,
     selectedTimeRange,
-    selectedAITools,
+    selectedAITool,
     toggleCategory,
     setDifficulty,
     setTimeRange,
@@ -64,17 +68,17 @@ export function FilterChips() {
     }
   }
 
-  // Add AI tool chips
-  selectedAITools.forEach((toolId) => {
-    const tool = POPULAR_AI_TOOLS.find((t) => t.id === toolId);
+  // Add AI tool chip
+  if (selectedAITool) {
+    const tool = aiTools.find((t) => t.id === selectedAITool);
     if (tool) {
       chips.push({
-        id: `tool-${toolId}`,
-        label: tool.label,
-        onRemove: () => toggleAITool(toolId),
+        id: `tool-${selectedAITool}`,
+        label: tool.name,
+        onRemove: () => toggleAITool(selectedAITool),
       });
     }
-  });
+  }
 
   if (chips.length === 0) return null;
 

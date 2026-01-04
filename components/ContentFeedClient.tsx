@@ -10,10 +10,12 @@ import { useFilterSync } from "@/hooks/useFilterSync";
 import { mapFiltersToOptions } from "@/lib/utils/filter-mapper";
 import { getContentsCount } from "@/lib/db/contents";
 import type { ContentCardData } from "@/types/content";
+import type { AIToolData } from "@/lib/db/ai-tools";
 
 interface ContentFeedClientProps {
   initialData: ContentCardData[];
   initialTotalCount: number;
+  aiTools: AIToolData[];
 }
 
 /**
@@ -28,6 +30,7 @@ interface ContentFeedClientProps {
 export function ContentFeedClient({
   initialData,
   initialTotalCount,
+  aiTools,
 }: ContentFeedClientProps) {
   const filterStore = useFilterStore();
 
@@ -41,13 +44,13 @@ export function ContentFeedClient({
         selectedCategories: filterStore.selectedCategories,
         selectedDifficulty: filterStore.selectedDifficulty,
         selectedTimeRange: filterStore.selectedTimeRange,
-        selectedAITools: filterStore.selectedAITools,
+        selectedAITool: filterStore.selectedAITool,
       }),
     [
       filterStore.selectedCategories,
       filterStore.selectedDifficulty,
       filterStore.selectedTimeRange,
-      filterStore.selectedAITools,
+      filterStore.selectedAITool,
     ]
   );
 
@@ -68,7 +71,7 @@ export function ContentFeedClient({
       <CategoryFilter />
 
       {/* 필터 바 (결과 개수 + 활성 필터 칩 + 필터 버튼) */}
-      <FilterBar totalResults={totalCount ?? 0} />
+      <FilterBar totalResults={totalCount ?? 0} aiTools={aiTools} />
 
       {/* 무한 스크롤 콘텐츠 그리드 */}
       <InfiniteContentGrid

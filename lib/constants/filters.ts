@@ -36,23 +36,3 @@ export const TIME_RANGE_OPTIONS: TimeRangeOption[] = [
   { value: "30", label: "10-30분" },
   { value: "30+", label: "30분 이상" },
 ];
-
-// AI Tool options - these would typically come from the database
-// For now, we'll use a static list based on the screenshot
-export interface AIToolOption {
-  id: string;
-  label: string;
-}
-
-export const POPULAR_AI_TOOLS: AIToolOption[] = [
-  { id: "chatgpt", label: "Chat GPT" },
-  { id: "cursor", label: "Cursor" },
-  { id: "freepik", label: "Freepik" },
-  { id: "gemini", label: "Gemini" },
-  { id: "google-notebook-lm", label: "Google Notebook LM" },
-  { id: "lovable", label: "Lovable" },
-  { id: "midjourney", label: "Midjourney" },
-  { id: "ponder-ai", label: "Ponder AI" },
-  { id: "perplexity", label: "Perplexity" },
-  { id: "replit", label: "Replit" },
-];
