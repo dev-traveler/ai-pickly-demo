@@ -27,7 +27,7 @@ async function main() {
       },
       aiTools: {
         include: {
-          tool: true,
+          aiTool: true,
         },
       },
       tags: {
@@ -53,7 +53,7 @@ async function main() {
     console.log(
       `   Categories: ${content.categories.map((c) => c.category.name).join(', ')}`
     )
-    console.log(`   Tools: ${content.aiTools.map((t) => t.tool.name).join(', ')}`)
+    console.log(`   Tools: ${content.aiTools.map((t) => t.aiTool.name).join(', ')}`)
     console.log(`   Tags: ${content.tags.map((t) => t.tag.name).join(', ')}`)
     console.log(
       `   Estimated time: ${content.estimatedTime?.displayMinutes} minutes`
