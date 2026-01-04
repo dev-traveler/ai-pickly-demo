@@ -133,7 +133,7 @@ export function SubscribeNewsletterDialog({
               개인정보처리방침
             </Link>
             과{" "}
-            <Link href="/policy/" className="underline font-semibold">
+            <Link href="/policy/marketing" className="underline font-semibold">
               마케팅 정보 수신
             </Link>
             에 동의한 것으로 간주해요.
