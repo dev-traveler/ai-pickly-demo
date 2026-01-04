@@ -12,6 +12,7 @@ export interface GetContentsOptions {
   minMinutes?: number;
   maxMinutes?: number;
   aiToolIds?: string[];
+  searchQuery?: string;
 }
 
 /**
@@ -29,6 +30,7 @@ export async function getContents(
     minMinutes,
     maxMinutes,
     aiToolIds,
+    searchQuery,
   } = options;
 
   const skip = (page - 1) * pageSize;
@@ -70,6 +72,30 @@ export async function getContents(
         },
       },
     };
+  }
+
+  // 검색 필터 (OR 로직 across multiple fields)
+  if (searchQuery && searchQuery.trim().length > 0) {
+    const trimmedQuery = searchQuery.trim();
+
+    where.OR = [
+      // Search in title (has GIN index)
+      { title: { contains: trimmedQuery, mode: "insensitive" } },
+      // Search in description (has GIN index)
+      { description: { contains: trimmedQuery, mode: "insensitive" } },
+      // Search in author (has GIN index)
+      { author: { contains: trimmedQuery, mode: "insensitive" } },
+      // Search in tag names (has GIN index, requires junction table)
+      {
+        tags: {
+          some: {
+            tag: {
+              name: { contains: trimmedQuery, mode: "insensitive" },
+            },
+          },
+        },
+      },
+    ];
   }
 
   const contents = await prisma.content.findMany({
@@ -152,7 +178,7 @@ export async function getContents(
 export async function getContentsCount(
   options: Omit<GetContentsOptions, "page" | "pageSize"> = {}
 ): Promise<number> {
-  const { categoryIds, difficulty, minMinutes, maxMinutes, aiToolIds } = options;
+  const { categoryIds, difficulty, minMinutes, maxMinutes, aiToolIds, searchQuery } = options;
 
   const where: Prisma.ContentWhereInput = {};
 
@@ -190,6 +216,30 @@ export async function getContentsCount(
         },
       },
     };
+  }
+
+  // 검색 필터 (OR 로직 across multiple fields)
+  if (searchQuery && searchQuery.trim().length > 0) {
+    const trimmedQuery = searchQuery.trim();
+
+    where.OR = [
+      // Search in title (has GIN index)
+      { title: { contains: trimmedQuery, mode: "insensitive" } },
+      // Search in description (has GIN index)
+      { description: { contains: trimmedQuery, mode: "insensitive" } },
+      // Search in author (has GIN index)
+      { author: { contains: trimmedQuery, mode: "insensitive" } },
+      // Search in tag names (has GIN index, requires junction table)
+      {
+        tags: {
+          some: {
+            tag: {
+              name: { contains: trimmedQuery, mode: "insensitive" },
+            },
+          },
+        },
+      },
+    ];
   }
 
   return prisma.content.count({ where });

@@ -48,6 +48,7 @@ export function useFilterSync() {
       selectedDifficulty: filterStore.selectedDifficulty,
       selectedTimeRange: filterStore.selectedTimeRange,
       selectedAITool: filterStore.selectedAITool,
+      searchQuery: filterStore.searchQuery,
     });
 
     const currentUrl = searchParams.toString();
@@ -65,6 +66,7 @@ export function useFilterSync() {
     filterStore.selectedDifficulty,
     filterStore.selectedTimeRange,
     filterStore.selectedAITool,
+    filterStore.searchQuery,
     router,
     searchParams,
   ]);

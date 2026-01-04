@@ -1,11 +1,24 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useFilterStore } from "@/lib/stores/filter-store";
 
 export function SearchBar() {
   const { searchQuery, setSearchQuery } = useFilterStore();
+  const [localQuery, setLocalQuery] = useState(searchQuery);
+
+  // Sync Zustand back to local (for URL changes)
+  useEffect(() => {
+    setLocalQuery(searchQuery);
+  }, [searchQuery]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      setSearchQuery(localQuery);
+    }
+  };
 
   return (
     <div className="relative w-full max-w-2xl">
@@ -13,8 +26,9 @@ export function SearchBar() {
       <Input
         type="search"
         placeholder="어떤 AI를 찾으시나요?"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        value={localQuery}
+        onChange={(e) => setLocalQuery(e.target.value)}
+        onKeyDown={handleKeyDown}
         className="pl-10 h-12 rounded-full border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-900"
       />
     </div>

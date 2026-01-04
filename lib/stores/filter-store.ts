@@ -88,6 +88,7 @@ export const useFilterStore = create<FilterState>((set, get) => ({
   hasActiveFilters: () => {
     const state = get();
     return (
+      state.searchQuery.trim().length > 0 ||
       state.selectedCategories.length > 0 ||
       state.selectedDifficulty !== null ||
       state.selectedTimeRange !== null ||

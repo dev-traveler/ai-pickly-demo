@@ -27,6 +27,7 @@ export function mapFiltersToOptions(filterState: {
   selectedDifficulty: Difficulty | null;
   selectedTimeRange: TimeRange | null;
   selectedAITool: string | null;
+  searchQuery: string;
 }): Omit<GetContentsOptions, "page" | "pageSize"> {
   const options: Omit<GetContentsOptions, "page" | "pageSize"> = {};
 
@@ -54,6 +55,11 @@ export function mapFiltersToOptions(filterState: {
     options.aiToolIds = [filterState.selectedAITool];
   }
 
+  // 검색 쿼리 (빈 문자열이면 undefined)
+  if (filterState.searchQuery && filterState.searchQuery.trim().length > 0) {
+    options.searchQuery = filterState.searchQuery.trim();
+  }
+
   return options;
 }
 
@@ -65,6 +71,7 @@ export function serializeFiltersToURL(filterState: {
   selectedDifficulty: Difficulty | null;
   selectedTimeRange: TimeRange | null;
   selectedAITool: string | null;
+  searchQuery: string;
 }): URLSearchParams {
   const params = new URLSearchParams();
 
@@ -88,6 +95,11 @@ export function serializeFiltersToURL(filterState: {
     params.set("tools", filterState.selectedAITool);
   }
 
+  // 검색 쿼리
+  if (filterState.searchQuery && filterState.searchQuery.trim().length > 0) {
+    params.set("q", filterState.searchQuery.trim());
+  }
+
   return params;
 }
 
@@ -99,12 +111,14 @@ export function parseFiltersFromURL(searchParams: URLSearchParams): Partial<{
   selectedDifficulty: Difficulty;
   selectedTimeRange: TimeRange;
   selectedAITool: string | null;
+  searchQuery: string;
 }> {
   const filters: Partial<{
     selectedCategories: string[];
     selectedDifficulty: Difficulty;
     selectedTimeRange: TimeRange;
     selectedAITool: string | null;
+    searchQuery: string;
   }> = {};
 
   // 카테고리
@@ -132,6 +146,12 @@ export function parseFiltersFromURL(searchParams: URLSearchParams): Partial<{
   const tools = searchParams.get("tools");
   if (tools) {
     filters.selectedAITool = tools;
+  }
+
+  // 검색 쿼리
+  const query = searchParams.get("q");
+  if (query && query.trim().length > 0) {
+    filters.searchQuery = query.trim();
   }
 
   return filters;

@@ -45,12 +45,14 @@ export function ContentFeedClient({
         selectedDifficulty: filterStore.selectedDifficulty,
         selectedTimeRange: filterStore.selectedTimeRange,
         selectedAITool: filterStore.selectedAITool,
+        searchQuery: filterStore.searchQuery,
       }),
     [
       filterStore.selectedCategories,
       filterStore.selectedDifficulty,
       filterStore.selectedTimeRange,
       filterStore.selectedAITool,
+      filterStore.searchQuery,
     ]
   );
 
