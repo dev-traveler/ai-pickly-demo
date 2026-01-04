@@ -1,5 +1,6 @@
 "use server";
 
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { ContentCardData } from "@/types/content";
 
@@ -30,7 +31,7 @@ export async function getContents(
 
   const skip = (page - 1) * pageSize;
 
-  const where: any = {};
+  const where: Prisma.ContentWhereInput = {};
 
   // 카테고리 필터 (다중 선택, OR 로직)
   if (categoryIds && categoryIds.length > 0) {
@@ -150,7 +151,7 @@ export async function getContentsCount(
 ): Promise<number> {
   const { categoryIds, difficulty, maxMinutes, aiToolIds } = options;
 
-  const where: any = {};
+  const where: Prisma.ContentWhereInput = {};
 
   // 카테고리 필터 (다중 선택, OR 로직)
   if (categoryIds && categoryIds.length > 0) {

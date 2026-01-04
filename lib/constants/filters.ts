@@ -1,10 +1,10 @@
-import { FileText, Image, Video, Code } from "lucide-react";
+import { FileText, Image, Video, Code, type LucideIcon } from "lucide-react";
 import type { Difficulty, TimeRange } from "@/lib/stores/filter-store";
 
 export interface CategoryOption {
   id: string;
   label: string;
-  icon: any; // lucide-react icon component
+  icon: LucideIcon;
 }
 
 export const CATEGORIES: CategoryOption[] = [
