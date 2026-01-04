@@ -25,7 +25,10 @@ export function FilterBar({ totalResults = 0, aiTools }: FilterBarProps) {
           <h2 className="text-lg font-semibold text-gray-900">
             결과 <span className="text-gray-500">{totalResults}</span>
           </h2>
-          <FilterChips aiTools={aiTools} />
+
+          <div className="hidden md:block">
+            <FilterChips aiTools={aiTools} />
+          </div>
         </div>
         <Button
           variant="outline"
@@ -43,7 +46,11 @@ export function FilterBar({ totalResults = 0, aiTools }: FilterBarProps) {
         </Button>
       </div>
 
-      <FilterSheet open={sheetOpen} onOpenChange={setSheetOpen} aiTools={aiTools} />
+      <FilterSheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        aiTools={aiTools}
+      />
     </div>
   );
 }
