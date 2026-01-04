@@ -1,4 +1,4 @@
-import { ContentCardSkeleton } from "@/components/ContentCardSkeleton";
+import { ContentGridSkeleton } from "@/components/ContentGrid";
 
 export default function Loading() {
   return (
@@ -11,11 +11,7 @@ export default function Loading() {
         </div>
 
         {/* Content Grid Skeleton */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <ContentCardSkeleton key={`loading-skeleton-${i}`} />
-          ))}
-        </div>
+        <ContentGridSkeleton />
       </div>
     </div>
   );

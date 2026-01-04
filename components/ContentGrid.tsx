@@ -1,5 +1,6 @@
 import { ContentCardData } from "@/types/content";
 import { ContentCard } from "@/components/ContentCard";
+import { ContentCardSkeleton } from "@/components/ContentCardSkeleton";
 
 interface ContentGridProps {
   contents: ContentCardData[];
@@ -24,6 +25,16 @@ export function ContentGrid({
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
       {contents.map((content, index) => (
         <ContentCard key={content.id} content={content} priority={index < 4} />
+      ))}
+    </div>
+  );
+}
+
+export function ContentGridSkeleton() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+      {Array.from({ length: 16 }).map((_, i) => (
+        <ContentCardSkeleton key={`loading-skeleton-${i}`} />
       ))}
     </div>
   );
