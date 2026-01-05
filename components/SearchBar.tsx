@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useFilterStore } from "@/lib/stores/filter-store";
@@ -8,6 +9,8 @@ import { useFilterStore } from "@/lib/stores/filter-store";
 export function SearchBar() {
   const { searchQuery, setSearchQuery } = useFilterStore();
   const [localQuery, setLocalQuery] = useState(searchQuery);
+  const router = useRouter();
+  const pathname = usePathname();
 
   // Sync Zustand back to local (for URL changes)
   useEffect(() => {
@@ -17,6 +20,11 @@ export function SearchBar() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       setSearchQuery(localQuery);
+
+      // 현재 경로가 루트가 아니면 루트로 이동
+      if (pathname !== "/") {
+        router.push("/");
+      }
     }
   };
 
