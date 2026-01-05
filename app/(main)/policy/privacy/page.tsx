@@ -2,8 +2,8 @@ export default async function PrivacyPage() {
   return (
     <div>
       {/* Header section - NewsletterBanner와 유사한 높이 유지 */}
-      <div className="flex justify-center bg-black text-white p-8 md:p-12">
-        <div className="container px-4 flex flex-col gap-2">
+      <div className="bg-black text-white p-8">
+        <div className="container mx-auto px-4 max-w-3xl flex flex-col gap-2">
           <h1 className="text-2xl md:text-3xl font-bold">개인정보처리방침</h1>
           <p className="text-gray-300 text-sm md:text-base">
             AI Pickly의 개인정보 수집 및 이용에 관한 안내
@@ -12,8 +12,8 @@ export default async function PrivacyPage() {
       </div>
 
       {/* Main content - Home 페이지와 동일한 container 구조 */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-3xl mx-auto space-y-8">
+      <div className="container mx-auto px-8 md:px-4 py-16 md:py-32 max-w-3xl">
+        <div className="space-y-8">
           {/* 서론 */}
           <section className="space-y-4">
             <p className="text-gray-700 leading-relaxed">
