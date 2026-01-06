@@ -133,7 +133,10 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
         <div className="border-t bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
           <Button
             variant="outline"
-            onClick={resetFilters}
+            onClick={() => {
+              onOpenChange(false);
+              resetFilters();
+            }}
             className="w-full rounded-full"
           >
             필터 초기화
