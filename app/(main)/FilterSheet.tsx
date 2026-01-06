@@ -132,12 +132,12 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
         {/* Footer with Reset Button */}
         <div className="border-t bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
           <Button
-            variant="outline"
+            variant="cta"
             onClick={() => {
               onOpenChange(false);
               resetFilters();
             }}
-            className="w-full rounded-full"
+            className="w-full h-10 rounded-full font-semibold"
           >
             필터 초기화
           </Button>
