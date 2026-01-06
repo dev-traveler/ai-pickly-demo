@@ -14,8 +14,8 @@ import {
   DIFFICULTY_OPTIONS,
   TIME_RANGE_OPTIONS,
 } from "@/lib/constants/filters";
-import { cn } from "@/lib/utils";
 import type { AIToolData } from "@/lib/db/ai-tools";
+import { FilterOptionButton } from "@/app/(main)/FilterOptionButton";
 
 interface FilterSheetProps {
   open: boolean;
@@ -38,13 +38,16 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
-        <SheetHeader className="flex flex-row items-center justify-between pb-4">
+      <SheetContent
+        side="right"
+        className="flex h-dvh w-full flex-col p-0 sm:max-w-md"
+      >
+        <SheetHeader className="flex flex-row items-center justify-between px-6 pb-4 pt-6">
           <SheetTitle className="text-xl font-bold">필터</SheetTitle>
           <SheetClose />
         </SheetHeader>
 
-        <div className="px-6 py-6 space-y-8">
+        <div className="flex-1 space-y-8 overflow-y-auto px-6 pb-10 pt-2">
           {/* Category Filter */}
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-900">카테고리</h3>
@@ -52,20 +55,13 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
               {CATEGORIES.map((category) => {
                 const isSelected = selectedCategories.includes(category.id);
                 return (
-                  <Button
+                  <FilterOptionButton
                     key={category.id}
-                    variant={isSelected ? "default" : "outline"}
-                    size="sm"
+                    selected={isSelected}
                     onClick={() => toggleCategory(category.id)}
-                    className={cn(
-                      "rounded-full px-4",
-                      isSelected
-                        ? "bg-gray-900 text-white hover:bg-gray-800"
-                        : "bg-white hover:bg-gray-50"
-                    )}
                   >
                     {category.label}
-                  </Button>
+                  </FilterOptionButton>
                 );
               })}
             </div>
@@ -78,22 +74,15 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
               {DIFFICULTY_OPTIONS.map((difficulty) => {
                 const isSelected = selectedDifficulty === difficulty.value;
                 return (
-                  <Button
+                  <FilterOptionButton
                     key={difficulty.value}
-                    variant={isSelected ? "default" : "outline"}
-                    size="sm"
+                    selected={isSelected}
                     onClick={() =>
                       setDifficulty(isSelected ? null : difficulty.value)
                     }
-                    className={cn(
-                      "rounded-full px-4",
-                      isSelected
-                        ? "bg-gray-900 text-white hover:bg-gray-800"
-                        : "bg-white hover:bg-gray-50"
-                    )}
                   >
                     {difficulty.label}
-                  </Button>
+                  </FilterOptionButton>
                 );
               })}
             </div>
@@ -106,22 +95,15 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
               {TIME_RANGE_OPTIONS.map((timeRange) => {
                 const isSelected = selectedTimeRange === timeRange.value;
                 return (
-                  <Button
+                  <FilterOptionButton
                     key={timeRange.value}
-                    variant={isSelected ? "default" : "outline"}
-                    size="sm"
+                    selected={isSelected}
                     onClick={() =>
                       setTimeRange(isSelected ? null : timeRange.value)
                     }
-                    className={cn(
-                      "rounded-full px-4",
-                      isSelected
-                        ? "bg-gray-900 text-white hover:bg-gray-800"
-                        : "bg-white hover:bg-gray-50"
-                    )}
                   >
                     {timeRange.label}
-                  </Button>
+                  </FilterOptionButton>
                 );
               })}
             </div>
@@ -134,20 +116,13 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
               {aiTools.map((tool) => {
                 const isSelected = selectedAITool === tool.id;
                 return (
-                  <Button
+                  <FilterOptionButton
                     key={tool.id}
-                    variant={isSelected ? "default" : "outline"}
-                    size="sm"
+                    selected={isSelected}
                     onClick={() => toggleAITool(tool.id)}
-                    className={cn(
-                      "rounded-full px-4",
-                      isSelected
-                        ? "bg-gray-900 text-white hover:bg-gray-800"
-                        : "bg-white hover:bg-gray-50"
-                    )}
                   >
                     {tool.name}
-                  </Button>
+                  </FilterOptionButton>
                 );
               })}
             </div>
@@ -155,7 +130,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
         </div>
 
         {/* Footer with Reset Button */}
-        <div className="absolute bottom-0 left-0 right-0 bg-white p-4">
+        <div className="border-t bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
           <Button
             variant="outline"
             onClick={resetFilters}

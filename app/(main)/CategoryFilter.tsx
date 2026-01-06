@@ -1,9 +1,8 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { useFilterStore } from "@/lib/stores/filter-store";
 import { CATEGORIES } from "@/lib/constants/filters";
-import { Button } from "@/components/ui/button";
+import { FilterOptionButton } from "@/app/(main)/FilterOptionButton";
 
 export function CategoryFilter() {
   const { selectedCategories, toggleCategory } = useFilterStore();
@@ -15,22 +14,15 @@ export function CategoryFilter() {
         const isSelected = selectedCategories.includes(category.id);
 
         return (
-          <Button
+          <FilterOptionButton
             key={category.id}
-            variant={isSelected ? "default" : "outline"}
+            selected={isSelected}
             onClick={() => toggleCategory(category.id)}
-            className={cn(
-              "flex items-center gap-2 rounded-2xl px-6 whitespace-nowrap",
-              "text-xs h-8",
-              "md:text-sm md:h-10",
-              isSelected
-                ? "bg-gray-900 text-white hover:bg-gray-800"
-                : "bg-white hover:bg-gray-50"
-            )}
+            className="flex items-center gap-2 rounded-2xl px-6 whitespace-nowrap text-xs h-8 md:text-sm md:h-10"
           >
             <Icon className="h-5 w-5 hidden md:block" />
             <span className="font-medium">{category.label}</span>
-          </Button>
+          </FilterOptionButton>
         );
       })}
     </div>
