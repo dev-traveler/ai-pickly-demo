@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { CategoryFilter } from "@/components/CategoryFilter";
 import { FilterBar } from "@/components/FilterBar";
+import { FilterButton } from "@/components/FilterButton";
+import { FilterSheet } from "@/components/FilterSheet";
 import { InfiniteContentGrid } from "@/components/InfiniteContentGrid";
 import { useFilterStore } from "@/lib/stores/filter-store";
 import { useFilterSync } from "@/hooks/useFilterSync";
@@ -33,6 +35,7 @@ export function ContentFeedClient({
   aiTools,
 }: ContentFeedClientProps) {
   const filterStore = useFilterStore();
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   // URL ↔ Zustand 양방향 동기화
   useFilterSync();
@@ -66,6 +69,7 @@ export function ContentFeedClient({
 
   // 필터가 활성화되어 있는지 확인
   const hasFilters = filterStore.hasActiveFilters();
+  const activeFilters = filterStore.getActiveFilterCount();
 
   return (
     <>
@@ -73,12 +77,29 @@ export function ContentFeedClient({
       <CategoryFilter />
 
       {/* 필터 바 (결과 개수 + 활성 필터 칩 + 필터 버튼) */}
-      <FilterBar totalResults={totalCount ?? 0} aiTools={aiTools} />
+      <FilterBar
+        totalResults={totalCount ?? 0}
+        aiTools={aiTools}
+        onOpenFilter={() => setSheetOpen(true)}
+      />
 
       {/* 무한 스크롤 콘텐츠 그리드 */}
       <InfiniteContentGrid
         filters={filterOptions}
         initialData={hasFilters ? undefined : initialData}
+      />
+
+      <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 md:hidden">
+        <FilterButton
+          activeFilters={activeFilters}
+          onClick={() => setSheetOpen(true)}
+        />
+      </div>
+
+      <FilterSheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        aiTools={aiTools}
       />
     </>
   );
