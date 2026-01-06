@@ -70,9 +70,7 @@ export function ContentFeedClient({
   return (
     <>
       {/* 카테고리 필터 */}
-      <div className="hidden md:block">
-        <CategoryFilter />
-      </div>
+      <CategoryFilter />
 
       {/* 필터 바 (결과 개수 + 활성 필터 칩 + 필터 버튼) */}
       <FilterBar totalResults={totalCount ?? 0} aiTools={aiTools} />
