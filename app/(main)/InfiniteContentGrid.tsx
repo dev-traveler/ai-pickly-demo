@@ -2,7 +2,7 @@
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
-import { ContentGrid, ContentGridSkeleton } from "@/components/ContentGrid";
+import { ContentGrid, ContentGridSkeleton } from "@/app/(main)/ContentGrid";
 import { getContents, GetContentsOptions } from "@/lib/db/contents";
 
 type Content = Awaited<ReturnType<typeof getContents>>[number];

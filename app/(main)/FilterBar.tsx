@@ -1,7 +1,7 @@
 "use client";
 
-import { FilterChips } from "@/components/FilterChips";
-import { FilterButton } from "@/components/FilterButton";
+import { FilterChips } from "@/app/(main)/FilterChips";
+import { FilterButton } from "@/app/(main)/FilterButton";
 import { useFilterStore } from "@/lib/stores/filter-store";
 import type { AIToolData } from "@/lib/db/ai-tools";
 
@@ -32,10 +32,7 @@ export function FilterBar({
           </div>
         </div>
         <div className="hidden md:block">
-          <FilterButton
-            activeFilters={activeFilters}
-            onClick={onOpenFilter}
-          />
+          <FilterButton activeFilters={activeFilters} onClick={onOpenFilter} />
         </div>
       </div>
     </div>

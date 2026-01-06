@@ -1,7 +1,7 @@
 import { getContents, getContentsCount } from "@/lib/db/contents";
 import { getAITools } from "@/lib/db/ai-tools";
-import { ContentFeedClient } from "@/components/ContentFeedClient";
-import { NewsletterBanner } from "@/components/NewsletterBanner";
+import { NewsletterBanner } from "./NewsletterBanner";
+import { ContentFeedClient } from "./ContentFeedClient";
 
 export default async function Home() {
   // 초기 데이터 병렬 fetch (SSR)

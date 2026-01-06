@@ -1,6 +1,6 @@
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { FilterResetProvider } from "@/components/FilterResetProvider";
+import { FilterResetProvider } from "./FilterResetProvider";
+import { Header } from "./Header";
+import { Footer } from "./Footer";
 
 export default function MainLayout({
   children,

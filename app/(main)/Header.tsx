@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Logo } from "@/components/Logo";
-import { SearchBar } from "@/components/SearchBar";
-import { SubscribeNewsletterDialog } from "./SubscribeNewsletterDialog";
+import { Logo } from "@/app/(main)/Logo";
+import { SearchBar } from "@/app/(main)/SearchBar";
+import { SubscribeNewsletterDialog } from "@/app/(main)/SubscribeNewsletterDialog";
 
 export function Header() {
   return (

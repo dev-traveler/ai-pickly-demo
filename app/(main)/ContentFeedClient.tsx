@@ -2,11 +2,11 @@
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { CategoryFilter } from "@/components/CategoryFilter";
-import { FilterBar } from "@/components/FilterBar";
-import { FilterButton } from "@/components/FilterButton";
-import { FilterSheet } from "@/components/FilterSheet";
-import { InfiniteContentGrid } from "@/components/InfiniteContentGrid";
+import { CategoryFilter } from "./CategoryFilter";
+import { FilterBar } from "@/app/(main)/FilterBar";
+import { FilterButton } from "@/app/(main)/FilterButton";
+import { FilterSheet } from "@/app/(main)/FilterSheet";
+import { InfiniteContentGrid } from "@/app/(main)/InfiniteContentGrid";
 import { useFilterStore } from "@/lib/stores/filter-store";
 import { useFilterSync } from "@/hooks/useFilterSync";
 import { mapFiltersToOptions } from "@/lib/utils/filter-mapper";

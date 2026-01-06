@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Logo } from "./Logo";
+import { Logo } from "@/app/(main)/Logo";
 
 export function Footer() {
   return (
