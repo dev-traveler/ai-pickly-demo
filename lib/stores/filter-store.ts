@@ -19,6 +19,8 @@ interface FilterState {
   setDifficulty: (difficulty: Difficulty | null) => void;
   setTimeRange: (timeRange: TimeRange | null) => void;
   toggleAITool: (toolId: string) => void;
+  resetSearchQuery: () => void;
+  resetFilterChips: () => void;
   resetFilters: () => void;
 
   // Bulk update actions (for URL sync)
@@ -61,14 +63,18 @@ export const useFilterStore = create<FilterState>((set, get) => ({
           : toolId, // 새로운 AI 툴 하나만 선택 (기존 선택은 자동으로 해제됨)
     })),
 
-  resetFilters: () =>
+  resetSearchQuery: () => set({ searchQuery: "" }),
+  resetFilterChips: () =>
     set({
-      searchQuery: "",
       selectedCategories: [],
       selectedDifficulty: null,
       selectedTimeRange: null,
       selectedAITool: null,
     }),
+  resetFilters: () => {
+    get().resetSearchQuery();
+    get().resetFilterChips();
+  },
 
   // Bulk update actions (URL 동기화용)
   setCategories: (categories) => set({ selectedCategories: categories }),
