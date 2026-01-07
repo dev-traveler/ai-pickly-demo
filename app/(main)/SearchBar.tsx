@@ -20,6 +20,7 @@ export function SearchBar() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       setSearchQuery(localQuery);
+      e.currentTarget.blur();
 
       // 현재 경로가 루트가 아니면 루트로 이동
       if (pathname !== "/") {
@@ -37,7 +38,7 @@ export function SearchBar() {
         value={localQuery}
         onChange={(e) => setLocalQuery(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="pl-10 h-12 rounded-full border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-900"
+        className="pl-10 h-12 rounded-full border-gray-200"
       />
     </div>
   );
