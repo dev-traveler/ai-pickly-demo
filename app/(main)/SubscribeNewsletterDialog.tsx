@@ -129,11 +129,19 @@ export function SubscribeNewsletterDialog({
           </li>
           <li>
             뉴스레터 구독 시{" "}
-            <Link href="/policy/privacy" className="underline font-semibold">
+            <Link
+              href="/policy/privacy"
+              className="underline font-semibold"
+              onClick={() => setOpen(false)}
+            >
               개인정보처리방침
             </Link>
             과{" "}
-            <Link href="/policy/marketing" className="underline font-semibold">
+            <Link
+              href="/policy/marketing"
+              className="underline font-semibold"
+              onClick={() => setOpen(false)}
+            >
               마케팅 정보 수신
             </Link>
             에 동의한 것으로 간주해요.
