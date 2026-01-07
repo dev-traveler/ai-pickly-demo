@@ -33,7 +33,7 @@ export function FilterBar({
     setDifficulty,
     setTimeRange,
     toggleAITool,
-    resetFilters,
+    resetFilterChips,
   } = useFilterStore();
   const activeFilters = getActiveFilterCount();
 
@@ -105,7 +105,7 @@ export function FilterBar({
 
           <div>
             {chips.length > 0 && (
-              <XIcon className="size-8 p-2" onClick={resetFilters} />
+              <XIcon className="size-8 p-2" onClick={resetFilterChips} />
             )}
           </div>
         </div>

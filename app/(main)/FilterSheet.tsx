@@ -33,7 +33,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
     setDifficulty,
     setTimeRange,
     toggleAITool,
-    resetFilters,
+    resetFilterChips,
   } = useFilterStore();
 
   return (
@@ -145,7 +145,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
             variant="outline"
             onClick={() => {
               onOpenChange(false);
-              resetFilters();
+              resetFilterChips();
             }}
             className="w-full h-10 rounded-full"
           >
