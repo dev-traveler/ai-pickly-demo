@@ -1,14 +1,46 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface FilterButtonProps {
   activeFilters: number;
+  responsive?: boolean;
   onClick: () => void;
 }
 
-export function FilterButton({ activeFilters, onClick }: FilterButtonProps) {
+export function FilterButton({
+  activeFilters,
+  responsive = false,
+  onClick,
+}: FilterButtonProps) {
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    if (!responsive) return;
+
+    const toggleVisibility = () => {
+      // 화면 끝까지 300px 남았을 때 버튼 숨김
+      if (
+        window.scrollY + window.innerHeight >=
+        document.documentElement.scrollHeight - 300
+      ) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+    };
+
+    window.addEventListener("scroll", toggleVisibility);
+
+    return () => {
+      window.removeEventListener("scroll", toggleVisibility);
+    };
+  }, [responsive]);
+
+  if (!isVisible) return null;
+
   return (
     <Button
       variant="outline"
