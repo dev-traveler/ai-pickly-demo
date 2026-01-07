@@ -7,6 +7,7 @@ import { FilterBar } from "@/app/(main)/FilterBar";
 import { FilterButton } from "@/app/(main)/FilterButton";
 import { FilterSheet } from "@/app/(main)/FilterSheet";
 import { InfiniteContentGrid } from "@/app/(main)/InfiniteContentGrid";
+import { ScrollToTopButton } from "@/app/(main)/ScrollToTopButton";
 import { useFilterStore } from "@/lib/stores/filter-store";
 import { useFilterSync } from "@/hooks/useFilterSync";
 import { mapFiltersToOptions } from "@/lib/utils/filter-mapper";
@@ -89,11 +90,15 @@ export function ContentFeedClient({
         initialData={hasFilters ? undefined : initialData}
       />
 
-      <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 md:hidden">
-        <FilterButton
-          activeFilters={activeFilters}
-          onClick={() => setSheetOpen(true)}
-        />
+      <div className="w-full fixed bottom-6 left-1/2 z-50 -translate-x-1/2 md:hidden">
+        <div className="flex items-center justify-center w-full">
+          <FilterButton
+            responsive
+            activeFilters={activeFilters}
+            onClick={() => setSheetOpen(true)}
+          />
+          <ScrollToTopButton className="absolute right-6" />
+        </div>
       </div>
 
       <FilterSheet
