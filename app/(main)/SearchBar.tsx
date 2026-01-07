@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Search } from "lucide-react";
+import { Search, XIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useFilterStore } from "@/lib/stores/filter-store";
 
 export function SearchBar() {
-  const { searchQuery, setSearchQuery } = useFilterStore();
+  const { searchQuery, setSearchQuery, resetSearchQuery } = useFilterStore();
   const [localQuery, setLocalQuery] = useState(searchQuery);
   const router = useRouter();
   const pathname = usePathname();
@@ -40,6 +40,12 @@ export function SearchBar() {
         onKeyDown={handleKeyDown}
         className="pl-10 h-12 rounded-full border-gray-200"
       />
+      {localQuery !== "" && localQuery !== undefined && (
+        <XIcon
+          className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+          onClick={resetSearchQuery}
+        />
+      )}
     </div>
   );
 }
