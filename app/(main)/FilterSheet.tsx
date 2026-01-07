@@ -130,14 +130,24 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
         </div>
 
         {/* Footer with Reset Button */}
-        <div className="border-t bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+        <div className="border-t bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] space-y-2">
           <Button
             variant="cta"
             onClick={() => {
               onOpenChange(false);
-              resetFilters();
             }}
             className="w-full h-10 rounded-full font-semibold"
+          >
+            필터 적용
+          </Button>
+
+          <Button
+            variant="outline"
+            onClick={() => {
+              onOpenChange(false);
+              resetFilters();
+            }}
+            className="w-full h-10 rounded-full"
           >
             필터 초기화
           </Button>
