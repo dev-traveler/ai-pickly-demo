@@ -125,5 +125,11 @@
 }
 
 body {
-  @apply !min-w-full;
+  @apply min-w-full!;
+}
+
+input::-webkit-search-cancel-button,
+input::-ms-clear,
+input::-ms-reveal {
+  display: none;
 }
