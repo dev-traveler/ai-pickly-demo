@@ -1,7 +1,5 @@
 "use client";
 
-import { X } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { useFilterStore } from "@/lib/stores/filter-store";
 import {
   CATEGORIES,
@@ -9,6 +7,8 @@ import {
   TIME_RANGE_OPTIONS,
 } from "@/lib/constants/filters";
 import type { AIToolData } from "@/lib/db/ai-tools";
+import { FilterChip } from "./FilterChip";
+import type { filterChip } from "@/types/filter";
 
 interface FilterChipsProps {
   aiTools: AIToolData[];
@@ -26,7 +26,7 @@ export function FilterChips({ aiTools }: FilterChipsProps) {
     toggleAITool,
   } = useFilterStore();
 
-  const chips: Array<{ id: string; label: string; onRemove: () => void }> = [];
+  const chips: Array<filterChip> = [];
 
   // Add category chips
   selectedCategories.forEach((categoryId) => {
@@ -85,20 +85,7 @@ export function FilterChips({ aiTools }: FilterChipsProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {chips.map((chip) => (
-        <Badge
-          key={chip.id}
-          variant="secondary"
-          className="px-3 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200 text-sm font-medium text-gray-900"
-        >
-          {chip.label}
-          <button
-            onClick={chip.onRemove}
-            className="ml-2 inline-flex items-center justify-center rounded-full hover:bg-gray-300 transition-colors"
-            aria-label={`Remove ${chip.label} filter`}
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        </Badge>
+        <FilterChip key={chip.id} chip={chip} />
       ))}
     </div>
   );
