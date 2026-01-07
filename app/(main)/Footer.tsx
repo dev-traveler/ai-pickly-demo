@@ -103,7 +103,7 @@ export function Footer() {
           <div className="flex flex-col md:flex-row justify-between gap-4 text-xs text-gray-500">
             <div className="space-y-1.5">
               <p className="leading-relaxed">
-                AI Pickly | hello@aipickly.com |{" "}
+                AI Pickly |{" "}
                 <Link
                   href="/policy/privacy"
                   className="hover:text-gray-300 transition-colors"
@@ -116,6 +116,13 @@ export function Footer() {
                   className="hover:text-gray-300 transition-colors"
                 >
                   광고성 정보수신
+                </Link>{" "}
+                |{" "}
+                <Link
+                  href="https://docs.google.com/forms/d/e/1FAIpQLSc1HVgUEMl4qME6rjHPgYQhDkXmQyTBAs9t4I-hgVF9QUmedA/viewform"
+                  className="hover:text-gray-300 transition-colors"
+                >
+                  문의하기
                 </Link>
               </p>
               <p className="leading-relaxed">
