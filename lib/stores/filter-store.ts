@@ -21,7 +21,7 @@ interface FilterState {
   toggleAITool: (toolId: string) => void;
   resetSearchQuery: () => void;
   resetFilterChips: () => void;
-  resetFilters: () => void;
+  resetAllFilters: () => void;
 
   // Bulk update actions (for URL sync)
   setCategories: (categories: string[]) => void;
@@ -71,7 +71,7 @@ export const useFilterStore = create<FilterState>((set, get) => ({
       selectedTimeRange: null,
       selectedAITool: null,
     }),
-  resetFilters: () => {
+  resetAllFilters: () => {
     get().resetSearchQuery();
     get().resetFilterChips();
   },

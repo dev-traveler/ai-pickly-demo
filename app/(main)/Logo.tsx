@@ -13,7 +13,7 @@ interface LogoProps {
 
 export function Logo({ black = false, responsive = false }: LogoProps) {
   const router = useRouter();
-  const resetFilters = useFilterStore((state) => state.resetFilters);
+  const resetFilters = useFilterStore((state) => state.resetAllFilters);
 
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();

@@ -26,7 +26,7 @@ import { useFilterStore } from "@/lib/stores/filter-store";
 export function useFilterResetOnRouteLeave() {
   const pathname = usePathname();
   const previousPathnameRef = useRef<string>(pathname);
-  const resetFilters = useFilterStore((state) => state.resetFilters);
+  const resetFilters = useFilterStore((state) => state.resetAllFilters);
 
   useEffect(() => {
     const previousPathname = previousPathnameRef.current;
