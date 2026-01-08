@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Logo } from "@/app/(main)/Logo";
 import { SearchBar } from "@/app/(main)/SearchBar";
 import { SubscribeNewsletterDialog } from "@/app/(main)/SubscribeNewsletterDialog";
+import { LinkableFullLogo } from "./LinkableFullLogo";
 
 export function Header() {
   return (
@@ -9,7 +9,7 @@ export function Header() {
       <div className="container flex flex-col md:flex-row max-w-screen-2xl p-4 md:h-16 md:items-center gap-3 md:gap-6">
         {/* First Row on Mobile: Logo and Button */}
         <div className="flex items-center justify-between md:contents">
-          <Logo black />
+          <LinkableFullLogo black />
 
           {/* Navigation - visible on mobile */}
           <nav className="md:hidden">

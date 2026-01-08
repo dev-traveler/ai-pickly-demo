@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Logo } from "@/app/(main)/Logo";
+import { LinkableFullLogo } from "./LinkableFullLogo";
 
 export function Footer() {
   return (
@@ -7,7 +7,8 @@ export function Footer() {
       {/* Main footer content */}
       <div className="container mx-auto px-6 py-16">
         <div className="flex flex-col md:flex-row justify-between">
-          <Logo />
+          <LinkableFullLogo />
+
           {/* 
           <div className="flex justify-between gap-16 text-xs text-gray-500">
             <div>
