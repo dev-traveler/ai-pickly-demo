@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { CategoryFilter } from "./CategoryFilter";
 import { FilterBar } from "@/app/(main)/FilterBar";
@@ -14,6 +14,8 @@ import { mapFiltersToOptions } from "@/lib/utils/filter-mapper";
 import { getContentsCount } from "@/lib/db/contents";
 import type { ContentCardData } from "@/types/content";
 import type { AIToolData } from "@/lib/db/ai-tools";
+import { useOnboardingStore } from "@/lib/stores/onboarding-store";
+import { OnboardingDialog } from "@/components/onboarding/OnboardingDialog";
 
 interface ContentFeedClientProps {
   initialData: ContentCardData[];
@@ -37,6 +39,21 @@ export function ContentFeedClient({
 }: ContentFeedClientProps) {
   const filterStore = useFilterStore();
   const [sheetOpen, setSheetOpen] = useState(false);
+
+  // 온보딩 상태 관리
+  const [onboardingDismissed, setOnboardingDismissed] = useState(false);
+  const hasSeenOnboarding = useOnboardingStore(
+    (state) => state.hasSeenOnboarding
+  );
+
+  const isOnboardingHydrated = useSyncExternalStore(
+    (onStoreChange) =>
+      useOnboardingStore.persist.onFinishHydration(onStoreChange),
+    () => useOnboardingStore.persist.hasHydrated(),
+    () => false
+  );
+  const showOnboarding =
+    isOnboardingHydrated && !hasSeenOnboarding && !onboardingDismissed;
 
   // URL ↔ Zustand 양방향 동기화
   useFilterSync();
@@ -105,6 +122,16 @@ export function ContentFeedClient({
         open={sheetOpen}
         onOpenChange={setSheetOpen}
         aiTools={aiTools}
+      />
+
+      {/* 온보딩 다이얼로그 */}
+      <OnboardingDialog
+        open={showOnboarding}
+        onOpenChange={(open) => {
+          if (!open) {
+            setOnboardingDismissed(true);
+          }
+        }}
       />
     </>
   );
