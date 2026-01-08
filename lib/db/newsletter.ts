@@ -35,24 +35,23 @@ export async function subscribeToNewsletter(
   }
 
   try {
-    // NewsletterSubscriber 테이블에 데이터 삽입
-    await prisma.newsletterSubscriber.create({
-      data: {
-        id: crypto.randomUUID(),
-        email: normalizedEmail,
-      },
-    });
+    const result = await prisma.$queryRaw<{ isActive: boolean }[]>(
+      Prisma.sql`
+        INSERT INTO "NewsletterSubscriber" (id, email, "isActive")
+        VALUES (${crypto.randomUUID()}, ${normalizedEmail}, true)
+        ON CONFLICT (email)
+        DO UPDATE SET "isActive" = true
+        WHERE "NewsletterSubscriber"."isActive" = false
+        RETURNING "isActive";
+      `
+    );
+
+    if (result.length === 0) {
+      return { success: false, error: "DUPLICATE_EMAIL" };
+    }
 
     return { success: true };
   } catch (error) {
-    // Prisma 에러 핸들링
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      // P2002: Unique constraint violation (중복 이메일)
-      if (error.code === "P2002") {
-        return { success: false, error: "DUPLICATE_EMAIL" };
-      }
-    }
-
     // 기타 데이터베이스 에러
     console.error("Newsletter subscription error:", error);
     return { success: false, error: "DATABASE_ERROR" };
