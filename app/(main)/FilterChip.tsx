@@ -19,7 +19,7 @@ export function FilterChip({ chip }: FilterChipProps) {
         className="ml-2 inline-flex items-center justify-center rounded-full hover:bg-gray-300 transition-colors"
         aria-label={`Remove ${chip.label} filter`}
       >
-        <X className="h-3.5 w-3.5" />
+        <X className="h-3.5 w-3.5" onClick={chip.onRemove} />
       </button>
     </Badge>
   );

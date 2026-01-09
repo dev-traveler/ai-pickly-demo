@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Logo } from "@/components/Logo";
-import { useFilterStore } from "@/lib/stores/filter-store";
 import { cn } from "@/lib/utils";
 
 interface LinkableFullLogoProps {
@@ -12,11 +11,10 @@ interface LinkableFullLogoProps {
 
 export function LinkableFullLogo({ black = false }: LinkableFullLogoProps) {
   const router = useRouter();
-  const resetFilters = useFilterStore((state) => state.resetAllFilters);
 
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    resetFilters();
+    // resetFilters();
     router.push("/");
   };
 

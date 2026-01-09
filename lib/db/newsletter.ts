@@ -37,10 +37,12 @@ export async function subscribeToNewsletter(
   try {
     const result = await prisma.$queryRaw<{ isActive: boolean }[]>(
       Prisma.sql`
-        INSERT INTO "NewsletterSubscriber" (id, email, "isActive")
-        VALUES (${crypto.randomUUID()}, ${normalizedEmail}, true)
+        INSERT INTO "NewsletterSubscriber" (id, email, "isActive", "statusChangedAt")
+        VALUES (${crypto.randomUUID()}, ${normalizedEmail}, true, CURRENT_TIMESTAMP)
         ON CONFLICT (email)
-        DO UPDATE SET "isActive" = true
+        DO UPDATE SET
+          "isActive" = true,
+          "statusChangedAt" = CURRENT_TIMESTAMP
         WHERE "NewsletterSubscriber"."isActive" = false
         RETURNING "isActive";
       `
@@ -83,6 +85,7 @@ export async function unsubscribeFromNewsletter(
       },
       data: {
         isActive: false,
+        statusChangedAt: new Date(),
       },
     });
 

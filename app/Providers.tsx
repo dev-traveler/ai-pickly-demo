@@ -1,22 +1,20 @@
 "use client";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { getQueryClient } from "@/lib/get-query-client";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 60 * 1000, // 1분
-            refetchOnWindowFocus: false,
-          },
-        },
-      })
-  );
+  const [queryClient] = useState(() => getQueryClient());
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <NuqsAdapter defaultOptions={{ shallow: false }}>
+      <QueryClientProvider client={queryClient}>
+        {children}
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </NuqsAdapter>
   );
 }

@@ -1,5 +1,6 @@
 import { FileText, Image, Video, Code, type LucideIcon } from "lucide-react";
-import type { Difficulty, TimeRange } from "@/lib/stores/filter-store";
+import { Difficulty } from "@prisma/client";
+import { TimeRange } from "@/types/filter";
 
 export interface CategoryOption {
   id: string;
@@ -26,7 +27,7 @@ export const DIFFICULTY_OPTIONS: DifficultyOption[] = [
 ];
 
 export interface TimeRangeOption {
-  value: TimeRange;
+  value: keyof typeof TimeRange;
   label: string;
 }
 

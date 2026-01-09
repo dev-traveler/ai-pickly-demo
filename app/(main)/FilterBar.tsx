@@ -1,9 +1,9 @@
 "use client";
 
+import { useQueryState } from "nuqs";
 import { XIcon } from "lucide-react";
 import { FilterChips } from "@/app/(main)/FilterChips";
 import { FilterButton } from "@/app/(main)/FilterButton";
-import { useFilterStore } from "@/lib/stores/filter-store";
 import type { AIToolData } from "@/lib/db/ai-tools";
 import { filterChip } from "@/types/filter";
 import {
@@ -11,82 +11,73 @@ import {
   DIFFICULTY_OPTIONS,
   TIME_RANGE_OPTIONS,
 } from "@/lib/constants/filters";
+import { useFiltersSearchParams } from "@/hooks/useFiltersSearchParams";
 
 interface FilterBarProps {
-  totalResults?: number;
+  totalResults?: number | string;
   aiTools: AIToolData[];
   onOpenFilter: () => void;
 }
 
 export function FilterBar({
-  totalResults = 0,
+  totalResults,
   aiTools,
   onOpenFilter,
 }: FilterBarProps) {
-  const {
-    selectedCategories,
-    selectedDifficulty,
-    selectedTimeRange,
-    selectedAITool,
-    getActiveFilterCount,
-    toggleCategory,
-    setDifficulty,
-    setTimeRange,
-    toggleAITool,
-    resetFilterChips,
-  } = useFilterStore();
-  const activeFilters = getActiveFilterCount();
+  const [category, setCategory] = useQueryState("category");
+  const [difficulty, setDifficulty] = useQueryState("difficulty");
+  const [time, setTime] = useQueryState("time");
+  const [tool, setTool] = useQueryState("tool");
+  const [, setSearchParams] = useFiltersSearchParams();
+
+  const resetFilterChips = () => setSearchParams(null);
 
   const chips: Array<filterChip> = [];
 
   // Add category chips
-  selectedCategories.forEach((categoryId) => {
-    const category = CATEGORIES.find((c) => c.id === categoryId);
-    if (category) {
+  if (category) {
+    const c = CATEGORIES.find((t) => t.id === category);
+    if (c) {
       chips.push({
-        id: `category-${categoryId}`,
-        label: category.label,
-        onRemove: () => toggleCategory(categoryId),
+        id: `category-${c.id}`,
+        label: c.label,
+        onRemove: () => setCategory(null),
       });
     }
-  });
+  }
 
   // Add difficulty chip
-  if (selectedDifficulty) {
-    const difficulty = DIFFICULTY_OPTIONS.find(
-      (d) => d.value === selectedDifficulty
-    );
-    if (difficulty) {
+  if (difficulty) {
+    const d = DIFFICULTY_OPTIONS.find((d) => d.value === difficulty);
+    if (d) {
       chips.push({
         id: "difficulty",
-        label: difficulty.label,
+        label: d.label,
         onRemove: () => setDifficulty(null),
       });
     }
   }
 
   // Add time range chip
-  if (selectedTimeRange) {
-    const timeRange = TIME_RANGE_OPTIONS.find(
-      (t) => t.value === selectedTimeRange
-    );
-    if (timeRange) {
+  if (time) {
+    const t = TIME_RANGE_OPTIONS.find((t) => t.value === time);
+    if (t) {
       chips.push({
         id: "time-range",
-        label: timeRange.label,
-        onRemove: () => setTimeRange(null),
+        label: t.label,
+        onRemove: () => setTime(null),
       });
     }
   }
 
   // Add AI tool chip
-  if (selectedAITool) {
-    const tool = aiTools.find((t) => t.id === selectedAITool);
-    if (tool) {
+  if (tool) {
+    const t = aiTools.find((t) => t.id === tool);
+    if (t) {
       chips.push({
-        id: `tool-${selectedAITool}`,
-        label: tool.name,
-        onRemove: () => toggleAITool(selectedAITool),
+        id: `tool-${t.id}`,
+        label: t.name,
+        onRemove: () => setTool(null),
       });
     }
   }
@@ -110,7 +101,7 @@ export function FilterBar({
           </div>
         </div>
         <div className="hidden md:block">
-          <FilterButton activeFilters={activeFilters} onClick={onOpenFilter} />
+          <FilterButton onClick={onOpenFilter} />
         </div>
       </div>
     </div>

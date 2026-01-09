@@ -1,18 +1,26 @@
 "use server";
 
-import { Prisma } from "@prisma/client";
+import { Difficulty, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { ContentCardData } from "@/types/content";
+import { TimeRange } from "@/types/filter";
+import { mapTimeRangeToMinutes } from "../utils/filter-mapper";
+
+const COUNT_CACHE_TTL_MS = 1000 * 30;
+const MAX_COUNT_CACHE_ENTRIES = 200;
+const contentsCountCache = new Map<
+  string,
+  { value: number; expiresAt: number }
+>();
 
 export interface GetContentsOptions {
   page?: number;
-  pageSize?: number;
-  categoryIds?: string[];
-  difficulty?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
-  minMinutes?: number;
-  maxMinutes?: number;
-  aiToolIds?: string[];
-  searchQuery?: string;
+  pageSize: number;
+  category?: string | null;
+  difficulty?: Difficulty | null;
+  time?: TimeRange | null;
+  tool?: string | null;
+  q?: string | null;
 }
 
 /**
@@ -20,29 +28,22 @@ export interface GetContentsOptions {
  * 기본적으로 인기순(scrapCount, viewCount)과 최신순(publishedAt)으로 정렬됩니다.
  */
 export async function getContents(
-  options: GetContentsOptions = {}
+  options: GetContentsOptions
 ): Promise<ContentCardData[]> {
-  const {
-    page = 1,
-    pageSize = 20,
-    categoryIds,
-    difficulty,
-    minMinutes,
-    maxMinutes,
-    aiToolIds,
-    searchQuery,
-  } = options;
+  const { page = 1, pageSize, category, difficulty, time, tool, q } = options;
+
+  const { minMinutes, maxMinutes } = mapTimeRangeToMinutes(time);
 
   const skip = (page - 1) * pageSize;
 
   const where: Prisma.ContentWhereInput = {};
 
-  // 카테고리 필터 (다중 선택, OR 로직)
-  if (categoryIds && categoryIds.length > 0) {
+  // 카테고리 필터
+  if (category) {
     where.categories = {
       some: {
         categoryId: {
-          in: categoryIds,
+          in: [category],
         },
       },
     };
@@ -63,20 +64,20 @@ export async function getContents(
     };
   }
 
-  // AI Tools 필터 (다중 선택, OR 로직)
-  if (aiToolIds && aiToolIds.length > 0) {
+  // AI Tools 필터
+  if (tool) {
     where.aiTools = {
       some: {
         toolId: {
-          in: aiToolIds,
+          in: [tool],
         },
       },
     };
   }
 
   // 검색 필터 (OR 로직 across multiple fields)
-  if (searchQuery && searchQuery.trim().length > 0) {
-    const trimmedQuery = searchQuery.trim();
+  if (q && q.trim().length > 0) {
+    const trimmedQuery = q.trim();
 
     where.OR = [
       // Search in title (has GIN index)
@@ -178,16 +179,32 @@ export async function getContents(
 export async function getContentsCount(
   options: Omit<GetContentsOptions, "page" | "pageSize"> = {}
 ): Promise<number> {
-  const { categoryIds, difficulty, minMinutes, maxMinutes, aiToolIds, searchQuery } = options;
+  const { category, difficulty, time, tool, q } = options;
+  const { minMinutes, maxMinutes } = mapTimeRangeToMinutes(time);
+
+  const normalizedKey = JSON.stringify({
+    category: category ?? "",
+    difficulty: difficulty ?? null,
+    minMinutes: minMinutes ?? null,
+    maxMinutes: maxMinutes ?? null,
+    aiToolIds: tool ?? "",
+    q: q?.trim().toLowerCase() ?? "",
+  });
+
+  const now = Date.now();
+  const cached = contentsCountCache.get(normalizedKey);
+  if (cached && cached.expiresAt > now) {
+    return cached.value;
+  }
 
   const where: Prisma.ContentWhereInput = {};
 
-  // 카테고리 필터 (다중 선택, OR 로직)
-  if (categoryIds && categoryIds.length > 0) {
+  // 카테고리 필터
+  if (category) {
     where.categories = {
       some: {
         categoryId: {
-          in: categoryIds,
+          in: [category],
         },
       },
     };
@@ -208,19 +225,19 @@ export async function getContentsCount(
   }
 
   // AI Tools 필터 (다중 선택, OR 로직)
-  if (aiToolIds && aiToolIds.length > 0) {
+  if (tool) {
     where.aiTools = {
       some: {
         toolId: {
-          in: aiToolIds,
+          in: [tool],
         },
       },
     };
   }
 
   // 검색 필터 (OR 로직 across multiple fields)
-  if (searchQuery && searchQuery.trim().length > 0) {
-    const trimmedQuery = searchQuery.trim();
+  if (q && q.trim().length > 0) {
+    const trimmedQuery = q.trim();
 
     where.OR = [
       // Search in title (has GIN index)
@@ -242,5 +259,25 @@ export async function getContentsCount(
     ];
   }
 
-  return prisma.content.count({ where });
+  const limitedResults = await prisma.content.findMany({
+    where,
+    select: { id: true },
+    take: 100,
+  });
+
+  const count = limitedResults.length;
+  contentsCountCache.set(normalizedKey, {
+    value: count,
+    expiresAt: now + COUNT_CACHE_TTL_MS,
+  });
+  if (contentsCountCache.size > MAX_COUNT_CACHE_ENTRIES) {
+    const oldestKey = contentsCountCache.keys().next().value as
+      | string
+      | undefined;
+    if (oldestKey) {
+      contentsCountCache.delete(oldestKey);
+    }
+  }
+
+  return count;
 }

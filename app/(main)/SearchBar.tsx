@@ -1,31 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Search, XIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useFilterStore } from "@/lib/stores/filter-store";
+import { useQueryState } from "nuqs";
+import {
+  useFiltersSearchParams,
+  serialize,
+} from "@/hooks/useFiltersSearchParams";
 
 export function SearchBar() {
-  const { searchQuery, setSearchQuery, resetSearchQuery } = useFilterStore();
-  const [localQuery, setLocalQuery] = useState(searchQuery);
+  const [q, setQ] = useQueryState("q", { shallow: true });
+  const [localQuery, setLocalQuery] = useState(q ?? "");
+  const [filters] = useFiltersSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  // Sync Zustand back to local (for URL changes)
-  useEffect(() => {
-    setLocalQuery(searchQuery);
-  }, [searchQuery]);
+  const resetQuery = () => {
+    setQ(null);
+    setLocalQuery("");
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      setSearchQuery(localQuery);
       e.currentTarget.blur();
 
       // 현재 경로가 루트가 아니면 루트로 이동
       if (pathname !== "/") {
-        router.push("/");
+        const searchParams = new URLSearchParams(serialize(filters));
+
+        if (localQuery) {
+          searchParams.set("q", localQuery);
+        } else {
+          searchParams.delete("q");
+        }
+
+        const queryString = searchParams.toString();
+        router.push(queryString ? `/?${queryString}` : "/");
+        return;
       }
+
+      setQ(localQuery);
     }
   };
 
@@ -43,7 +59,7 @@ export function SearchBar() {
       {localQuery !== "" && localQuery !== undefined && (
         <XIcon
           className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-          onClick={resetSearchQuery}
+          onClick={resetQuery}
         />
       )}
     </div>

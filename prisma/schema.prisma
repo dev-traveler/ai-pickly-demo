@@ -101,10 +101,11 @@ model EstimatedTime {
 }
 
 model NewsletterSubscriber {
-  id           String   @id
-  email        String   @unique
-  subscribedAt DateTime @default(now())
-  isActive     Boolean  @default(true)
+  id              String   @id
+  email           String   @unique
+  subscribedAt    DateTime @default(now())
+  isActive        Boolean  @default(true)
+  statusChangedAt DateTime @default(now())
 }
 
 model ResultPreview {

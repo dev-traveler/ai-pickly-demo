@@ -3,9 +3,9 @@ import type { Viewport } from "next";
 import localFont from "next/font/local";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Toaster } from "@/components/ui/sonner";
-import { Providers } from "./Providers";
 
 import "./globals.css";
+import { Providers } from "./Providers";
 
 const pretendard = localFont({
   src: "PretendardVariable.woff2",

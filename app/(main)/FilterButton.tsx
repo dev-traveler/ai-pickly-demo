@@ -3,19 +3,19 @@
 import { useEffect, useState } from "react";
 import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useFiltersSearchParams } from "@/hooks/useFiltersSearchParams";
 
 interface FilterButtonProps {
-  activeFilters: number;
   responsive?: boolean;
   onClick: () => void;
 }
 
 export function FilterButton({
-  activeFilters,
   responsive = false,
   onClick,
 }: FilterButtonProps) {
   const [isVisible, setIsVisible] = useState(true);
+  const filteringCount = useFiltersSearchParams()[2];
 
   useEffect(() => {
     if (!responsive) return;
@@ -50,9 +50,9 @@ export function FilterButton({
     >
       <span>필터</span>
       <SlidersHorizontal className="h-4 w-4" />
-      {activeFilters > 0 && (
+      {filteringCount > 0 && (
         <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-gray-900 text-xs text-white">
-          {activeFilters}
+          {filteringCount}
         </span>
       )}
     </Button>

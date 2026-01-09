@@ -1,6 +1,7 @@
 import { ContentCardData } from "@/types/content";
 import { ContentCard } from "@/app/(main)/ContentCard";
 import { ContentCardSkeleton } from "@/app/(main)/ContentCardSkeleton";
+import { PAGE_SIZE } from "./page";
 
 interface ContentGridProps {
   contents: ContentCardData[];
@@ -36,7 +37,7 @@ export function ContentGrid({
 export function ContentGridSkeleton() {
   return (
     <div className={contentGrid}>
-      {Array.from({ length: 16 }).map((_, i) => (
+      {Array.from({ length: PAGE_SIZE }).map((_, i) => (
         <ContentCardSkeleton key={`loading-skeleton-${i}`} />
       ))}
     </div>

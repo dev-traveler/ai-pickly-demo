@@ -19,7 +19,7 @@ import { unsubscribeFromNewsletter } from "@/lib/db/newsletter";
 
 // 이메일 유효성 검사 스키마
 const formSchema = z.object({
-  email: z.string().email("유효하지 않은 이메일 주소입니다."),
+  email: z.email("유효하지 않은 이메일 주소입니다."),
 });
 
 type FormValues = z.infer<typeof formSchema>;

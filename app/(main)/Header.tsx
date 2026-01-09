@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { SearchBar } from "@/app/(main)/SearchBar";
+import { SearchBarSkeleton } from "@/app/(main)/SearchBarSkeleton";
 import { SubscribeNewsletterDialog } from "@/app/(main)/SubscribeNewsletterDialog";
 import { LinkableFullLogo } from "./LinkableFullLogo";
 
@@ -28,7 +30,9 @@ export function Header() {
 
         {/* Second Row on Mobile: Search Bar */}
         <div className="flex-1 max-w-2xl mx-auto w-full md:w-auto">
-          <SearchBar />
+          <Suspense fallback={<SearchBarSkeleton />}>
+            <SearchBar />
+          </Suspense>
         </div>
 
         {/* Navigation - visible on desktop */}

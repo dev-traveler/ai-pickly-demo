@@ -1,5 +1,6 @@
 "use client";
 
+import { useQueryState } from "nuqs";
 import {
   Sheet,
   SheetContent,
@@ -8,7 +9,6 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { useFilterStore } from "@/lib/stores/filter-store";
 import {
   CATEGORIES,
   DIFFICULTY_OPTIONS,
@@ -16,6 +16,7 @@ import {
 } from "@/lib/constants/filters";
 import type { AIToolData } from "@/lib/db/ai-tools";
 import { FilterOptionButton } from "@/app/(main)/FilterOptionButton";
+import { useFiltersSearchParams } from "@/hooks/useFiltersSearchParams";
 
 interface FilterSheetProps {
   open: boolean;
@@ -24,17 +25,13 @@ interface FilterSheetProps {
 }
 
 export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
-  const {
-    selectedCategories,
-    selectedDifficulty,
-    selectedTimeRange,
-    selectedAITool,
-    toggleCategory,
-    setDifficulty,
-    setTimeRange,
-    toggleAITool,
-    resetFilterChips,
-  } = useFilterStore();
+  const [category, setCategory] = useQueryState("category");
+  const [difficulty, setDifficulty] = useQueryState("difficulty");
+  const [time, setTime] = useQueryState("time");
+  const [tool, setTool] = useQueryState("tool");
+  const [, setFilterSearchParams] = useFiltersSearchParams();
+
+  const resetFilterChips = () => setFilterSearchParams(null);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -52,15 +49,19 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-900">카테고리</h3>
             <div className="flex flex-wrap gap-2">
-              {CATEGORIES.map((category) => {
-                const isSelected = selectedCategories.includes(category.id);
+              {CATEGORIES.map((categoryOption) => {
+                const isSelected = category === categoryOption.id;
                 return (
                   <FilterOptionButton
-                    key={category.id}
+                    key={categoryOption.id}
                     selected={isSelected}
-                    onClick={() => toggleCategory(category.id)}
+                    onClick={() =>
+                      isSelected
+                        ? setCategory(null)
+                        : setCategory(categoryOption.id)
+                    }
                   >
-                    {category.label}
+                    {categoryOption.label}
                   </FilterOptionButton>
                 );
               })}
@@ -71,17 +72,19 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-900">난이도</h3>
             <div className="flex gap-2">
-              {DIFFICULTY_OPTIONS.map((difficulty) => {
-                const isSelected = selectedDifficulty === difficulty.value;
+              {DIFFICULTY_OPTIONS.map((difficultyOption) => {
+                const isSelected = difficulty === difficultyOption.value;
                 return (
                   <FilterOptionButton
-                    key={difficulty.value}
+                    key={difficultyOption.value}
                     selected={isSelected}
                     onClick={() =>
-                      setDifficulty(isSelected ? null : difficulty.value)
+                      isSelected
+                        ? setDifficulty(null)
+                        : setDifficulty(difficultyOption.value)
                     }
                   >
-                    {difficulty.label}
+                    {difficultyOption.label}
                   </FilterOptionButton>
                 );
               })}
@@ -92,17 +95,19 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-900">소요시간</h3>
             <div className="flex gap-2">
-              {TIME_RANGE_OPTIONS.map((timeRange) => {
-                const isSelected = selectedTimeRange === timeRange.value;
+              {TIME_RANGE_OPTIONS.map((timeRangeOption) => {
+                const isSelected = time === timeRangeOption.value;
                 return (
                   <FilterOptionButton
-                    key={timeRange.value}
+                    key={timeRangeOption.value}
                     selected={isSelected}
                     onClick={() =>
-                      setTimeRange(isSelected ? null : timeRange.value)
+                      isSelected
+                        ? setTime(null)
+                        : setTime(timeRangeOption.value)
                     }
                   >
-                    {timeRange.label}
+                    {timeRangeOption.label}
                   </FilterOptionButton>
                 );
               })}
@@ -113,15 +118,17 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-900">AI 툴</h3>
             <div className="flex flex-wrap gap-2">
-              {aiTools.map((tool) => {
-                const isSelected = selectedAITool === tool.id;
+              {aiTools.map((aiToolData) => {
+                const isSelected = tool === aiToolData.id;
                 return (
                   <FilterOptionButton
-                    key={tool.id}
+                    key={aiToolData.id}
                     selected={isSelected}
-                    onClick={() => toggleAITool(tool.id)}
+                    onClick={() =>
+                      isSelected ? setTool(null) : setTool(aiToolData.id)
+                    }
                   >
-                    {tool.name}
+                    {aiToolData.name}
                   </FilterOptionButton>
                 );
               })}

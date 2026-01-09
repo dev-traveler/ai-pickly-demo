@@ -1,27 +1,60 @@
+import type { SearchParams } from "nuqs/server";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getContents, getContentsCount } from "@/lib/db/contents";
 import { getAITools } from "@/lib/db/ai-tools";
+import { getQueryClient } from "@/lib/get-query-client";
 import { NewsletterBanner } from "./NewsletterBanner";
 import { ContentFeedClient } from "./ContentFeedClient";
+import { loadContentsSearchParams } from "./search-params";
 
-export default async function Home() {
-  // 초기 데이터 병렬 fetch (SSR)
-  const [contents, totalCount, aiTools] = await Promise.all([
-    getContents({ page: 1, pageSize: 20 }),
-    getContentsCount({}),
-    getAITools(),
-  ]);
+type PageProps = {
+  searchParams: Promise<SearchParams>;
+};
+
+export const PAGE_SIZE = 24;
+
+export default async function Home({ searchParams }: PageProps) {
+  const contentsSearchParams = await loadContentsSearchParams(searchParams);
+  const queryClient = getQueryClient();
+
+  // Prefetch infinite query (첫 페이지만)
+  await queryClient.prefetchInfiniteQuery({
+    queryKey: ["contents", { ...contentsSearchParams }, PAGE_SIZE],
+    queryFn: ({ pageParam = 1 }) =>
+      getContents({
+        page: pageParam,
+        pageSize: PAGE_SIZE,
+        ...contentsSearchParams,
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.length < PAGE_SIZE) return undefined;
+      return allPages.length + 1;
+    },
+    pages: 1,
+  });
+
+  // Prefetch count
+  await queryClient.prefetchQuery({
+    queryKey: ["contents-count", { ...contentsSearchParams }],
+    queryFn: () => getContentsCount({ ...contentsSearchParams }),
+  });
+
+  // Prefetch AI tools
+  await queryClient.prefetchQuery({
+    queryKey: ["ai-tools"],
+    queryFn: () => getAITools(),
+  });
 
   return (
     <div>
       <NewsletterBanner />
       <div className="container mx-auto px-4 py-8">
         <div className="space-y-6">
-          {/* ContentFeedClient가 필터 오케스트레이션 담당 */}
-          <ContentFeedClient
-            initialData={contents}
-            initialTotalCount={totalCount}
-            aiTools={aiTools}
-          />
+          {/* HydrationBoundary가 prefetch된 데이터를 클라이언트에 전달 */}
+          <HydrationBoundary state={dehydrate(queryClient)}>
+            <ContentFeedClient />
+          </HydrationBoundary>
         </div>
       </div>
     </div>

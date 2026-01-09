@@ -1,17 +1,21 @@
 "use client";
 
-import { useFilterStore } from "@/lib/stores/filter-store";
+import { useQueryState } from "nuqs";
 import { CATEGORIES } from "@/lib/constants/filters";
 import { FilterOptionButton } from "@/app/(main)/FilterOptionButton";
 
 export function CategoryFilter() {
-  const { selectedCategories, toggleCategory } = useFilterStore();
+  const [categoryQuery, setCategoryQuery] = useQueryState("category");
+
+  const toggleCategory = (id: string) => {
+    setCategoryQuery(categoryQuery === id ? null : id);
+  };
 
   return (
     <div className="flex gap-2 md:gap-3 overflow-x-auto pb-2">
       {CATEGORIES.map((category) => {
         const Icon = category.icon;
-        const isSelected = selectedCategories.includes(category.id);
+        const isSelected = categoryQuery === category.id;
 
         return (
           <FilterOptionButton

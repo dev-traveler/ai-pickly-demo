@@ -1,35 +1,17 @@
 "use client";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { ContentGrid, ContentGridSkeleton } from "@/app/(main)/ContentGrid";
-import { getContents, GetContentsOptions } from "@/lib/db/contents";
-
-type Content = Awaited<ReturnType<typeof getContents>>[number];
+import { useInfiniteContents } from "@/hooks/useContentsQuery";
 
 interface InfiniteContentGridProps {
-  filters?: Omit<GetContentsOptions, "page" | "pageSize">;
-  pageSize?: number;
   emptyMessage?: string;
-  initialData?: Content[];
 }
 
 export function InfiniteContentGrid({
-  filters = {},
-  pageSize = 20,
   emptyMessage = "콘텐츠가 없습니다.",
-  initialData,
 }: InfiniteContentGridProps) {
   const loadMoreRef = useRef<HTMLDivElement>(null);
-
-  // 필터가 활성화되어 있는지 확인
-  const hasFilters =
-    filters &&
-    Object.keys(filters).length > 0 &&
-    Object.values(filters).some((value) => {
-      if (Array.isArray(value)) return value.length > 0;
-      return value !== undefined && value !== null;
-    });
 
   const {
     data,
@@ -38,33 +20,7 @@ export function InfiniteContentGrid({
     isFetchingNextPage,
     isLoading,
     isError,
-  } = useInfiniteQuery({
-    queryKey: ["contents", filters, pageSize],
-    queryFn: ({ pageParam = 1 }) =>
-      getContents({
-        ...filters,
-        page: pageParam,
-        pageSize,
-      }),
-    getNextPageParam: (lastPage, allPages) => {
-      // 마지막 페이지가 pageSize보다 작으면 더 이상 페이지가 없음
-      if (lastPage.length < pageSize) {
-        return undefined;
-      }
-      return allPages.length + 1;
-    },
-    initialPageParam: 1,
-    // 필터가 없을 때만 initialData 사용 (필터 적용 시 서버에서 새로 가져옴)
-    initialData:
-      initialData && !hasFilters
-        ? {
-            pages: [initialData],
-            pageParams: [1],
-          }
-        : undefined,
-    // 필터가 없고 initialData가 있을 때만 캐시 유지
-    staleTime: initialData && !hasFilters ? 1000 * 60 * 5 : 0, // 5분
-  });
+  } = useInfiniteContents();
 
   // Intersection Observer로 무한 스크롤 구현
   useEffect(() => {
@@ -116,7 +72,6 @@ export function InfiniteContentGrid({
     );
   }
 
-  // 전체 콘텐츠 배열 생성
   const allContents = data?.pages.flatMap((page) => page) || [];
 
   return (

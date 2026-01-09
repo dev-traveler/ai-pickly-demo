@@ -1,5 +1,3 @@
-"use client";
-
 import { FilterChip } from "./FilterChip";
 import type { filterChip } from "@/types/filter";
 
