@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { trackFilterButtonClick } from "@/lib/tracking";
 
 interface FilterButtonProps {
   activeFilters: number;
@@ -15,6 +16,10 @@ export function FilterButton({
   responsive = false,
   onClick,
 }: FilterButtonProps) {
+  const handleClick = () => {
+    trackFilterButtonClick();
+    onClick();
+  };
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
@@ -45,7 +50,7 @@ export function FilterButton({
     <Button
       variant="outline"
       size="sm"
-      onClick={onClick}
+      onClick={handleClick}
       className="rounded-full gap-2 whitespace-nowrap"
     >
       <span>필터</span>

@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { Search, XIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useFilterStore } from "@/lib/stores/filter-store";
+import { trackSearch } from "@/lib/tracking";
 
 export function SearchBar() {
   const { searchQuery, setSearchQuery, resetSearchQuery } = useFilterStore();
@@ -19,6 +20,7 @@ export function SearchBar() {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
+      trackSearch(localQuery);
       setSearchQuery(localQuery);
       e.currentTarget.blur();
 

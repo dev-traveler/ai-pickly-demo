@@ -1,12 +1,22 @@
 import { X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { filterChip } from "@/types/filter";
+import { trackFilterChipRemove } from "@/lib/tracking";
 
 interface FilterChipProps {
   chip: filterChip;
 }
 
 export function FilterChip({ chip }: FilterChipProps) {
+  const handleRemove = () => {
+    trackFilterChipRemove({
+      filter_id: chip.id,
+      filter_type: chip.filterType,
+      name: chip.label,
+    });
+    chip.onRemove();
+  };
+
   return (
     <Badge
       key={chip.id}
@@ -15,7 +25,7 @@ export function FilterChip({ chip }: FilterChipProps) {
     >
       {chip.label}
       <button
-        onClick={chip.onRemove}
+        onClick={handleRemove}
         className="ml-2 inline-flex items-center justify-center rounded-full hover:bg-gray-300 transition-colors"
         aria-label={`Remove ${chip.label} filter`}
       >

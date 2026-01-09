@@ -6,13 +6,20 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, TrendingUp, Link2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { getOptimizedImageProps } from "@/lib/image-utils";
 import { Difficulty } from "@prisma/client";
+import {
+  useTrackImpression,
+  trackContentCardImpression,
+  trackContentCardClick,
+  getFilterParams,
+} from "@/lib/tracking";
 
 interface ContentCardProps {
   content: ContentCardData;
   priority?: boolean;
+  position?: number;
 }
 
 const difficultyMap: Record<Difficulty, string> = {
@@ -66,14 +73,45 @@ const getAIToolLogo = (toolName: string) => {
   return `/images/logo-${toolName}.png`;
 };
 
-export function ContentCard({ content, priority = false }: ContentCardProps) {
+export function ContentCard({
+  content,
+  priority = false,
+  position = 0,
+}: ContentCardProps) {
   const [imageError, setImageError] = useState(false);
   const estimatedMinutes = content.estimatedTime?.displayMinutes;
   const sourceName = getSourceName(content.sourceUrl);
   const defaultThumbnail = getDefaultThumbnail(content.categories);
 
+  // 노출 추적
+  const handleImpression = useCallback(() => {
+    trackContentCardImpression({
+      content_id: content.id,
+      title: content.title,
+      position,
+    });
+  }, [content.id, content.title, position]);
+
+  const cardRef = useTrackImpression<HTMLAnchorElement>(handleImpression);
+
+  // 클릭 추적
+  const handleClick = () => {
+    const filterParams = getFilterParams();
+    trackContentCardClick({
+      content_id: content.id,
+      title: content.title,
+      position,
+      search_category: filterParams.categories,
+    });
+  };
+
   return (
-    <Link href={`/content/${content.id}`} className="block group">
+    <Link
+      ref={cardRef}
+      href={`/content/${content.id}`}
+      className="block group"
+      onClick={handleClick}
+    >
       <Card className="p-0 gap-4 border-none shadow-none overflow-hidden transition-all">
         {/* Thumbnail */}
         <div className="relative aspect-video transition-transform duration-300 group-hover:-translate-y-2 mt-2">

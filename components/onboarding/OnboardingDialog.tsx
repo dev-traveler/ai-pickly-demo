@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { OnboardingCarousel } from "./OnboardingCarousel";
 import { useOnboardingStore } from "@/lib/stores/onboarding-store";
+import { trackOnboardingModalImpression } from "@/lib/tracking";
 
 interface OnboardingDialogProps {
   open: boolean;
@@ -16,6 +18,13 @@ export function OnboardingDialog({
   const markOnboardingAsViewed = useOnboardingStore(
     (state) => state.markOnboardingAsViewed
   );
+
+  // 모달 노출 추적
+  useEffect(() => {
+    if (open) {
+      trackOnboardingModalImpression();
+    }
+  }, [open]);
 
   const handleComplete = () => {
     markOnboardingAsViewed();

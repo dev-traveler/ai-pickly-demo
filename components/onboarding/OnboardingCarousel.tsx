@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -13,6 +13,11 @@ import { OnboardingFinalSlide } from "./OnboardingFinalSlide";
 import { OnboardingDots } from "./OnboardingDots";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  trackOnboardingStepImpression,
+  trackOnboardingNavigation,
+  trackOnboardingClose,
+} from "@/lib/tracking";
 
 interface OnboardingCarouselProps {
   onComplete: () => void;
@@ -29,31 +34,73 @@ const imageSlides = [
 const pageButton =
   "absolute top-1/2 -translate-y-[2.5rem] md:-translate-y-0 z-10 size-8 md:size-10 rounded-full bg-white/80 hover:bg-white shadow-md";
 
+const TOTAL_STEPS = 5;
+
 export function OnboardingCarousel({
   onComplete,
   onSkip,
 }: OnboardingCarouselProps) {
   const [api, setApi] = useState<CarouselApi>();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const previousSlideRef = useRef(0);
 
   useEffect(() => {
     if (!api) return;
 
     const onSelect = () => {
-      setCurrentSlide(api.selectedScrollSnap());
+      const newSlide = api.selectedScrollSnap();
+      setCurrentSlide(newSlide);
+
+      // 스텝 노출 추적 (슬라이드가 변경될 때만)
+      if (newSlide !== previousSlideRef.current) {
+        trackOnboardingStepImpression({
+          step_index: newSlide,
+          total_steps: TOTAL_STEPS,
+        });
+      }
+      previousSlideRef.current = newSlide;
     };
 
     // 이벤트 리스너 등록 후 즉시 호출하여 초기 상태 동기화
     api.on("select", onSelect);
-    onSelect(); // 초기 상태 설정
+    // 초기 스텝 노출 추적
+    trackOnboardingStepImpression({
+      step_index: 0,
+      total_steps: TOTAL_STEPS,
+    });
 
     return () => {
       api.off("select", onSelect);
     };
   }, [api]);
 
-  const handleNext = () => api?.scrollNext();
-  const handlePrev = () => api?.scrollPrev();
+  const handleNext = () => {
+    if (api) {
+      trackOnboardingNavigation({
+        direction: "next",
+        from_step: currentSlide,
+        to_step: currentSlide + 1,
+      });
+      api.scrollNext();
+    }
+  };
+
+  const handlePrev = () => {
+    if (api) {
+      trackOnboardingNavigation({
+        direction: "prev",
+        from_step: currentSlide,
+        to_step: currentSlide - 1,
+      });
+      api.scrollPrev();
+    }
+  };
+
+  const handleSkip = () => {
+    trackOnboardingClose({ current_step: currentSlide });
+    onSkip();
+  };
+
   const isFinalSlide = currentSlide === 4;
   const isFirstSlide = currentSlide === 0;
 
@@ -124,7 +171,7 @@ export function OnboardingCarousel({
         {!isFinalSlide && (
           <Button
             variant="ghost"
-            onClick={onSkip}
+            onClick={handleSkip}
             className="absolute bottom-1 right-4 z-10 text-xs text-muted-foreground hover:text-foreground"
           >
             건너뛰기
