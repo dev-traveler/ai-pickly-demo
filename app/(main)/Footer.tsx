@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { LinkableFullLogo } from "./LinkableFullLogo";
+import { trackFooterLinkClick } from "@/lib/tracking";
 
 export function Footer() {
   return (
@@ -7,7 +10,7 @@ export function Footer() {
       {/* Main footer content */}
       <div className="container mx-auto px-6 py-16">
         <div className="flex flex-col md:flex-row justify-between">
-          <LinkableFullLogo />
+          <LinkableFullLogo location="footer" />
 
           {/* 
           <div className="flex justify-between gap-16 text-xs text-gray-500">
@@ -108,6 +111,13 @@ export function Footer() {
                 <Link
                   href="/policy/privacy"
                   className="hover:text-gray-300 transition-colors"
+                  onClick={() =>
+                    trackFooterLinkClick({
+                      link_id: "privacy",
+                      name: "개인정보처리방침",
+                      position: 0,
+                    })
+                  }
                 >
                   개인정보처리방침
                 </Link>{" "}
@@ -115,6 +125,13 @@ export function Footer() {
                 <Link
                   href="/policy/marketing"
                   className="hover:text-gray-300 transition-colors"
+                  onClick={() =>
+                    trackFooterLinkClick({
+                      link_id: "marketing",
+                      name: "광고성 정보수신",
+                      position: 1,
+                    })
+                  }
                 >
                   광고성 정보수신
                 </Link>{" "}
@@ -122,6 +139,13 @@ export function Footer() {
                 <Link
                   href="https://docs.google.com/forms/d/e/1FAIpQLSc1HVgUEMl4qME6rjHPgYQhDkXmQyTBAs9t4I-hgVF9QUmedA/viewform"
                   className="hover:text-gray-300 transition-colors"
+                  onClick={() =>
+                    trackFooterLinkClick({
+                      link_id: "contact",
+                      name: "문의하기",
+                      position: 2,
+                    })
+                  }
                 >
                   문의하기
                 </Link>

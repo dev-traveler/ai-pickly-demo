@@ -1,5 +1,8 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { SubscribeNewsletterDialog } from "@/app/(main)/SubscribeNewsletterDialog";
+import { trackNewsletterBannerClick } from "@/lib/tracking";
 
 export function NewsletterBanner() {
   return (
@@ -17,6 +20,7 @@ export function NewsletterBanner() {
 
         {/* CTA 버튼 */}
         <SubscribeNewsletterDialog
+          onTriggerClick={trackNewsletterBannerClick}
           triggerComponent={
             <Button
               size="lg"

@@ -3,13 +3,14 @@
 import { useFilterStore } from "@/lib/stores/filter-store";
 import { CATEGORIES } from "@/lib/constants/filters";
 import { FilterOptionButton } from "@/app/(main)/FilterOptionButton";
+import { trackCategoryClick } from "@/lib/tracking";
 
 export function CategoryFilter() {
   const { selectedCategories, toggleCategory } = useFilterStore();
 
   return (
     <div className="flex gap-2 md:gap-3 overflow-x-auto pb-2">
-      {CATEGORIES.map((category) => {
+      {CATEGORIES.map((category, index) => {
         const Icon = category.icon;
         const isSelected = selectedCategories.includes(category.id);
 
@@ -17,7 +18,14 @@ export function CategoryFilter() {
           <FilterOptionButton
             key={category.id}
             selected={isSelected}
-            onClick={() => toggleCategory(category.id)}
+            onClick={() => {
+              trackCategoryClick({
+                category_id: category.id,
+                name: category.label,
+                position: index,
+              });
+              toggleCategory(category.id);
+            }}
             className="flex items-center gap-2 rounded-2xl px-6 whitespace-nowrap text-xs h-8 md:text-sm md:h-10"
           >
             <Icon className="h-5 w-5 hidden md:block" />

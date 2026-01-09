@@ -1,7 +1,10 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { SearchBar } from "@/app/(main)/SearchBar";
 import { SubscribeNewsletterDialog } from "@/app/(main)/SubscribeNewsletterDialog";
 import { LinkableFullLogo } from "./LinkableFullLogo";
+import { trackNewsletterHeaderClick } from "@/lib/tracking";
 
 export function Header() {
   return (
@@ -9,11 +12,12 @@ export function Header() {
       <div className="container flex flex-col md:flex-row max-w-screen-2xl p-4 md:h-16 md:items-center gap-3 md:gap-6">
         {/* First Row on Mobile: Logo and Button */}
         <div className="flex items-center justify-between md:contents">
-          <LinkableFullLogo black />
+          <LinkableFullLogo black location="header" />
 
           {/* Navigation - visible on mobile */}
           <nav className="md:hidden">
             <SubscribeNewsletterDialog
+              onTriggerClick={trackNewsletterHeaderClick}
               triggerComponent={
                 <Button
                   className="bg-black font-bold text-white hover:bg-neutral-700 hover:text-white hover:cursor-pointer whitespace-nowrap"
@@ -34,6 +38,7 @@ export function Header() {
         {/* Navigation - visible on desktop */}
         <nav className="hidden md:flex justify-end gap-2">
           <SubscribeNewsletterDialog
+            onTriggerClick={trackNewsletterHeaderClick}
             triggerComponent={
               <Button
                 className="bg-black font-bold text-white hover:bg-neutral-700 hover:text-white hover:cursor-pointer whitespace-nowrap"

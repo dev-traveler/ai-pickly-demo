@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -27,6 +27,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { subscribeToNewsletter } from "@/lib/db/newsletter";
+import {
+  trackNewsletterModalOpen,
+  trackNewsletterEmailInput,
+  trackNewsletterSubmitClick,
+  trackNewsletterSuccessImpression,
+  trackNewsletterPolicyLinkClick,
+} from "@/lib/tracking";
 
 // 이메일 유효성 검사 스키마
 const formSchema = z.object({
@@ -37,10 +44,12 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface SubscribeNewsletterDialogProps {
   triggerComponent?: React.ReactNode;
+  onTriggerClick?: () => void;
 }
 
 export function SubscribeNewsletterDialog({
   triggerComponent,
+  onTriggerClick,
 }: SubscribeNewsletterDialogProps) {
   const [open, setOpen] = useState(false);
 
@@ -51,10 +60,19 @@ export function SubscribeNewsletterDialog({
     },
   });
 
+  // 모달 열림 추적
+  useEffect(() => {
+    if (open) {
+      trackNewsletterModalOpen({ is_open: true });
+    }
+  }, [open]);
+
   async function onSubmit(values: FormValues) {
+    trackNewsletterSubmitClick();
     const result = await subscribeToNewsletter(values.email);
 
     if (result.success) {
+      trackNewsletterSuccessImpression();
       toast.success("구독 신청이 완료됐습니다.");
       form.reset();
       setOpen(false);
@@ -77,8 +95,15 @@ export function SubscribeNewsletterDialog({
     }
   }
 
+  const handleOpenChange = (newOpen: boolean) => {
+    if (newOpen && onTriggerClick) {
+      onTriggerClick();
+    }
+    setOpen(newOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{triggerComponent}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -100,7 +125,14 @@ export function SubscribeNewsletterDialog({
                     <Input
                       className="h-10 border-black"
                       placeholder="your@email.com"
-                      {...field}
+                      onBlur={() => {
+                        trackNewsletterEmailInput();
+                        field.onBlur();
+                      }}
+                      onChange={field.onChange}
+                      value={field.value}
+                      name={field.name}
+                      ref={field.ref}
                     />
                   </FormControl>
                   <FormMessage />
@@ -122,6 +154,13 @@ export function SubscribeNewsletterDialog({
             <Link
               href="/newsletter/unsubscribe"
               className="underline font-semibold"
+              onClick={() => {
+                trackNewsletterPolicyLinkClick({
+                  link_id: "unsubscribe",
+                  name: "취소",
+                });
+                setOpen(false);
+              }}
             >
               취소
             </Link>
@@ -132,7 +171,13 @@ export function SubscribeNewsletterDialog({
             <Link
               href="/policy/privacy"
               className="underline font-semibold"
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                trackNewsletterPolicyLinkClick({
+                  link_id: "privacy",
+                  name: "개인정보처리방침",
+                });
+                setOpen(false);
+              }}
             >
               개인정보처리방침
             </Link>
@@ -140,7 +185,13 @@ export function SubscribeNewsletterDialog({
             <Link
               href="/policy/marketing"
               className="underline font-semibold"
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                trackNewsletterPolicyLinkClick({
+                  link_id: "marketing",
+                  name: "마케팅 정보 수신",
+                });
+                setOpen(false);
+              }}
             >
               마케팅 정보 수신
             </Link>

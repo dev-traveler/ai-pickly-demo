@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import {
   Sheet,
   SheetContent,
@@ -16,6 +17,11 @@ import {
 } from "@/lib/constants/filters";
 import type { AIToolData } from "@/lib/db/ai-tools";
 import { FilterOptionButton } from "@/app/(main)/FilterOptionButton";
+import {
+  trackFilterSheetOpen,
+  trackFilterOptionClick,
+  trackFilterReset,
+} from "@/lib/tracking";
 
 interface FilterSheetProps {
   open: boolean;
@@ -36,6 +42,11 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
     resetFilterChips,
   } = useFilterStore();
 
+  // 시트 열림/닫힘 추적
+  useEffect(() => {
+    trackFilterSheetOpen({ is_open: open });
+  }, [open]);
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
@@ -52,13 +63,21 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-900">카테고리</h3>
             <div className="flex flex-wrap gap-2">
-              {CATEGORIES.map((category) => {
+              {CATEGORIES.map((category, index) => {
                 const isSelected = selectedCategories.includes(category.id);
                 return (
                   <FilterOptionButton
                     key={category.id}
                     selected={isSelected}
-                    onClick={() => toggleCategory(category.id)}
+                    onClick={() => {
+                      trackFilterOptionClick({
+                        option_id: category.id,
+                        option_type: "category",
+                        name: category.label,
+                        position: index,
+                      });
+                      toggleCategory(category.id);
+                    }}
                   >
                     {category.label}
                   </FilterOptionButton>
@@ -71,15 +90,21 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-900">난이도</h3>
             <div className="flex gap-2">
-              {DIFFICULTY_OPTIONS.map((difficulty) => {
+              {DIFFICULTY_OPTIONS.map((difficulty, index) => {
                 const isSelected = selectedDifficulty === difficulty.value;
                 return (
                   <FilterOptionButton
                     key={difficulty.value}
                     selected={isSelected}
-                    onClick={() =>
-                      setDifficulty(isSelected ? null : difficulty.value)
-                    }
+                    onClick={() => {
+                      trackFilterOptionClick({
+                        option_id: difficulty.value,
+                        option_type: "difficulty",
+                        name: difficulty.label,
+                        position: index,
+                      });
+                      setDifficulty(isSelected ? null : difficulty.value);
+                    }}
                   >
                     {difficulty.label}
                   </FilterOptionButton>
@@ -92,15 +117,21 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-900">소요시간</h3>
             <div className="flex gap-2">
-              {TIME_RANGE_OPTIONS.map((timeRange) => {
+              {TIME_RANGE_OPTIONS.map((timeRange, index) => {
                 const isSelected = selectedTimeRange === timeRange.value;
                 return (
                   <FilterOptionButton
                     key={timeRange.value}
                     selected={isSelected}
-                    onClick={() =>
-                      setTimeRange(isSelected ? null : timeRange.value)
-                    }
+                    onClick={() => {
+                      trackFilterOptionClick({
+                        option_id: timeRange.value,
+                        option_type: "time",
+                        name: timeRange.label,
+                        position: index,
+                      });
+                      setTimeRange(isSelected ? null : timeRange.value);
+                    }}
                   >
                     {timeRange.label}
                   </FilterOptionButton>
@@ -113,13 +144,21 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-900">AI 툴</h3>
             <div className="flex flex-wrap gap-2">
-              {aiTools.map((tool) => {
+              {aiTools.map((tool, index) => {
                 const isSelected = selectedAITool === tool.id;
                 return (
                   <FilterOptionButton
                     key={tool.id}
                     selected={isSelected}
-                    onClick={() => toggleAITool(tool.id)}
+                    onClick={() => {
+                      trackFilterOptionClick({
+                        option_id: tool.id,
+                        option_type: "tool",
+                        name: tool.name,
+                        position: index,
+                      });
+                      toggleAITool(tool.id);
+                    }}
                   >
                     {tool.name}
                   </FilterOptionButton>
@@ -144,6 +183,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
           <Button
             variant="outline"
             onClick={() => {
+              trackFilterReset();
               onOpenChange(false);
               resetFilterChips();
             }}

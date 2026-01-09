@@ -11,6 +11,7 @@ import {
   DIFFICULTY_OPTIONS,
   TIME_RANGE_OPTIONS,
 } from "@/lib/constants/filters";
+import { trackFilterReset } from "@/lib/tracking";
 
 interface FilterBarProps {
   totalResults?: number;
@@ -46,6 +47,7 @@ export function FilterBar({
       chips.push({
         id: `category-${categoryId}`,
         label: category.label,
+        filterType: "category",
         onRemove: () => toggleCategory(categoryId),
       });
     }
@@ -60,6 +62,7 @@ export function FilterBar({
       chips.push({
         id: "difficulty",
         label: difficulty.label,
+        filterType: "difficulty",
         onRemove: () => setDifficulty(null),
       });
     }
@@ -74,6 +77,7 @@ export function FilterBar({
       chips.push({
         id: "time-range",
         label: timeRange.label,
+        filterType: "time",
         onRemove: () => setTimeRange(null),
       });
     }
@@ -86,6 +90,7 @@ export function FilterBar({
       chips.push({
         id: `tool-${selectedAITool}`,
         label: tool.name,
+        filterType: "tool",
         onRemove: () => toggleAITool(selectedAITool),
       });
     }
@@ -105,7 +110,13 @@ export function FilterBar({
 
           <div>
             {chips.length > 0 && (
-              <XIcon className="size-8 p-2" onClick={resetFilterChips} />
+              <XIcon
+                className="size-8 p-2"
+                onClick={() => {
+                  trackFilterReset();
+                  resetFilterChips();
+                }}
+              />
             )}
           </div>
         </div>

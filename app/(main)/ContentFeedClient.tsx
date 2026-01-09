@@ -16,6 +16,7 @@ import type { ContentCardData } from "@/types/content";
 import type { AIToolData } from "@/lib/db/ai-tools";
 import { useOnboardingStore } from "@/lib/stores/onboarding-store";
 import { OnboardingDialog } from "@/components/onboarding/OnboardingDialog";
+import { useTrackPageView } from "@/lib/tracking";
 
 interface ContentFeedClientProps {
   initialData: ContentCardData[];
@@ -57,6 +58,9 @@ export function ContentFeedClient({
 
   // URL ↔ Zustand 양방향 동기화
   useFilterSync();
+
+  // 페이지뷰 추적
+  useTrackPageView();
 
   // Zustand 상태를 Server Action GetContentsOptions 형식으로 변환
   const filterOptions = useMemo(

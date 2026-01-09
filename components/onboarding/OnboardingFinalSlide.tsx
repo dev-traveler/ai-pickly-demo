@@ -1,5 +1,8 @@
+"use client";
+
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
+import { trackOnboardingStartClick } from "@/lib/tracking";
 
 interface OnboardingFinalSlideProps {
   onGetStarted: () => void;
@@ -8,6 +11,11 @@ interface OnboardingFinalSlideProps {
 export function OnboardingFinalSlide({
   onGetStarted,
 }: OnboardingFinalSlideProps) {
+  const handleClick = () => {
+    trackOnboardingStartClick();
+    onGetStarted();
+  };
+
   return (
     <div className="h-full flex flex-col items-center justify-center py-12 px-6 space-y-4 md:space-y-6">
       <Logo className="h-10 w-10 md:w-12 md:h-12" black />
@@ -22,7 +30,7 @@ export function OnboardingFinalSlide({
       <Button
         variant="cta"
         className="w-full max-w-xs h-10 md:h-12 text-base"
-        onClick={onGetStarted}
+        onClick={handleClick}
       >
         AI Pickly 사용하기
       </Button>
