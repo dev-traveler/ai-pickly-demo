@@ -3,16 +3,23 @@
 import { ContentCardData } from "@/types/content";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Clock, TrendingUp, Link2 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getOptimizedImageProps } from "@/lib/image-utils";
 import { Difficulty } from "@prisma/client";
+import { trackImpression, trackHover, trackClick } from "@/lib/analytics/mixpanel";
 
 interface ContentCardProps {
   content: ContentCardData;
   priority?: boolean;
+  position?: number;
 }
 
 const difficultyMap: Record<Difficulty, string> = {
@@ -62,56 +69,127 @@ const getDefaultThumbnail = (categories: ContentCardData["categories"]) => {
   }
 };
 
-const getAIToolLogo = (toolName: string) => {
-  return `/images/logo-${toolName}.png`;
-};
+const DEFAULT_AI_TOOL_LOGO = "/images/default-ai-tool-logo.png";
 
-export function ContentCard({ content, priority = false }: ContentCardProps) {
+export function ContentCard({ content, priority = false, position = 0 }: ContentCardProps) {
   const [imageError, setImageError] = useState(false);
+  const [hasTrackedImpression, setHasTrackedImpression] = useState(false);
+  const cardRef = useRef<HTMLAnchorElement>(null);
   const estimatedMinutes = content.estimatedTime?.displayMinutes;
   const sourceName = getSourceName(content.sourceUrl);
   const defaultThumbnail = getDefaultThumbnail(content.categories);
 
-  return (
-    <Link href={`/content/${content.id}`} className="block group">
-      <Card className="p-0 gap-4 border-none shadow-none overflow-hidden transition-all">
-        {/* Thumbnail */}
-        <div className="relative aspect-video transition-transform duration-300 group-hover:-translate-y-2 mt-2">
-          {content.thumbnailUrl && !imageError ? (
-            <Image
-              src={content.thumbnailUrl}
-              alt={content.title}
-              fill
-              className="object-cover rounded-2xl "
-              {...getOptimizedImageProps(content.thumbnailUrl, { priority })}
-              onError={() => setImageError(true)}
-            />
-          ) : (
-            <Image
-              src={defaultThumbnail}
-              alt={content.title}
-              fill
-              className="object-cover rounded-2xl"
-            />
-          )}
+  // Intersection Observer로 impression 추적
+  useEffect(() => {
+    if (!cardRef.current || hasTrackedImpression) return;
 
-          {/* Avatar positioned at bottom right of thumbnail */}
-          {content.aiTools.map((data) => (
-            <div key={data.aiTool.id} className="absolute -bottom-7 right-7">
-              <div className="flex items-center justify-center w-14 h-14 rounded-full bg-background">
-                <div className="w-12 h-12 rounded-full bg-background shadow-lg">
-                  <Image
-                    className="object-cover rounded-full"
-                    src={getAIToolLogo(data.aiTool.id)}
-                    alt={data.aiTool.name}
-                    width={48}
-                    height={48}
-                  />
-                </div>
-              </div>
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !hasTrackedImpression) {
+            trackImpression("content_card", {
+              page_name: "home",
+              object_section: "body",
+              object_id: content.id,
+              object_name: content.title,
+              object_position: position,
+            });
+            setHasTrackedImpression(true);
+          }
+        });
+      },
+      {
+        threshold: 0.5, // 50% 보일 때 추적
+      }
+    );
+
+    observer.observe(cardRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [content.id, content.title, position, hasTrackedImpression]);
+
+  const handleClick = () => {
+    trackClick("content_card", {
+      page_name: "home",
+      object_section: "body",
+      object_id: content.id,
+      object_name: content.title,
+      object_position: position,
+    });
+  };
+
+  const handleToolLogoHover = (toolId: string, toolName: string, toolPosition: number) => {
+    trackHover("tool_logo", {
+      page_name: "home",
+      object_section: "body",
+      object_id: toolId,
+      object_name: toolName,
+      object_position: toolPosition,
+    });
+  };
+
+  return (
+    <TooltipProvider>
+      <a
+        ref={cardRef}
+        href={content.sourceUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block group"
+        onClick={handleClick}
+      >
+        <Card className="p-0 gap-4 border-none shadow-none overflow-hidden transition-all">
+          {/* Thumbnail */}
+          <div className="relative aspect-video transition-transform duration-300 group-hover:-translate-y-2 mt-2">
+            {content.thumbnailUrl && !imageError ? (
+              <Image
+                src={content.thumbnailUrl}
+                alt={content.title}
+                fill
+                className="object-cover rounded-2xl "
+                {...getOptimizedImageProps(content.thumbnailUrl, { priority })}
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <Image
+                src={defaultThumbnail}
+                alt={content.title}
+                fill
+                className="object-cover rounded-2xl"
+              />
+            )}
+
+            {/* AI Tool Logos positioned at bottom right of thumbnail */}
+            <div className="absolute -bottom-7 right-4 flex gap-2">
+              {content.aiTools.map((data, index) => (
+                <Tooltip key={data.aiTool.id}>
+                  <TooltipTrigger asChild>
+                    <div
+                      className="flex items-center justify-center w-14 h-14 rounded-full bg-background"
+                      onMouseEnter={() =>
+                        handleToolLogoHover(data.aiTool.id, data.aiTool.name, index)
+                      }
+                    >
+                      <div className="w-12 h-12 rounded-full bg-background shadow-lg overflow-hidden">
+                        <Image
+                          className="object-cover rounded-full"
+                          src={data.aiTool.logoUrl || DEFAULT_AI_TOOL_LOGO}
+                          alt={data.aiTool.name}
+                          width={48}
+                          height={48}
+                        />
+                      </div>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{data.aiTool.name}</p>
+                  </TooltipContent>
+                </Tooltip>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
 
         <CardContent className="px-4 space-y-3">
           {/* Author and Date */}
@@ -173,6 +251,7 @@ export function ContentCard({ content, priority = false }: ContentCardProps) {
           </div>
         </CardFooter>
       </Card>
-    </Link>
+    </a>
+    </TooltipProvider>
   );
 }

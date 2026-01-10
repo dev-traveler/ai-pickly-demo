@@ -47,3 +47,17 @@ CLAUDE.md
 AGENTS.md
 
 .vscode
+
+# Database and migration files
+*.csv
+prisma/migrate-*.ts
+prisma/sync-*.ts
+prisma/check-*.ts
+prisma/upload-*.ts
+*.log
+
+# Temporary scripts
+check-*.ts
+fix-*.ts
+*.sh
+*.py

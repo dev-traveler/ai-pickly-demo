@@ -17,6 +17,7 @@ import {
 import type { AIToolData } from "@/lib/db/ai-tools";
 import { FilterOptionButton } from "@/app/(main)/FilterOptionButton";
 import { useFiltersSearchParams } from "@/hooks/useFiltersSearchParams";
+import { trackClick, trackClose } from "@/lib/analytics/mixpanel";
 
 interface FilterSheetProps {
   open: boolean;
@@ -33,8 +34,52 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
 
   const resetFilterChips = () => setFilterSearchParams(null);
 
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen && open) {
+      // Sheet 닫기 이벤트
+      trackClose("sheet", {
+        page_name: "home",
+        object_section: "filter_sheet",
+        object_id: "filter_sheet",
+        object_name: "filter_sheet",
+        closed_by: "외부영역",
+      });
+    }
+    onOpenChange(newOpen);
+  };
+
+  const handleFilterClick = (filterId: string, filterName: string) => {
+    trackClick("button", {
+      page_name: "home",
+      object_section: "filter_sheet",
+      object_id: filterId,
+      object_name: filterName,
+    });
+  };
+
+  const handleApplyFilter = () => {
+    trackClick("button", {
+      page_name: "home",
+      object_section: "filter_sheet",
+      object_id: "apply_filter",
+      object_name: "필터 적용",
+    });
+    onOpenChange(false);
+  };
+
+  const handleResetFilter = () => {
+    trackClick("button", {
+      page_name: "home",
+      object_section: "filter_sheet",
+      object_id: "reset_filter",
+      object_name: "필터 초기화",
+    });
+    onOpenChange(false);
+    resetFilterChips();
+  };
+
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent
         side="right"
         className="flex h-dvh w-full flex-col p-0 sm:max-w-md"
@@ -55,11 +100,12 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
                   <FilterOptionButton
                     key={categoryOption.id}
                     selected={isSelected}
-                    onClick={() =>
+                    onClick={() => {
+                      handleFilterClick(categoryOption.id, categoryOption.label);
                       isSelected
                         ? setCategory(null)
-                        : setCategory(categoryOption.id)
-                    }
+                        : setCategory(categoryOption.id);
+                    }}
                   >
                     {categoryOption.label}
                   </FilterOptionButton>
@@ -78,11 +124,12 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
                   <FilterOptionButton
                     key={difficultyOption.value}
                     selected={isSelected}
-                    onClick={() =>
+                    onClick={() => {
+                      handleFilterClick(difficultyOption.value, difficultyOption.label);
                       isSelected
                         ? setDifficulty(null)
-                        : setDifficulty(difficultyOption.value)
-                    }
+                        : setDifficulty(difficultyOption.value);
+                    }}
                   >
                     {difficultyOption.label}
                   </FilterOptionButton>
@@ -101,11 +148,12 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
                   <FilterOptionButton
                     key={timeRangeOption.value}
                     selected={isSelected}
-                    onClick={() =>
+                    onClick={() => {
+                      handleFilterClick(timeRangeOption.value, timeRangeOption.label);
                       isSelected
                         ? setTime(null)
-                        : setTime(timeRangeOption.value)
-                    }
+                        : setTime(timeRangeOption.value);
+                    }}
                   >
                     {timeRangeOption.label}
                   </FilterOptionButton>
@@ -124,9 +172,10 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
                   <FilterOptionButton
                     key={aiToolData.id}
                     selected={isSelected}
-                    onClick={() =>
-                      isSelected ? setTool(null) : setTool(aiToolData.id)
-                    }
+                    onClick={() => {
+                      handleFilterClick(aiToolData.id, aiToolData.name);
+                      isSelected ? setTool(null) : setTool(aiToolData.id);
+                    }}
                   >
                     {aiToolData.name}
                   </FilterOptionButton>
@@ -140,9 +189,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
         <div className="border-t bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] space-y-2">
           <Button
             variant="cta"
-            onClick={() => {
-              onOpenChange(false);
-            }}
+            onClick={handleApplyFilter}
             className="w-full h-10 rounded-full font-semibold"
           >
             필터 적용
@@ -150,10 +197,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
 
           <Button
             variant="outline"
-            onClick={() => {
-              onOpenChange(false);
-              resetFilterChips();
-            }}
+            onClick={handleResetFilter}
             className="w-full h-10 rounded-full"
           >
             필터 초기화

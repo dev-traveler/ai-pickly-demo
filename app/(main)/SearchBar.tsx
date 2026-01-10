@@ -9,6 +9,7 @@ import {
   useFiltersSearchParams,
   serialize,
 } from "@/hooks/useFiltersSearchParams";
+import { trackSearch } from "@/lib/analytics/mixpanel";
 
 export function SearchBar() {
   const [q, setQ] = useQueryState("q", { shallow: true });
@@ -25,6 +26,16 @@ export function SearchBar() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.currentTarget.blur();
+
+      // 검색 이벤트 추적
+      if (localQuery.trim()) {
+        trackSearch("keyword", {
+          page_name: "home",
+          object_section: "header",
+          object_id: localQuery,
+          object_name: localQuery,
+        });
+      }
 
       // 현재 경로가 루트가 아니면 루트로 이동
       if (pathname !== "/") {

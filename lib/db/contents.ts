@@ -143,6 +143,7 @@ export async function getContents(
               id: true,
               name: true,
               slug: true,
+              logoUrl: true,
             },
           },
         },
@@ -259,13 +260,9 @@ export async function getContentsCount(
     ];
   }
 
-  const limitedResults = await prisma.content.findMany({
+  const count = await prisma.content.count({
     where,
-    select: { id: true },
-    take: 100,
   });
-
-  const count = limitedResults.length;
   contentsCountCache.set(normalizedKey, {
     value: count,
     expiresAt: now + COUNT_CACHE_TTL_MS,
