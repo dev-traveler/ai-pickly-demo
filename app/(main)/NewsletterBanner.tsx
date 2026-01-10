@@ -1,7 +1,19 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { SubscribeNewsletterDialog } from "@/app/(main)/SubscribeNewsletterDialog";
+import { trackClick } from "@/lib/analytics/mixpanel";
 
 export function NewsletterBanner() {
+  const handleBannerButtonClick = () => {
+    trackClick("button", {
+      page_name: "home",
+      object_section: "banner",
+      object_id: "무료 AI 뉴스레터 배송받기",
+      object_name: "무료 AI 뉴스레터 배송받기",
+    });
+  };
+
   return (
     <div className="flex justify-center bg-black text-white p-8 md:p-12">
       <div className="container px-4 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
@@ -16,16 +28,18 @@ export function NewsletterBanner() {
         </div>
 
         {/* CTA 버튼 */}
-        <SubscribeNewsletterDialog
-          triggerComponent={
-            <Button
-              size="lg"
-              className="bg-white text-black hover:bg-gray-100 font-semibold whitespace-nowrap"
-            >
-              무료 AI 뉴스레터 배송받기
-            </Button>
-          }
-        />
+        <div onClick={handleBannerButtonClick}>
+          <SubscribeNewsletterDialog
+            triggerComponent={
+              <Button
+                size="lg"
+                className="bg-white text-black hover:bg-gray-100 font-semibold whitespace-nowrap"
+              >
+                무료 AI 뉴스레터 배송받기
+              </Button>
+            }
+          />
+        </div>
       </div>
     </div>
   );

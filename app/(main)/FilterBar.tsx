@@ -12,6 +12,7 @@ import {
   TIME_RANGE_OPTIONS,
 } from "@/lib/constants/filters";
 import { useFiltersSearchParams } from "@/hooks/useFiltersSearchParams";
+import { trackClick } from "@/lib/analytics/mixpanel";
 
 interface FilterBarProps {
   totalResults?: number | string;
@@ -30,7 +31,15 @@ export function FilterBar({
   const [tool, setTool] = useQueryState("tool");
   const [, setSearchParams] = useFiltersSearchParams();
 
-  const resetFilterChips = () => setSearchParams(null);
+  const resetFilterChips = () => {
+    trackClick("button", {
+      page_name: "home",
+      object_section: "body",
+      object_id: "refresh_filters",
+      object_name: "refresh_filters",
+    });
+    setSearchParams(null);
+  };
 
   const chips: Array<filterChip> = [];
 

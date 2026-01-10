@@ -47,6 +47,30 @@ const nextConfig: NextConfig = {
         pathname: "/vi/**",
       },
 
+      // 소셜 미디어 CDN
+      {
+        protocol: "https",
+        hostname: "*.cdninstagram.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "scontent-*.cdninstagram.com",
+        pathname: "/**",
+      },
+
+      // Google 이미지 CDN
+      {
+        protocol: "https",
+        hostname: "*.gstatic.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "encrypted-tbn*.gstatic.com",
+        pathname: "/**",
+      },
+
       // 한국 블로그 플랫폼 (외부 링크용)
       {
         protocol: "https",
@@ -56,6 +80,21 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "*.kakaocdn.net",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.daumcdn.net",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.pstatic.net",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.spartaclub.kr",
         pathname: "/**",
       },
     ],
