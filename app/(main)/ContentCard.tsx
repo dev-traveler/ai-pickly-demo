@@ -12,7 +12,6 @@ import {
 import { Clock, TrendingUp, Link2 } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { getOptimizedImageProps } from "@/lib/image-utils";
 import { Difficulty } from "@prisma/client";
 import { trackImpression, trackHover, trackClick } from "@/lib/analytics/mixpanel";
 
@@ -148,9 +147,15 @@ export function ContentCard({ content, priority = false, position = 0 }: Content
                 src={content.thumbnailUrl}
                 alt={content.title}
                 fill
-                className="object-cover rounded-2xl "
-                {...getOptimizedImageProps(content.thumbnailUrl, { priority })}
-                onError={() => setImageError(true)}
+                className="object-cover rounded-2xl"
+                loading={priority ? "eager" : "lazy"}
+                priority={priority}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                quality={85}
+                onError={() => {
+                  console.error(`Failed to load thumbnail for ${content.id}:`, content.thumbnailUrl);
+                  setImageError(true);
+                }}
               />
             ) : (
               <Image
@@ -158,6 +163,7 @@ export function ContentCard({ content, priority = false, position = 0 }: Content
                 alt={content.title}
                 fill
                 className="object-cover rounded-2xl"
+                priority={priority}
               />
             )}
 

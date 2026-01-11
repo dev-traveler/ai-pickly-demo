@@ -72,11 +72,16 @@ export function InfiniteContentGrid({
     );
   }
 
+  // Flatten all pages and deduplicate by ID
   const allContents = data?.pages.flatMap((page) => page) || [];
+  const uniqueContents = allContents.filter(
+    (content, index, self) =>
+      index === self.findIndex((c) => c.id === content.id)
+  );
 
   return (
     <div className="space-y-8">
-      <ContentGrid contents={allContents} emptyMessage={emptyMessage} />
+      <ContentGrid contents={uniqueContents} emptyMessage={emptyMessage} />
 
       {/* 무한 스크롤 트리거 */}
       <div ref={loadMoreRef} className="py-8 text-center">

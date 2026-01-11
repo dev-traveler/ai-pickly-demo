@@ -11,11 +11,16 @@ const nextConfig: NextConfig = {
 
     // 허용된 외부 이미지 도메인
     remotePatterns: [
-      // Supabase Storage CDN
+      // Supabase Storage CDN (public & signed URLs)
       {
         protocol: "https",
         hostname: "*.supabase.co",
         pathname: "/storage/v1/object/public/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/sign/**",
       },
 
       // MVP 임시 이미지 (Unsplash)
