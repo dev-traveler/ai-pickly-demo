@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { LinkableFullLogo } from "./LinkableFullLogo";
+import { TrackedLink } from "./TrackedLink";
 
 export function Footer() {
   return (
@@ -7,7 +7,7 @@ export function Footer() {
       {/* Main footer content */}
       <div className="container mx-auto px-6 py-16">
         <div className="flex flex-col md:flex-row justify-between">
-          <LinkableFullLogo />
+          <LinkableFullLogo section="footer" />
 
           {/* 
           <div className="flex justify-between gap-16 text-xs text-gray-500">
@@ -105,26 +105,38 @@ export function Footer() {
             <div className="space-y-1.5">
               <p className="leading-relaxed">
                 AI Pickly |{" "}
-                <Link
+                <TrackedLink
                   href="/policy/privacy"
                   className="hover:text-gray-300 transition-colors"
+                  pageName="home"
+                  objectSection="footer"
+                  objectId="개인정보처리방침"
+                  objectName="개인정보처리방침"
                 >
                   개인정보처리방침
-                </Link>{" "}
+                </TrackedLink>{" "}
                 |{" "}
-                <Link
+                <TrackedLink
                   href="/policy/marketing"
                   className="hover:text-gray-300 transition-colors"
+                  pageName="home"
+                  objectSection="footer"
+                  objectId="광고성 정보수신"
+                  objectName="광고성 정보수신"
                 >
                   광고성 정보수신
-                </Link>{" "}
+                </TrackedLink>{" "}
                 |{" "}
-                <Link
+                <TrackedLink
                   href="https://docs.google.com/forms/d/e/1FAIpQLSc1HVgUEMl4qME6rjHPgYQhDkXmQyTBAs9t4I-hgVF9QUmedA/viewform"
                   className="hover:text-gray-300 transition-colors"
+                  pageName="home"
+                  objectSection="footer"
+                  objectId="문의하기"
+                  objectName="문의하기"
                 >
                   문의하기
-                </Link>
+                </TrackedLink>
               </p>
               <p className="leading-relaxed">
                 서울특별시 동작구 노량진로 10 스페이스살림 2층

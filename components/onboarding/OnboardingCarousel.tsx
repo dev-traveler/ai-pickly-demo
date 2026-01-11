@@ -13,6 +13,7 @@ import { OnboardingFinalSlide } from "./OnboardingFinalSlide";
 import { OnboardingDots } from "./OnboardingDots";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import mixpanel from "mixpanel-browser";
 
 interface OnboardingCarouselProps {
   onComplete: () => void;
@@ -52,8 +53,33 @@ export function OnboardingCarousel({
     };
   }, [api]);
 
-  const handleNext = () => api?.scrollNext();
-  const handlePrev = () => api?.scrollPrev();
+  const handleNext = () => {
+    mixpanel.track("click@button", {
+      page_name: "home",
+      object_section: "onboarding_modal",
+      object_id: "next",
+      object_name: "next",
+    });
+    api?.scrollNext();
+  };
+  const handlePrev = () => {
+    mixpanel.track("click@button", {
+      page_name: "home",
+      object_section: "onboarding_modal",
+      object_id: "prev",
+      object_name: "prev",
+    });
+    api?.scrollPrev();
+  };
+  const handleSkip = () => {
+    mixpanel.track("click@button", {
+      page_name: "home",
+      object_section: "onboarding_modal",
+      object_id: "skip",
+      object_name: "skip",
+    });
+    onSkip();
+  };
   const isFinalSlide = currentSlide === 4;
   const isFirstSlide = currentSlide === 0;
 
@@ -124,7 +150,7 @@ export function OnboardingCarousel({
         {!isFinalSlide && (
           <Button
             variant="ghost"
-            onClick={onSkip}
+            onClick={handleSkip}
             className="absolute bottom-1 right-4 z-10 text-xs text-muted-foreground hover:text-foreground"
           >
             건너뛰기

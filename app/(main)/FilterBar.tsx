@@ -12,6 +12,7 @@ import {
   TIME_RANGE_OPTIONS,
 } from "@/lib/constants/filters";
 import { useFiltersSearchParams } from "@/hooks/useFiltersSearchParams";
+import mixpanel from "mixpanel-browser";
 
 interface FilterBarProps {
   totalResults?: number | string;
@@ -30,7 +31,15 @@ export function FilterBar({
   const [tool, setTool] = useQueryState("tool");
   const [, setSearchParams] = useFiltersSearchParams();
 
-  const resetFilterChips = () => setSearchParams(null);
+  const resetFilterChips = () => {
+    mixpanel.track("click@button", {
+      page_name: "home",
+      object_section: "body",
+      object_id: "refresh_filters",
+      object_name: "refresh_filters",
+    });
+    setSearchParams(null);
+  };
 
   const chips: Array<filterChip> = [];
 
@@ -41,7 +50,15 @@ export function FilterBar({
       chips.push({
         id: `category-${c.id}`,
         label: c.label,
-        onRemove: () => setCategory(null),
+        onRemove: () => {
+          mixpanel.track("click@button", {
+            page_name: "home",
+            object_section: "body",
+            object_id: c.id,
+            object_name: c.label,
+          });
+          setCategory(null);
+        },
       });
     }
   }
@@ -53,7 +70,15 @@ export function FilterBar({
       chips.push({
         id: "difficulty",
         label: d.label,
-        onRemove: () => setDifficulty(null),
+        onRemove: () => {
+          mixpanel.track("click@button", {
+            page_name: "home",
+            object_section: "body",
+            object_id: d.value,
+            object_name: d.label,
+          });
+          setDifficulty(null);
+        },
       });
     }
   }
@@ -65,7 +90,15 @@ export function FilterBar({
       chips.push({
         id: "time-range",
         label: t.label,
-        onRemove: () => setTime(null),
+        onRemove: () => {
+          mixpanel.track("click@button", {
+            page_name: "home",
+            object_section: "body",
+            object_id: t.value,
+            object_name: t.label,
+          });
+          setTime(null);
+        },
       });
     }
   }
@@ -77,7 +110,15 @@ export function FilterBar({
       chips.push({
         id: `tool-${t.id}`,
         label: t.name,
-        onRemove: () => setTool(null),
+        onRemove: () => {
+          mixpanel.track("click@button", {
+            page_name: "home",
+            object_section: "body",
+            object_id: t.id,
+            object_name: t.name,
+          });
+          setTool(null);
+        },
       });
     }
   }

@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { Search, XIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useQueryState } from "nuqs";
+import mixpanel from "mixpanel-browser";
 import {
   useFiltersSearchParams,
   serialize,
@@ -24,14 +25,23 @@ export function SearchBar() {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
+      const trimmedQuery = localQuery.trim();
+      if (trimmedQuery) {
+        mixpanel.track("search@keyword", {
+          page_name: "home",
+          object_section: "header",
+          object_id: trimmedQuery,
+          object_name: trimmedQuery,
+        });
+      }
       e.currentTarget.blur();
 
       // 현재 경로가 루트가 아니면 루트로 이동
       if (pathname !== "/") {
         const searchParams = new URLSearchParams(serialize(filters));
 
-        if (localQuery) {
-          searchParams.set("q", localQuery);
+        if (trimmedQuery) {
+          searchParams.set("q", trimmedQuery);
         } else {
           searchParams.delete("q");
         }
@@ -41,7 +51,7 @@ export function SearchBar() {
         return;
       }
 
-      setQ(localQuery);
+      setQ(trimmedQuery);
     }
   };
 

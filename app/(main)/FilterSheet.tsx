@@ -17,6 +17,7 @@ import {
 import type { AIToolData } from "@/lib/db/ai-tools";
 import { FilterOptionButton } from "@/app/(main)/FilterOptionButton";
 import { useFiltersSearchParams } from "@/hooks/useFiltersSearchParams";
+import mixpanel from "mixpanel-browser";
 
 interface FilterSheetProps {
   open: boolean;
@@ -32,9 +33,20 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
   const [, setFilterSearchParams] = useFiltersSearchParams();
 
   const resetFilterChips = () => setFilterSearchParams(null);
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      mixpanel.track("close@sheet", {
+        page_name: "home",
+        object_section: "filter_sheet",
+        object_id: "filter_sheet",
+        object_name: "filter_sheet",
+      });
+    }
+    onOpenChange(nextOpen);
+  };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent
         side="right"
         className="flex h-dvh w-full flex-col p-0 sm:max-w-md"
@@ -55,11 +67,17 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
                   <FilterOptionButton
                     key={categoryOption.id}
                     selected={isSelected}
-                    onClick={() =>
+                    onClick={() => {
+                      mixpanel.track("click@button", {
+                        page_name: "home",
+                        object_section: "filter_sheet",
+                        object_id: categoryOption.id,
+                        object_name: categoryOption.label,
+                      });
                       isSelected
                         ? setCategory(null)
-                        : setCategory(categoryOption.id)
-                    }
+                        : setCategory(categoryOption.id);
+                    }}
                   >
                     {categoryOption.label}
                   </FilterOptionButton>
@@ -78,11 +96,17 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
                   <FilterOptionButton
                     key={difficultyOption.value}
                     selected={isSelected}
-                    onClick={() =>
+                    onClick={() => {
+                      mixpanel.track("click@button", {
+                        page_name: "home",
+                        object_section: "filter_sheet",
+                        object_id: difficultyOption.value,
+                        object_name: difficultyOption.label,
+                      });
                       isSelected
                         ? setDifficulty(null)
-                        : setDifficulty(difficultyOption.value)
-                    }
+                        : setDifficulty(difficultyOption.value);
+                    }}
                   >
                     {difficultyOption.label}
                   </FilterOptionButton>
@@ -101,11 +125,17 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
                   <FilterOptionButton
                     key={timeRangeOption.value}
                     selected={isSelected}
-                    onClick={() =>
+                    onClick={() => {
+                      mixpanel.track("click@button", {
+                        page_name: "home",
+                        object_section: "filter_sheet",
+                        object_id: timeRangeOption.value,
+                        object_name: timeRangeOption.label,
+                      });
                       isSelected
                         ? setTime(null)
-                        : setTime(timeRangeOption.value)
-                    }
+                        : setTime(timeRangeOption.value);
+                    }}
                   >
                     {timeRangeOption.label}
                   </FilterOptionButton>
@@ -124,9 +154,15 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
                   <FilterOptionButton
                     key={aiToolData.id}
                     selected={isSelected}
-                    onClick={() =>
-                      isSelected ? setTool(null) : setTool(aiToolData.id)
-                    }
+                    onClick={() => {
+                      mixpanel.track("click@button", {
+                        page_name: "home",
+                        object_section: "filter_sheet",
+                        object_id: aiToolData.id,
+                        object_name: aiToolData.name,
+                      });
+                      isSelected ? setTool(null) : setTool(aiToolData.id);
+                    }}
                   >
                     {aiToolData.name}
                   </FilterOptionButton>
@@ -141,6 +177,12 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
           <Button
             variant="cta"
             onClick={() => {
+              mixpanel.track("click@button", {
+                page_name: "home",
+                object_section: "filter_sheet",
+                object_id: "필터 적용",
+                object_name: "필터 적용",
+              });
               onOpenChange(false);
             }}
             className="w-full h-10 rounded-full font-semibold"
@@ -151,6 +193,12 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
           <Button
             variant="outline"
             onClick={() => {
+              mixpanel.track("click@button", {
+                page_name: "home",
+                object_section: "filter_sheet",
+                object_id: "필터 초기화",
+                object_name: "필터 초기화",
+              });
               onOpenChange(false);
               resetFilterChips();
             }}

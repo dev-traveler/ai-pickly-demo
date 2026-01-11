@@ -1,71 +1,7 @@
-"use client";
-
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { unsubscribeFromNewsletter } from "@/lib/db/newsletter";
 import { PageViewTracker } from "@/components/PageViewTracker";
-
-// 이메일 유효성 검사 스키마
-const formSchema = z.object({
-  email: z.email("유효하지 않은 이메일 주소입니다."),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+import { UnsubscribeForm } from "./unsubscribe-form";
 
 export default function UnsubscribePage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-    },
-  });
-
-  async function onSubmit(values: FormValues) {
-    setIsSubmitting(true);
-
-    try {
-      const result = await unsubscribeFromNewsletter(values.email);
-
-      if (result.success) {
-        toast.success("구독 취소가 완료됐습니다.");
-        form.reset();
-      } else {
-        switch (result.error) {
-          case "INVALID_EMAIL":
-            form.setError("email", {
-              message: "유효하지 않은 이메일입니다.",
-            });
-            break;
-          case "EMAIL_NOT_FOUND":
-            toast.error(
-              "해당 이메일로 등록된 구독이 없습니다. 구독 상태가 아니거나 이미 취소된 것 같습니다."
-            );
-            break;
-          case "DATABASE_ERROR":
-            toast.error("오류가 발생했습니다. 다시 시도해주세요.");
-            break;
-        }
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
   return (
     <>
       <div>
@@ -95,38 +31,7 @@ export default function UnsubscribePage() {
               </p>
             </div>
 
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
-              >
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          className="h-10 border-black"
-                          placeholder="your@email.com"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Button
-                  className="w-full h-12"
-                  type="submit"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "처리 중..." : "구독 취소하기"}
-                </Button>
-              </form>
-            </Form>
+            <UnsubscribeForm />
 
             <div className="p-4 bg-gray-50 rounded-lg text-sm text-gray-600 space-y-2">
               <p className="font-semibold">안내사항</p>

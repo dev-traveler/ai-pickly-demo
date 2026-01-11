@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { subscribeToNewsletter } from "@/lib/db/newsletter";
+import mixpanel from "mixpanel-browser";
 
 // 이메일 유효성 검사 스키마
 const formSchema = z.object({
@@ -37,10 +38,15 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface SubscribeNewsletterDialogProps {
   triggerComponent?: React.ReactNode;
+  triggerTracking?: {
+    event: string;
+    properties: Record<string, string>;
+  };
 }
 
 export function SubscribeNewsletterDialog({
   triggerComponent,
+  triggerTracking,
 }: SubscribeNewsletterDialogProps) {
   const [open, setOpen] = useState(false);
 
@@ -78,8 +84,28 @@ export function SubscribeNewsletterDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{triggerComponent}</DialogTrigger>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen);
+        mixpanel.track("close@modal", {
+          page_name: "home",
+          object_section: "newsletter_subscribe_modal",
+          object_id: "newsletter_subscribe_modal",
+          object_name: "newsletter_subscribe_modal",
+        });
+      }}
+    >
+      <DialogTrigger
+        asChild
+        onClick={() => {
+          if (triggerTracking) {
+            mixpanel.track(triggerTracking.event, triggerTracking.properties);
+          }
+        }}
+      >
+        {triggerComponent}
+      </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>AI 뉴스레터 구독하기</DialogTitle>
@@ -93,23 +119,46 @@ export function SubscribeNewsletterDialog({
             <FormField
               control={form.control}
               name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="h-10 border-black"
-                      placeholder="your@email.com"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                const { onBlur, ...fieldProps } = field;
+                return (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="h-10 border-black"
+                        placeholder="your@email.com"
+                        onBlur={() => {
+                          onBlur();
+                          mixpanel.track("input@email", {
+                            page_name: "home",
+                            object_section: "newsletter_subscribe_modal",
+                            object_id: "newsletter_subscribe_email",
+                            object_name: "newsletter_subscribe_email",
+                          });
+                        }}
+                        {...fieldProps}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
 
             <DialogFooter>
-              <Button className="w-full h-12" type="submit">
+              <Button
+                className="w-full h-12"
+                type="submit"
+                onClick={() => {
+                  mixpanel.track("click@button", {
+                    page_name: "home",
+                    object_section: "newsletter_subscribe_modal",
+                    object_id: "무료 구독 시작하기",
+                    object_name: "무료 구독 시작하기",
+                  });
+                }}
+              >
                 무료 구독 시작하기
               </Button>
             </DialogFooter>
@@ -122,6 +171,14 @@ export function SubscribeNewsletterDialog({
             <Link
               href="/newsletter/unsubscribe"
               className="underline font-semibold"
+              onClick={() => {
+                mixpanel.track("click@link", {
+                  page_name: "home",
+                  object_section: "newsletter_subscribe_modal",
+                  object_id: "구독 취소",
+                  object_name: "구독 취소",
+                });
+              }}
             >
               취소
             </Link>
@@ -132,7 +189,15 @@ export function SubscribeNewsletterDialog({
             <Link
               href="/policy/privacy"
               className="underline font-semibold"
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                setOpen(false);
+                mixpanel.track("click@link", {
+                  page_name: "home",
+                  object_section: "newsletter_subscribe_modal",
+                  object_id: "개인정보처리방침",
+                  object_name: "개인정보처리방침",
+                });
+              }}
             >
               개인정보처리방침
             </Link>
@@ -140,7 +205,15 @@ export function SubscribeNewsletterDialog({
             <Link
               href="/policy/marketing"
               className="underline font-semibold"
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                setOpen(false);
+                mixpanel.track("click@link", {
+                  page_name: "home",
+                  object_section: "newsletter_subscribe_modal",
+                  object_id: "마케팅 정보 수신",
+                  object_name: "마케팅 정보 수신",
+                });
+              }}
             >
               마케팅 정보 수신
             </Link>

@@ -17,6 +17,15 @@ export function NewsletterBanner() {
 
         {/* CTA 버튼 */}
         <SubscribeNewsletterDialog
+          triggerTracking={{
+            event: "click@button",
+            properties: {
+              page_name: "home",
+              object_section: "banner",
+              object_id: "무료 AI 뉴스레터 배송받기",
+              object_name: "무료 AI 뉴스레터 배송받기",
+            },
+          }}
           triggerComponent={
             <Button
               size="lg"

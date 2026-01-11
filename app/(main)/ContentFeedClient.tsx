@@ -9,6 +9,7 @@ import { InfiniteContentGrid } from "@/app/(main)/InfiniteContentGrid";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { OnboardingDialog } from "@/components/onboarding/OnboardingDialog";
 import { useContentsCount, useAITools } from "@/hooks/useContentsQuery";
+import mixpanel from "mixpanel-browser";
 
 const ONBOARDING_STORAGE_KEY = "onboarding.dismissed";
 const ONBOARDING_EVENT_KEY = "onboarding-dismissed";
@@ -83,7 +84,15 @@ export function ContentFeedClient() {
       <FilterBar
         totalResults={totalCount}
         aiTools={aiTools}
-        onOpenFilter={() => setSheetOpen(true)}
+        onOpenFilter={() => {
+          mixpanel.track("click@button", {
+            page_name: "home",
+            object_section: "body",
+            object_id: "open_filter_sheet",
+            object_name: "open_filter_sheet",
+          });
+          setSheetOpen(true);
+        }}
       />
 
       {/* 무한 스크롤 콘텐츠 그리드 */}
@@ -91,7 +100,18 @@ export function ContentFeedClient() {
 
       <div className="w-full fixed bottom-6 left-1/2 z-50 -translate-x-1/2 md:hidden">
         <div className="flex items-center justify-center w-full">
-          <FilterButton responsive onClick={() => setSheetOpen(true)} />
+          <FilterButton
+            responsive
+            onClick={() => {
+              mixpanel.track("click@button", {
+                page_name: "home",
+                object_section: "body",
+                object_id: "open_filter_sheet",
+                object_name: "open_filter_sheet",
+              });
+              setSheetOpen(true);
+            }}
+          />
           <ScrollToTopButton className="absolute right-6" />
         </div>
       </div>

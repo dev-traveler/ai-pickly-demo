@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Clock, TrendingUp, Link2 } from "lucide-react";
@@ -14,10 +14,12 @@ import {
 import { ContentCardData } from "@/types/content";
 import { getOptimizedImageProps } from "@/lib/image-utils";
 import { Difficulty } from "@prisma/client";
+import mixpanel from "mixpanel-browser";
 
 interface ContentCardProps {
   content: ContentCardData;
   priority?: boolean;
+  index: number;
 }
 
 const difficultyMap: Record<Difficulty, string> = {
@@ -71,15 +73,64 @@ const getAIToolLogo = (toolName: string) => {
   return `/images/logo-${toolName}.png`;
 };
 
-export function ContentCard({ content, priority = false }: ContentCardProps) {
+export function ContentCard({
+  content,
+  priority = false,
+  index,
+}: ContentCardProps) {
   const [imageError, setImageError] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const hasTrackedImpression = useRef(false);
   const estimatedMinutes = content.estimatedTime?.displayMinutes;
   const sourceName = getSourceName(content.sourceUrl);
   const defaultThumbnail = getDefaultThumbnail(content.categories);
 
+  useEffect(() => {
+    if (!cardRef.current || hasTrackedImpression.current) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0];
+        if (target.isIntersecting && !hasTrackedImpression.current) {
+          mixpanel.track("impression@content_card", {
+            page_name: "home",
+            object_section: "body",
+            object_id: content.id,
+            object_name: content.title,
+            object_position: String(index),
+          });
+          hasTrackedImpression.current = true;
+          observer.disconnect();
+        }
+      },
+      { threshold: 1 }
+    );
+
+    observer.observe(cardRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [content.id, content.title, index]);
+
   return (
-    <Link href={`/content/${content.id}`} className="block group">
-      <Card className="p-0 gap-4 border-none shadow-none overflow-hidden transition-all">
+    <Link
+      href={`/content/${content.id}`}
+      className="block group"
+      onClick={() => {
+        mixpanel.track("click@content_card", {
+          page_name: "home",
+          object_section: "body",
+          object_id: content.id,
+          object_name: content.title,
+          object_position: String(index),
+        });
+      }}
+    >
+      <div ref={cardRef}>
+        <Card className="p-0 gap-4 border-none shadow-none overflow-hidden transition-all">
         {/* Thumbnail */}
         <div className="relative aspect-video transition-transform duration-300 group-hover:-translate-y-2 mt-2">
           {content.thumbnailUrl && !imageError ? (
@@ -103,7 +154,21 @@ export function ContentCard({ content, priority = false }: ContentCardProps) {
 
           {/* Avatar positioned at bottom right of thumbnail */}
           {content.aiTools.map((data) => (
-            <Tooltip key={data.aiTool.id} delayDuration={300}>
+            <Tooltip
+              key={data.aiTool.id}
+              delayDuration={300}
+              onOpenChange={(open) => {
+                if (open) {
+                  mixpanel.track("hover@tool_logo", {
+                    page_name: "home",
+                    object_section: "body",
+                    object_id: data.aiTool.id,
+                    object_name: data.aiTool.name,
+                    object_position: String(index),
+                  });
+                }
+              }}
+            >
               <TooltipTrigger asChild>
                 <div className="absolute -bottom-7 right-7">
                   <div className="flex items-center justify-center w-14 h-14 rounded-full bg-background">
@@ -185,7 +250,8 @@ export function ContentCard({ content, priority = false }: ContentCardProps) {
             ))}
           </div>
         </CardFooter>
-      </Card>
+        </Card>
+      </div>
     </Link>
   );
 }

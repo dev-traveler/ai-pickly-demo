@@ -4,17 +4,27 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Logo } from "@/components/Logo";
 import { cn } from "@/lib/utils";
+import mixpanel from "mixpanel-browser";
 
 interface LinkableFullLogoProps {
   black?: boolean;
+  section: "header" | "footer";
 }
 
-export function LinkableFullLogo({ black = false }: LinkableFullLogoProps) {
+export function LinkableFullLogo({
+  black = false,
+  section,
+}: LinkableFullLogoProps) {
   const router = useRouter();
 
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    // resetFilters();
+    mixpanel.track("click@logo", {
+      page_name: "home",
+      object_section: section,
+      object_id: "logo",
+      object_name: "logo",
+    });
     router.push("/");
   };
 

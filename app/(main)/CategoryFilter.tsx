@@ -3,6 +3,7 @@
 import { useQueryState } from "nuqs";
 import { CATEGORIES } from "@/lib/constants/filters";
 import { FilterOptionButton } from "@/app/(main)/FilterOptionButton";
+import mixpanel from "mixpanel-browser";
 
 export function CategoryFilter() {
   const [categoryQuery, setCategoryQuery] = useQueryState("category");
@@ -21,7 +22,15 @@ export function CategoryFilter() {
           <FilterOptionButton
             key={category.id}
             selected={isSelected}
-            onClick={() => toggleCategory(category.id)}
+            onClick={() => {
+              mixpanel.track("click@button", {
+                page_name: "home",
+                object_section: "body",
+                object_id: category.id,
+                object_name: category.label,
+              });
+              toggleCategory(category.id);
+            }}
             className="flex items-center gap-2 rounded-2xl px-6 whitespace-nowrap text-xs h-8 md:text-sm md:h-10"
           >
             <Icon className="h-5 w-5 hidden md:block" />

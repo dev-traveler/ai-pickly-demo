@@ -11,7 +11,7 @@ export function Header() {
       <div className="container flex flex-col md:flex-row max-w-screen-2xl p-4 md:h-16 md:items-center gap-3 md:gap-6">
         {/* First Row on Mobile: Logo and Button */}
         <div className="flex items-center justify-between md:contents">
-          <LinkableFullLogo black />
+          <LinkableFullLogo black section="header" />
 
           {/* Navigation - visible on mobile */}
           <nav className="md:hidden">
@@ -24,6 +24,15 @@ export function Header() {
                   AI 뉴스레터 구독
                 </Button>
               }
+              triggerTracking={{
+                event: "click@button",
+                properties: {
+                  page_name: "home",
+                  object_section: "header",
+                  object_id: "AI 뉴스레터 구독",
+                  object_name: "AI 뉴스레터 구독",
+                },
+              }}
             />
           </nav>
         </div>
@@ -46,6 +55,15 @@ export function Header() {
                 AI 뉴스레터 구독
               </Button>
             }
+            triggerTracking={{
+              event: "click@button",
+              properties: {
+                page_name: "home",
+                object_section: "header",
+                object_id: "AI 뉴스레터 구독",
+                object_name: "AI 뉴스레터 구독",
+              },
+            }}
           />
         </nav>
       </div>
