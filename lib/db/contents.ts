@@ -158,7 +158,7 @@ export async function getContents(
     description: content.description,
     author: content.author,
     publishedAt: content.publishedAt,
-    thumbnailUrl: content.thumbnailUrl,
+    thumbnailUrl: content.thumbnailUrl || null, // 명시적으로 null 처리
     sourceUrl: content.sourceUrl,
     difficulty: content.difficulty,
     estimatedTime: content.estimatedTime,

@@ -78,6 +78,11 @@ export function ContentCard({ content, priority = false, position = 0 }: Content
   const sourceName = getSourceName(content.sourceUrl);
   const defaultThumbnail = getDefaultThumbnail(content.categories);
 
+  // thumbnailUrl이 null이거나 빈 문자열이면 기본 이미지 사용
+  const thumbnailSrc = content.thumbnailUrl && !imageError
+    ? content.thumbnailUrl
+    : defaultThumbnail;
+
   // Intersection Observer로 impression 추적
   useEffect(() => {
     if (!cardRef.current || hasTrackedImpression) return;
@@ -142,30 +147,22 @@ export function ContentCard({ content, priority = false, position = 0 }: Content
         <Card className="p-0 gap-4 border-none shadow-none overflow-hidden transition-all">
           {/* Thumbnail */}
           <div className="relative aspect-video transition-transform duration-300 group-hover:-translate-y-2 mt-2">
-            {content.thumbnailUrl && !imageError ? (
-              <Image
-                src={content.thumbnailUrl}
-                alt={content.title}
-                fill
-                className="object-cover rounded-2xl"
-                loading={priority ? "eager" : "lazy"}
-                priority={priority}
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                quality={85}
-                onError={() => {
+            <Image
+              src={thumbnailSrc}
+              alt={content.title}
+              fill
+              className="object-cover rounded-2xl"
+              loading={priority ? "eager" : "lazy"}
+              priority={priority}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              quality={85}
+              onError={() => {
+                if (!shouldUseDefaultThumbnail) {
                   console.error(`Failed to load thumbnail for ${content.id}:`, content.thumbnailUrl);
                   setImageError(true);
-                }}
-              />
-            ) : (
-              <Image
-                src={defaultThumbnail}
-                alt={content.title}
-                fill
-                className="object-cover rounded-2xl"
-                priority={priority}
-              />
-            )}
+                }
+              }}
+            />
 
             {/* AI Tool Logos positioned at bottom right of thumbnail */}
             <div className="absolute -bottom-7 right-4 flex gap-2">
