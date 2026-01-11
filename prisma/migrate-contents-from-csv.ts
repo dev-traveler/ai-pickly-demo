@@ -23,7 +23,8 @@ function parseDifficulty(level: string): Difficulty {
   return "BEGINNER";
 }
 
-function parseLanguage(language: string): Language {
+function parseLanguage(language: string | undefined): Language {
+  if (!language) return "KO"; // Default to Korean if not specified
   const normalized = language.toUpperCase().trim();
   if (normalized === "EN" || normalized === "ENGLISH" || normalized === "영어") return "EN";
   return "KO";
@@ -65,27 +66,28 @@ function parseCSVRow(line: string): string[] {
   const values: string[] = [];
   let current = "";
   let inQuotes = false;
-  let braceDepth = 0;
 
   for (let i = 0; i < line.length; i++) {
     const char = line[i];
 
     if (char === '"') {
-      inQuotes = !inQuotes;
-    } else if (char === '{' && inQuotes) {
-      braceDepth++;
-      current += char;
-    } else if (char === '}' && inQuotes) {
-      braceDepth--;
-      current += char;
-    } else if (char === "," && !inQuotes && braceDepth === 0) {
-      values.push(current.trim().replace(/^"|"$/g, ""));
+      // Toggle quote status but don't add the quote itself
+      // We'll keep the content inside quotes
+      if (inQuotes && i + 1 < line.length && line[i + 1] === '"') {
+        // Double quote escape - keep one quote
+        current += '"';
+        i++; // Skip next quote
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === "," && !inQuotes) {
+      values.push(current.trim());
       current = "";
     } else {
       current += char;
     }
   }
-  values.push(current.trim().replace(/^"|"$/g, ""));
+  values.push(current.trim());
 
   return values;
 }
@@ -101,20 +103,46 @@ async function main() {
   }
 
   const csvContent = fs.readFileSync(csvPath, "utf-8");
-  const lines = csvContent.split("\n").filter((line) => line.trim());
 
-  console.log(`📊 Found ${lines.length - 1} rows in CSV\n`);
+  // Parse multiline CSV (JSON spans multiple lines)
+  // Each row starts with CONTENTS-XXX pattern
+  const rows: string[] = [];
+  const allLines = csvContent.split("\n");
+  let currentRow = "";
+
+  for (let i = 1; i < allLines.length; i++) {
+    const line = allLines[i];
+
+    // Check if this line starts a new row (starts with CONTENTS-)
+    if (line.match(/^CONTENTS-\d+/)) {
+      // Save previous row if exists
+      if (currentRow.trim()) {
+        rows.push(currentRow);
+      }
+      currentRow = line;
+    } else {
+      // Continue current row (multiline JSON)
+      currentRow += "\n" + line;
+    }
+  }
+
+  // Add last row if exists
+  if (currentRow.trim()) {
+    rows.push(currentRow);
+  }
+
+  console.log(`📊 Found ${rows.length} rows in CSV\n`);
 
   let successCount = 0;
   let errorCount = 0;
   const errors: string[] = [];
 
-  for (let i = 1; i < lines.length; i++) {
+  for (let i = 0; i < rows.length; i++) {
     try {
-      const values = parseCSVRow(lines[i]);
+      const values = parseCSVRow(rows[i]);
 
       if (values.length < 7) {
-        console.log(`⚠️  Skipping incomplete row ${i}`);
+        console.log(`⚠️  Skipping incomplete row ${i + 1}: got ${values.length} fields`);
         continue;
       }
 
@@ -128,8 +156,16 @@ async function main() {
 
       console.log(`Processing: ${id} - ${title.substring(0, 50)}...`);
 
-      // Parse Properties JSON
-      const properties: PropertiesJSON = JSON.parse(propertiesStr);
+      // Debug: log first 200 chars of properties string
+      if (i === 0) {
+        console.log("DEBUG - Raw properties string (first 200 chars):");
+        console.log(propertiesStr.substring(0, 200));
+        console.log("\n");
+      }
+
+      // Parse Properties JSON - replace escaped quotes
+      const cleanPropertiesStr = propertiesStr.replace(/""/g, '"');
+      const properties: PropertiesJSON = JSON.parse(cleanPropertiesStr);
 
       // Parse date
       const publishedAt = parseDate(dateStr);
