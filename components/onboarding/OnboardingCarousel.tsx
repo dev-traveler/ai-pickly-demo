@@ -13,6 +13,7 @@ import { OnboardingFinalSlide } from "./OnboardingFinalSlide";
 import { OnboardingDots } from "./OnboardingDots";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { trackImpression, trackClick } from "@/lib/analytics/mixpanel";
 
 interface OnboardingCarouselProps {
   onComplete: () => void;
@@ -52,8 +53,49 @@ export function OnboardingCarousel({
     };
   }, [api]);
 
-  const handleNext = () => api?.scrollNext();
-  const handlePrev = () => api?.scrollPrev();
+  // 온보딩 impression 이벤트 (최초 1회만)
+  useEffect(() => {
+    trackImpression("onboarding", {
+      page_name: "home",
+      object_section: "onboarding_modal",
+      object_id: "onboarding",
+      object_name: "onboarding",
+      object_position: 0,
+    });
+  }, []);
+
+  const handleNext = () => {
+    trackClick("button", {
+      page_name: "home",
+      object_section: "onboarding_modal",
+      object_id: "next",
+      object_name: "다음",
+      object_position: currentSlide,
+    });
+    api?.scrollNext();
+  };
+
+  const handlePrev = () => {
+    trackClick("button", {
+      page_name: "home",
+      object_section: "onboarding_modal",
+      object_id: "prev",
+      object_name: "이전",
+      object_position: currentSlide,
+    });
+    api?.scrollPrev();
+  };
+
+  const handleSkip = () => {
+    trackClick("button", {
+      page_name: "home",
+      object_section: "onboarding_modal",
+      object_id: "skip",
+      object_name: "건너뛰기",
+    });
+    onSkip();
+  };
+
   const isFinalSlide = currentSlide === 4;
   const isFirstSlide = currentSlide === 0;
 
@@ -124,7 +166,7 @@ export function OnboardingCarousel({
         {!isFinalSlide && (
           <Button
             variant="ghost"
-            onClick={onSkip}
+            onClick={handleSkip}
             className="absolute bottom-1 right-4 z-10 text-xs text-muted-foreground hover:text-foreground"
           >
             건너뛰기

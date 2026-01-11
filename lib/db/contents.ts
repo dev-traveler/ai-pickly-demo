@@ -143,6 +143,7 @@ export async function getContents(
               id: true,
               name: true,
               slug: true,
+              logoUrl: true,
             },
           },
         },
@@ -157,7 +158,7 @@ export async function getContents(
     description: content.description,
     author: content.author,
     publishedAt: content.publishedAt,
-    thumbnailUrl: content.thumbnailUrl,
+    thumbnailUrl: content.thumbnailUrl || null, // 명시적으로 null 처리
     sourceUrl: content.sourceUrl,
     difficulty: content.difficulty,
     estimatedTime: content.estimatedTime,
@@ -259,13 +260,9 @@ export async function getContentsCount(
     ];
   }
 
-  const limitedResults = await prisma.content.findMany({
+  const count = await prisma.content.count({
     where,
-    select: { id: true },
-    take: 100,
   });
-
-  const count = limitedResults.length;
   contentsCountCache.set(normalizedKey, {
     value: count,
     expiresAt: now + COUNT_CACHE_TTL_MS,

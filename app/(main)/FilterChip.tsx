@@ -1,12 +1,25 @@
+"use client";
+
 import { X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { filterChip } from "@/types/filter";
+import { trackClick } from "@/lib/analytics/mixpanel";
 
 interface FilterChipProps {
   chip: filterChip;
 }
 
 export function FilterChip({ chip }: FilterChipProps) {
+  const handleRemove = () => {
+    trackClick("button", {
+      page_name: "home",
+      object_section: "body",
+      object_id: chip.id,
+      object_name: chip.label,
+    });
+    chip.onRemove();
+  };
+
   return (
     <Badge
       key={chip.id}
@@ -15,11 +28,11 @@ export function FilterChip({ chip }: FilterChipProps) {
     >
       {chip.label}
       <button
-        onClick={chip.onRemove}
+        onClick={handleRemove}
         className="ml-2 inline-flex items-center justify-center rounded-full hover:bg-gray-300 transition-colors"
         aria-label={`Remove ${chip.label} filter`}
       >
-        <X className="h-3.5 w-3.5" onClick={chip.onRemove} />
+        <X className="h-3.5 w-3.5" />
       </button>
     </Badge>
   );

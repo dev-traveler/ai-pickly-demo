@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { subscribeToNewsletter } from "@/lib/db/newsletter";
+import { trackClick, trackInput, trackClose } from "@/lib/analytics/mixpanel";
 
 // 이메일 유효성 검사 스키마
 const formSchema = z.object({
@@ -51,7 +52,37 @@ export function SubscribeNewsletterDialog({
     },
   });
 
+  const handleOpenChange = (newOpen: boolean) => {
+    if (newOpen) {
+      // 뉴스레터 버튼 클릭
+      trackClick("button", {
+        page_name: "home",
+        object_section: "header",
+        object_id: "subscribe_newsletter",
+        object_name: "AI 뉴스레터 구독",
+      });
+    } else if (!newOpen && open) {
+      // 모달 닫기
+      trackClose("modal", {
+        page_name: "home",
+        object_section: "newletter_subscribe_modal",
+        object_id: "newletter_subscribe_modal",
+        object_name: "newletter_subscribe_modal",
+        closed_by: "외부영역",
+      });
+    }
+    setOpen(newOpen);
+  };
+
   async function onSubmit(values: FormValues) {
+    // 구독 버튼 클릭 이벤트
+    trackClick("button", {
+      page_name: "home",
+      object_section: "newletter_subscribe_modal",
+      object_id: "submit_subscribe",
+      object_name: "무료 구독 시작하기",
+    });
+
     const result = await subscribeToNewsletter(values.email);
 
     if (result.success) {
@@ -77,8 +108,17 @@ export function SubscribeNewsletterDialog({
     }
   }
 
+  const handleLinkClick = (linkName: string) => {
+    trackClick("link", {
+      page_name: "home",
+      object_section: "newletter_subscribe_modal",
+      object_id: linkName,
+      object_name: linkName,
+    });
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{triggerComponent}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -101,6 +141,18 @@ export function SubscribeNewsletterDialog({
                       className="h-10 border-black"
                       placeholder="your@email.com"
                       {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        // Email 입력 이벤트
+                        if (e.target.value) {
+                          trackInput("email", {
+                            page_name: "home",
+                            object_section: "newletter_subscribe_modal",
+                            object_id: "newletter_subscribe_email",
+                            object_name: "newletter_subscribe_email",
+                          });
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -122,6 +174,7 @@ export function SubscribeNewsletterDialog({
             <Link
               href="/newsletter/unsubscribe"
               className="underline font-semibold"
+              onClick={() => handleLinkClick("구독 취소")}
             >
               취소
             </Link>
@@ -132,7 +185,10 @@ export function SubscribeNewsletterDialog({
             <Link
               href="/policy/privacy"
               className="underline font-semibold"
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                handleLinkClick("개인정보처리방침");
+                setOpen(false);
+              }}
             >
               개인정보처리방침
             </Link>
@@ -140,7 +196,10 @@ export function SubscribeNewsletterDialog({
             <Link
               href="/policy/marketing"
               className="underline font-semibold"
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                handleLinkClick("마케팅 정보 수신");
+                setOpen(false);
+              }}
             >
               마케팅 정보 수신
             </Link>

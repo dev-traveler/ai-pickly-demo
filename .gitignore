@@ -47,3 +47,20 @@ CLAUDE.md
 AGENTS.md
 
 .vscode
+
+# Database CSV data files (not the migration scripts!)
+lib/db/*.csv
+lib/db/AI Tool Logo_final/
+
+# Log files
+*.log
+
+# Temporary one-off scripts (not reusable migration scripts)
+check-google-tools.ts
+check-tools.ts
+check-veo.ts
+fix-*.ts
+*.sh
+*.py
+
+# Note: Keep prisma/*.ts migration scripts for team members!

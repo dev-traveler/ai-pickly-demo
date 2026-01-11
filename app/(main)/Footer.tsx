@@ -1,7 +1,19 @@
+"use client";
+
 import Link from "next/link";
 import { LinkableFullLogo } from "./LinkableFullLogo";
+import { trackClick } from "@/lib/analytics/mixpanel";
 
 export function Footer() {
+  const handleLinkClick = (linkName: string) => {
+    trackClick("link", {
+      page_name: "home",
+      object_section: "footer",
+      object_id: linkName,
+      object_name: linkName,
+    });
+  };
+
   return (
     <footer className="bg-[#1a1a1a] text-gray-400 border-t border-gray-800">
       {/* Main footer content */}
@@ -108,6 +120,7 @@ export function Footer() {
                 <Link
                   href="/policy/privacy"
                   className="hover:text-gray-300 transition-colors"
+                  onClick={() => handleLinkClick("개인정보처리방침")}
                 >
                   개인정보처리방침
                 </Link>{" "}
@@ -115,6 +128,7 @@ export function Footer() {
                 <Link
                   href="/policy/marketing"
                   className="hover:text-gray-300 transition-colors"
+                  onClick={() => handleLinkClick("광고성 정보수신")}
                 >
                   광고성 정보수신
                 </Link>{" "}
@@ -122,6 +136,7 @@ export function Footer() {
                 <Link
                   href="https://docs.google.com/forms/d/e/1FAIpQLSc1HVgUEMl4qME6rjHPgYQhDkXmQyTBAs9t4I-hgVF9QUmedA/viewform"
                   className="hover:text-gray-300 transition-colors"
+                  onClick={() => handleLinkClick("문의하기")}
                 >
                   문의하기
                 </Link>
