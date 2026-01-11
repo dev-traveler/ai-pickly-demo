@@ -28,7 +28,7 @@ export function ContentGrid({
   return (
     <div className={contentGrid}>
       {contents.map((content, index) => (
-        <ContentCard key={content.id} content={content} priority={index < 4} />
+        <ContentCard key={content.id} content={content} priority={index < 8} />
       ))}
     </div>
   );

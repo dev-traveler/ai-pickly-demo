@@ -1,12 +1,12 @@
 "use client";
 
-import { ContentCardData } from "@/types/content";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Clock, TrendingUp, Link2 } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Clock, TrendingUp, Link2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { ContentCardData } from "@/types/content";
 import { getOptimizedImageProps } from "@/lib/image-utils";
 import { Difficulty } from "@prisma/client";
 
@@ -83,7 +83,7 @@ export function ContentCard({ content, priority = false }: ContentCardProps) {
               alt={content.title}
               fill
               className="object-cover rounded-2xl "
-              {...getOptimizedImageProps(content.thumbnailUrl, { priority })}
+              {...getOptimizedImageProps({ priority })}
               onError={() => setImageError(true)}
             />
           ) : (
@@ -92,6 +92,7 @@ export function ContentCard({ content, priority = false }: ContentCardProps) {
               alt={content.title}
               fill
               className="object-cover rounded-2xl"
+              {...getOptimizedImageProps({ priority })}
             />
           )}
 

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { getOptimizedImageProps } from "@/lib/image-utils";
 
 interface LogoProps {
   className?: string | undefined;
@@ -14,6 +15,7 @@ export function Logo({ className, black = false }: LogoProps) {
         alt="AI Pickly"
         className="object-center"
         fill
+        {...getOptimizedImageProps({ priority: true })}
       />
     </div>
   );

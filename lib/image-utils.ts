@@ -8,24 +8,18 @@ export const THUMBNAIL_BLUR_PLACEHOLDER =
 /**
  * Next.js Image 컴포넌트에 최적화된 props 생성
  */
-export function getOptimizedImageProps(
-  url: string | null,
-  options?: {
-    priority?: boolean;
-    sizes?: string;
-    quality?: number;
-  }
-) {
-  if (!url) return null;
-
+export function getOptimizedImageProps(options?: {
+  priority?: boolean;
+  sizes?: string;
+  quality?: number;
+}) {
   return {
-    src: url,
     loading: options?.priority ? ("eager" as const) : ("lazy" as const),
     priority: options?.priority ?? false,
     sizes:
       options?.sizes ??
       "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw",
-    quality: options?.quality ?? 85,
+    quality: options?.quality ?? 75,
     placeholder: "blur" as const,
     blurDataURL: THUMBNAIL_BLUR_PLACEHOLDER,
   };
