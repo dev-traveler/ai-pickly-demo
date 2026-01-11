@@ -48,16 +48,19 @@ AGENTS.md
 
 .vscode
 
-# Database and migration files
-*.csv
-prisma/migrate-*.ts
-prisma/sync-*.ts
-prisma/check-*.ts
-prisma/upload-*.ts
+# Database CSV data files (not the migration scripts!)
+lib/db/*.csv
+lib/db/AI Tool Logo_final/
+
+# Log files
 *.log
 
-# Temporary scripts
-check-*.ts
+# Temporary one-off scripts (not reusable migration scripts)
+check-google-tools.ts
+check-tools.ts
+check-veo.ts
 fix-*.ts
 *.sh
 *.py
+
+# Note: Keep prisma/*.ts migration scripts for team members!

@@ -8,9 +8,12 @@
     "start": "next start",
     "lint": "eslint",
     "db:seed": "tsx prisma/seed.ts",
-    "db:sync-thumbnails": "tsx prisma/sync-thumbnails.ts",
-    "db:sync-thumbnails-preview": "tsx prisma/sync-thumbnails-advanced.ts --dry-run",
-    "db:sync-thumbnails-overwrite": "tsx prisma/sync-thumbnails-advanced.ts --overwrite",
+    "db:migrate-contents": "tsx prisma/migrate-contents-complete.ts",
+    "db:migrate-aitools": "tsx prisma/migrate-aitools.ts",
+    "db:sync-thumbnails": "tsx prisma/sync-thumbnails-final.ts",
+    "db:update-thumbnails": "tsx prisma/update-from-bucket.ts",
+    "db:check-thumbnails": "tsx prisma/check-thumbnail-urls.ts",
+    "db:check-storage": "tsx prisma/check-supabase-storage.ts",
     "postinstall": "prisma generate"
   },
   "prisma": {
