@@ -6,6 +6,7 @@ import { getQueryClient } from "@/lib/get-query-client";
 import { NewsletterBanner } from "./NewsletterBanner";
 import { ContentFeedClient } from "./ContentFeedClient";
 import { loadContentsSearchParams } from "./search-params";
+import { PageViewTracker } from "@/components/PageViewTracker";
 
 type PageProps = {
   searchParams: Promise<SearchParams>;
@@ -47,16 +48,20 @@ export default async function Home({ searchParams }: PageProps) {
   });
 
   return (
-    <div>
-      <NewsletterBanner />
-      <div className="container mx-auto px-4 py-8">
-        <div className="space-y-6">
-          {/* HydrationBoundary가 prefetch된 데이터를 클라이언트에 전달 */}
-          <HydrationBoundary state={dehydrate(queryClient)}>
-            <ContentFeedClient />
-          </HydrationBoundary>
+    <>
+      <div>
+        <NewsletterBanner />
+        <div className="container mx-auto px-4 py-8">
+          <div className="space-y-6">
+            {/* HydrationBoundary가 prefetch된 데이터를 클라이언트에 전달 */}
+            <HydrationBoundary state={dehydrate(queryClient)}>
+              <ContentFeedClient />
+            </HydrationBoundary>
+          </div>
         </div>
       </div>
-    </div>
+
+      <PageViewTracker pageName="home" />
+    </>
   );
 }
