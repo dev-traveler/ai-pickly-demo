@@ -126,130 +126,142 @@ export function ContentCard({
           object_id: content.id,
           object_name: content.title,
           object_position: String(index),
+          categories: content.categories.join(","),
+          ai_tools: content.aiTools.join(","),
+          author: content.author,
+          difficulty: content.difficulty,
+          estimatedTime: content.estimatedTime,
+          publishedAt: content.publishedAt,
+          tags: content.tags.join(","),
+          title: content.title,
         });
       }}
     >
       <div ref={cardRef}>
         <Card className="p-0 gap-4 border-none shadow-none overflow-hidden transition-all">
-        {/* Thumbnail */}
-        <div className="relative aspect-video transition-transform duration-300 group-hover:-translate-y-2 mt-2">
-          {content.thumbnailUrl && !imageError ? (
-            <Image
-              src={content.thumbnailUrl}
-              alt={content.title}
-              fill
-              className="object-cover rounded-2xl "
-              {...getOptimizedImageProps({ priority })}
-              onError={() => setImageError(true)}
-            />
-          ) : (
-            <Image
-              src={defaultThumbnail}
-              alt={content.title}
-              fill
-              className="object-cover rounded-2xl"
-              {...getOptimizedImageProps({ priority })}
-            />
-          )}
-
-          {/* Avatar positioned at bottom right of thumbnail */}
-          {content.aiTools.map((data) => (
-            <Tooltip
-              key={data.aiTool.id}
-              delayDuration={300}
-              onOpenChange={(open) => {
-                if (open) {
-                  mixpanel.track("hover@tool_logo", {
-                    page_name: "home",
-                    object_section: "body",
-                    object_id: data.aiTool.id,
-                    object_name: data.aiTool.name,
-                    object_position: String(index),
-                  });
-                }
-              }}
-            >
-              <TooltipTrigger asChild>
-                <div className="absolute -bottom-7 right-7">
-                  <div className="flex items-center justify-center w-14 h-14 rounded-full bg-background">
-                    <div className="w-12 h-12 rounded-full bg-background shadow-lg">
-                      <Image
-                        className="object-cover rounded-full"
-                        src={getAIToolLogo(data.aiTool.id)}
-                        alt={data.aiTool.name}
-                        width={48}
-                        height={48}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{data.aiTool.name}</p>
-              </TooltipContent>
-            </Tooltip>
-          ))}
-        </div>
-
-        <CardContent className="px-4 space-y-3">
-          {/* Author and Date */}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>{content.author}</span>
-            <span>|</span>
-            <time dateTime={content.publishedAt.toISOString()}>
-              {formatDate(content.publishedAt)}
-            </time>
-          </div>
-
-          {/* Title */}
-          <h3 className="font-semibold text-lg line-clamp-2 group-hover:underline">
-            {content.title}
-          </h3>
-
-          {/* Description */}
-          <p className="text-sm text-muted-foreground line-clamp-2">
-            {content.description}
-          </p>
-
-          {/* Meta Information */}
-          <div className="flex items-center gap-3 text-sm text-muted-foreground">
-            {estimatedMinutes && (
-              <div className="flex items-center gap-1">
-                <Clock className="w-4 h-4" />
-                <span>{estimatedMinutes} min</span>
-              </div>
+          {/* Thumbnail */}
+          <div className="relative aspect-video transition-transform duration-300 group-hover:-translate-y-2 mt-2">
+            {content.thumbnailUrl && !imageError ? (
+              <Image
+                src={content.thumbnailUrl}
+                alt={content.title}
+                fill
+                className="object-cover rounded-2xl "
+                {...getOptimizedImageProps({ priority })}
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <Image
+                src={defaultThumbnail}
+                alt={content.title}
+                fill
+                className="object-cover rounded-2xl"
+                {...getOptimizedImageProps({ priority })}
+              />
             )}
 
-            <div className="flex items-center gap-1">
-              <TrendingUp className="w-4 h-4" />
-              <span>{difficultyMap[content.difficulty]}</span>
+            {/* Avatar positioned at bottom right of thumbnail */}
+            {content.aiTools.map((data) => (
+              <Tooltip
+                key={data.aiTool.id}
+                delayDuration={300}
+                onOpenChange={(open) => {
+                  if (open) {
+                    mixpanel.track("hover@tool_logo", {
+                      page_name: "home",
+                      object_section: "body",
+                      object_id: data.aiTool.id,
+                      object_name: data.aiTool.name,
+                      object_position: String(index),
+                    });
+                  }
+                }}
+              >
+                <TooltipTrigger asChild>
+                  <div className="absolute -bottom-7 right-7">
+                    <div className="flex items-center justify-center w-14 h-14 rounded-full bg-background">
+                      <div className="w-12 h-12 rounded-full bg-background shadow-lg">
+                        <Image
+                          className="object-cover rounded-full"
+                          src={getAIToolLogo(data.aiTool.id)}
+                          alt={data.aiTool.name}
+                          width={48}
+                          height={48}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{data.aiTool.name}</p>
+                </TooltipContent>
+              </Tooltip>
+            ))}
+          </div>
+
+          <CardContent className="px-4 space-y-3">
+            {/* Author and Date */}
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>{content.author}</span>
+              <span>|</span>
+              <time dateTime={content.publishedAt.toISOString()}>
+                {formatDate(content.publishedAt)}
+              </time>
             </div>
 
-            <div className="flex items-center gap-1">
-              <Link2 className="w-4 h-4" />
-              <span>{sourceName}</span>
+            {/* Title */}
+            <h3 className="font-semibold text-lg line-clamp-2 group-hover:underline">
+              {content.title}
+            </h3>
+
+            {/* Description */}
+            <p className="text-sm text-muted-foreground line-clamp-2">
+              {content.description}
+            </p>
+
+            {/* Meta Information */}
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              {estimatedMinutes && (
+                <div className="flex items-center gap-1">
+                  <Clock className="w-4 h-4" />
+                  <span>{estimatedMinutes} min</span>
+                </div>
+              )}
+
+              <div className="flex items-center gap-1">
+                <TrendingUp className="w-4 h-4" />
+                <span>{difficultyMap[content.difficulty]}</span>
+              </div>
+
+              <div className="flex items-center gap-1">
+                <Link2 className="w-4 h-4" />
+                <span>{sourceName}</span>
+              </div>
             </div>
-          </div>
-        </CardContent>
+          </CardContent>
 
-        {/* Tags */}
-        <CardFooter className="p-4 pt-0">
-          <div className="flex flex-wrap gap-2">
-            {/* Category Tags */}
-            {content.categories.map(({ category }) => (
-              <Badge key={category.id} variant="secondary" className="text-xs">
-                {category.name}
-              </Badge>
-            ))}
+          {/* Tags */}
+          <CardFooter className="p-4 pt-0">
+            <div className="flex flex-wrap gap-2">
+              {/* Category Tags */}
+              {content.categories.map(({ category }) => (
+                <Badge
+                  key={category.id}
+                  variant="secondary"
+                  className="text-xs"
+                >
+                  {category.name}
+                </Badge>
+              ))}
 
-            {/* Regular Tags */}
-            {content.tags.map(({ tag }) => (
-              <Badge key={tag.id} variant="outline" className="text-xs">
-                # {tag.name}
-              </Badge>
-            ))}
-          </div>
-        </CardFooter>
+              {/* Regular Tags */}
+              {content.tags.map(({ tag }) => (
+                <Badge key={tag.id} variant="outline" className="text-xs">
+                  # {tag.name}
+                </Badge>
+              ))}
+            </div>
+          </CardFooter>
         </Card>
       </div>
     </Link>
