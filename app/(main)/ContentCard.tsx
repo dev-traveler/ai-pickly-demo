@@ -6,6 +6,11 @@ import Image from "next/image";
 import { Clock, TrendingUp, Link2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ContentCardData } from "@/types/content";
 import { getOptimizedImageProps } from "@/lib/image-utils";
 import { Difficulty } from "@prisma/client";
@@ -98,19 +103,26 @@ export function ContentCard({ content, priority = false }: ContentCardProps) {
 
           {/* Avatar positioned at bottom right of thumbnail */}
           {content.aiTools.map((data) => (
-            <div key={data.aiTool.id} className="absolute -bottom-7 right-7">
-              <div className="flex items-center justify-center w-14 h-14 rounded-full bg-background">
-                <div className="w-12 h-12 rounded-full bg-background shadow-lg">
-                  <Image
-                    className="object-cover rounded-full"
-                    src={getAIToolLogo(data.aiTool.id)}
-                    alt={data.aiTool.name}
-                    width={48}
-                    height={48}
-                  />
+            <Tooltip key={data.aiTool.id} delayDuration={300}>
+              <TooltipTrigger asChild>
+                <div className="absolute -bottom-7 right-7">
+                  <div className="flex items-center justify-center w-14 h-14 rounded-full bg-background">
+                    <div className="w-12 h-12 rounded-full bg-background shadow-lg">
+                      <Image
+                        className="object-cover rounded-full"
+                        src={getAIToolLogo(data.aiTool.id)}
+                        alt={data.aiTool.name}
+                        width={48}
+                        height={48}
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{data.aiTool.name}</p>
+              </TooltipContent>
+            </Tooltip>
           ))}
         </div>
 
