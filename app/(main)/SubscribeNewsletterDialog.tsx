@@ -88,12 +88,14 @@ export function SubscribeNewsletterDialog({
       open={open}
       onOpenChange={(nextOpen) => {
         setOpen(nextOpen);
-        mixpanel.track("close@modal", {
-          page_name: "home",
-          object_section: "newsletter_subscribe_modal",
-          object_id: "newsletter_subscribe_modal",
-          object_name: "newsletter_subscribe_modal",
-        });
+        if (!nextOpen) {
+          mixpanel.track("close@modal", {
+            page_name: "home",
+            object_section: "newsletter_subscribe_modal",
+            object_id: "newsletter_subscribe_modal",
+            object_name: "newsletter_subscribe_modal",
+          });
+        }
       }}
     >
       <DialogTrigger
@@ -135,6 +137,7 @@ export function SubscribeNewsletterDialog({
                             object_section: "newsletter_subscribe_modal",
                             object_id: "newsletter_subscribe_email",
                             object_name: "newsletter_subscribe_email",
+                            email: form.getValues("email"),
                           });
                         }}
                         {...fieldProps}

@@ -88,6 +88,7 @@ export function UnsubscribeForm() {
                         object_section: "body",
                         object_id: fieldProps.value,
                         object_name: fieldProps.value,
+                        email: form.getValues("email"),
                       });
                     }}
                     {...fieldProps}
