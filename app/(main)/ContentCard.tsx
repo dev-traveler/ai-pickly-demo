@@ -21,7 +21,7 @@ interface ContentCardProps {
   priority?: boolean;
   index: number;
 }
-
+const DEFAULT_AI_TOOL_LOGO = "/images/default-ai-tool-logo.png";
 const difficultyMap: Record<Difficulty, string> = {
   BEGINNER: "초급",
   INTERMEDIATE: "중급",
@@ -69,8 +69,19 @@ const getDefaultThumbnail = (categories: ContentCardData["categories"]) => {
   }
 };
 
-const getAIToolLogo = (toolName: string) => {
-  return `/images/logo-${toolName}.png`;
+const getCategoryLabel = (categoryName: string) => {
+  switch (categoryName) {
+    case "text":
+      return "텍스트 생성";
+    case "image":
+      return "이미지 생성";
+    case "video":
+      return "영상 생성";
+    case "code":
+      return "바이브 코딩";
+    default:
+      return categoryName;
+  }
 };
 
 export function ContentCard({
@@ -113,11 +124,12 @@ export function ContentCard({
     return () => {
       observer.disconnect();
     };
-  }, [content.id, content.title, index]);
+  }, [content, content.id, content.title, index]);
 
   return (
     <Link
-      href={`/content/${content.id}`}
+      href={content.sourceUrl}
+      target="_blank"
       className="block group"
       onClick={() => {
         mixpanel.track("click@content_card", {
@@ -160,43 +172,50 @@ export function ContentCard({
               />
             )}
 
-            {/* Avatar positioned at bottom right of thumbnail */}
-            {content.aiTools.map((data) => (
-              <Tooltip
-                key={data.aiTool.id}
-                delayDuration={300}
-                onOpenChange={(open) => {
-                  if (open) {
-                    mixpanel.track("hover@tool_logo", {
-                      page_name: "home",
-                      object_section: "body",
-                      object_id: data.aiTool.id,
-                      object_name: data.aiTool.name,
-                      object_position: String(index),
-                    });
-                  }
-                }}
-              >
-                <TooltipTrigger asChild>
-                  <div className="absolute -bottom-7 right-7">
-                    <div className="flex items-center justify-center w-14 h-14 rounded-full bg-background">
-                      <div className="w-12 h-12 rounded-full bg-background shadow-lg">
-                        <Image
-                          className="object-cover rounded-full"
-                          src={getAIToolLogo(data.aiTool.id)}
-                          alt={data.aiTool.name}
-                          width={48}
-                          height={48}
-                        />
-                      </div>
-                    </div>
+            {/* AI tool logos positioned at bottom right of thumbnail */}
+            <div className="absolute bottom-0 translate-y-2/5 inset-x-0 aspect-64/9">
+              <div className="h-full flex items-center justify-end pr-[calc(10%)] -space-x-[calc(8%)] group-hover:-space-x-2">
+                {content.aiTools.map((data, toolIndex) => (
+                  <div
+                    key={data.aiTool.id}
+                    className="h-full transition-[margin] duration-300"
+                    style={{ zIndex: content.aiTools.length - toolIndex }}
+                  >
+                    <Tooltip
+                      delayDuration={300}
+                      onOpenChange={(open) => {
+                        if (open) {
+                          mixpanel.track("hover@tool_logo", {
+                            page_name: "home",
+                            object_section: "body",
+                            object_id: data.aiTool.id,
+                            object_name: data.aiTool.name,
+                            object_position: String(index),
+                          });
+                        }
+                      }}
+                    >
+                      <TooltipTrigger asChild>
+                        <div className="p-1 flex items-center justify-center rounded-full bg-background w-full h-full aspect-square">
+                          <div className="relative rounded-full shadow-lg aspect-square w-full">
+                            <Image
+                              className="object-cover rounded-full"
+                              src={data.aiTool.logoUrl || DEFAULT_AI_TOOL_LOGO}
+                              alt={data.aiTool.name}
+                              fill
+                              sizes="(max-width: 1024px) 12vw, 8vw"
+                            />
+                          </div>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{data.aiTool.name}</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{data.aiTool.name}</p>
-                </TooltipContent>
-              </Tooltip>
-            ))}
+                ))}
+              </div>
+            </div>
           </div>
 
           <CardContent className="px-4 space-y-3">
@@ -250,7 +269,7 @@ export function ContentCard({
                   variant="secondary"
                   className="text-xs"
                 >
-                  {category.name}
+                  {getCategoryLabel(category.name)}
                 </Badge>
               ))}
 
