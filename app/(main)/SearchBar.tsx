@@ -18,20 +18,32 @@ export function SearchBar() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const resetQuery = () => {
+  const handleClickX = () => {
+    mixpanel.track("search@keyword", {
+      page_name: "home",
+      object_section: "header",
+      object_id: "searchbar_x_icon",
+      object_name: "searchbar_x_icon",
+      keyword: localQuery,
+    });
     setQ(null);
     setLocalQuery("");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // 한글 IME 조합 중 Enter는 조합 확정 이벤트와 충돌해 마지막 글자 중복을 유발할 수 있음
+    if (e.nativeEvent.isComposing) {
+      return;
+    }
     if (e.key === "Enter") {
       const trimmedQuery = localQuery.trim();
-      if (trimmedQuery) {
+
+      if (localQuery) {
         mixpanel.track("search@keyword", {
           page_name: "home",
           object_section: "header",
-          object_id: trimmedQuery,
-          object_name: trimmedQuery,
+          object_id: localQuery,
+          object_name: localQuery,
         });
       }
       e.currentTarget.blur();
@@ -51,6 +63,7 @@ export function SearchBar() {
         return;
       }
 
+      setLocalQuery(trimmedQuery);
       setQ(trimmedQuery);
     }
   };
@@ -69,7 +82,7 @@ export function SearchBar() {
       {localQuery !== "" && localQuery !== undefined && (
         <XIcon
           className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-          onClick={resetQuery}
+          onClick={handleClickX}
         />
       )}
     </div>

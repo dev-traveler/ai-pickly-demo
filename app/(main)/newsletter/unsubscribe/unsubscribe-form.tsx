@@ -86,9 +86,9 @@ export function UnsubscribeForm() {
                       mixpanel.track("input@email", {
                         page_name: "newsletter_unsubscribe",
                         object_section: "body",
-                        object_id: fieldProps.value,
-                        object_name: fieldProps.value,
-                        email: form.getValues("email"),
+                        object_id: "newsletter_unsubscribe_email",
+                        object_name: "newsletter_unsubscribe_email",
+                        email: fieldProps.value,
                       });
                     }}
                     {...fieldProps}

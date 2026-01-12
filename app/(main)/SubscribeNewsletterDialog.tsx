@@ -132,12 +132,13 @@ export function SubscribeNewsletterDialog({
                         placeholder="your@email.com"
                         onBlur={() => {
                           onBlur();
+                          if (!fieldProps.value) return;
                           mixpanel.track("input@email", {
                             page_name: "home",
                             object_section: "newsletter_subscribe_modal",
                             object_id: "newsletter_subscribe_email",
                             object_name: "newsletter_subscribe_email",
-                            email: form.getValues("email"),
+                            email: fieldProps.value,
                           });
                         }}
                         {...fieldProps}

@@ -28,6 +28,7 @@ export function CategoryFilter() {
                 object_section: "body",
                 object_id: category.id,
                 object_name: category.label,
+                is_toggled: !isSelected,
               });
               toggleCategory(category.id);
             }}
