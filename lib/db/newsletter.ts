@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { isValidEmail } from "@/lib/utils/email-validator";
 import { Prisma } from "@prisma/client";
+import { getErrorInfo } from "@/lib/utils/error-utils";
 
 export type SubscribeResult =
   | { success: true }
@@ -54,6 +55,20 @@ export async function subscribeToNewsletter(
 
     return { success: true };
   } catch (error) {
+    const { code, message } = getErrorInfo(error);
+    // Handle connection pool exhaustion
+    if (
+      code === "P2024" ||
+      message?.includes("max clients") ||
+      message?.includes("Connection")
+    ) {
+      console.error("Database connection pool exhausted:", {
+        message: message,
+        code: code,
+        timestamp: new Date().toISOString(),
+      });
+      return { success: false, error: "DATABASE_ERROR" };
+    }
     // 기타 데이터베이스 에러
     console.error("Newsletter subscription error:", error);
     return { success: false, error: "DATABASE_ERROR" };
@@ -96,6 +111,20 @@ export async function unsubscribeFromNewsletter(
 
     return { success: true };
   } catch (error) {
+    const { code, message } = getErrorInfo(error);
+    // Handle connection pool exhaustion
+    if (
+      code === "P2024" ||
+      message?.includes("max clients") ||
+      message?.includes("Connection")
+    ) {
+      console.error("Database connection pool exhausted:", {
+        message,
+        code,
+        timestamp: new Date().toISOString(),
+      });
+      return { success: false, error: "DATABASE_ERROR" };
+    }
     // 기타 데이터베이스 에러
     console.error("Newsletter unsubscription error:", error);
     return { success: false, error: "DATABASE_ERROR" };

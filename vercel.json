@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "app/**/*.{ts,tsx}": {
+      "maxDuration": 10,
+      "memory": 1024
+    }
+  }
+}

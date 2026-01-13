@@ -12,3 +12,17 @@ export const prisma =
   });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+/**
+ * Database health check utility
+ * @returns Object with health status
+ */
+export async function checkDatabaseHealth() {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    return { healthy: true };
+  } catch (error) {
+    console.error("Database health check failed:", error);
+    return { healthy: false, error };
+  }
+}

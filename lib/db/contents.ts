@@ -4,7 +4,8 @@ import { Difficulty, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { ContentCardData } from "@/types/content";
 import { TimeRange } from "@/types/filter";
-import { mapTimeRangeToMinutes } from "../utils/filter-mapper";
+import { mapTimeRangeToMinutes } from "@/lib/utils/filter-mapper";
+import { getErrorInfo } from "@/lib/utils/error-utils";
 
 const COUNT_CACHE_TTL_MS = 1000 * 30;
 const MAX_COUNT_CACHE_ENTRIES = 200;
@@ -99,79 +100,98 @@ export async function getContents(
     ];
   }
 
-  const contents = await prisma.content.findMany({
-    where,
-    skip,
-    take: pageSize,
-    orderBy: [
-      { scrapCount: "desc" },
-      { viewCount: "desc" },
-      { publishedAt: "desc" },
-    ],
-    include: {
-      estimatedTime: {
-        select: {
-          displayMinutes: true,
+  try {
+    const contents = await prisma.content.findMany({
+      where,
+      skip,
+      take: pageSize,
+      orderBy: [
+        { scrapCount: "desc" },
+        { viewCount: "desc" },
+        { publishedAt: "desc" },
+      ],
+      include: {
+        estimatedTime: {
+          select: {
+            displayMinutes: true,
+          },
         },
-      },
-      categories: {
-        include: {
-          category: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
+        categories: {
+          include: {
+            category: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              },
+            },
+          },
+        },
+        tags: {
+          include: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              },
+            },
+          },
+        },
+        aiTools: {
+          include: {
+            aiTool: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                logoUrl: true,
+              },
             },
           },
         },
       },
-      tags: {
-        include: {
-          tag: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-            },
-          },
-        },
-      },
-      aiTools: {
-        include: {
-          aiTool: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-              logoUrl: true,
-            },
-          },
-        },
-      },
-    },
-  });
+    });
 
-  // Prisma 결과를 ContentCardData 타입으로 변환
-  return contents.map((content) => ({
-    id: content.id,
-    title: content.title,
-    description: content.description,
-    author: content.author,
-    publishedAt: content.publishedAt,
-    thumbnailUrl: content.thumbnailUrl,
-    sourceUrl: content.sourceUrl,
-    difficulty: content.difficulty,
-    estimatedTime: content.estimatedTime,
-    categories: content.categories.map((cc) => ({
-      category: cc.category,
-    })),
-    tags: content.tags.map((ct) => ({
-      tag: ct.tag,
-    })),
-    aiTools: content.aiTools.map((cat) => ({
-      aiTool: cat.aiTool,
-    })),
-  }));
+    // Prisma 결과를 ContentCardData 타입으로 변환
+    return contents.map((content) => ({
+      id: content.id,
+      title: content.title,
+      description: content.description,
+      author: content.author,
+      publishedAt: content.publishedAt,
+      thumbnailUrl: content.thumbnailUrl,
+      sourceUrl: content.sourceUrl,
+      difficulty: content.difficulty,
+      estimatedTime: content.estimatedTime,
+      categories: content.categories.map((cc) => ({
+        category: cc.category,
+      })),
+      tags: content.tags.map((ct) => ({
+        tag: ct.tag,
+      })),
+      aiTools: content.aiTools.map((cat) => ({
+        aiTool: cat.aiTool,
+      })),
+    }));
+  } catch (error: unknown) {
+    // Handle connection pool exhaustion
+    const { code, message } = getErrorInfo(error);
+    if (
+      code === "P2024" ||
+      message?.includes("max clients") ||
+      message?.includes("Connection")
+    ) {
+      console.error("Database connection pool exhausted:", {
+        message,
+        code,
+        timestamp: new Date().toISOString(),
+      });
+      throw new Error("Service temporarily unavailable. Please try again.");
+    }
+    // Re-throw other errors
+    throw error;
+  }
 }
 
 /**
@@ -260,23 +280,42 @@ export async function getContentsCount(
     ];
   }
 
-  const count = await prisma.content.count({
-    where,
-    take: 100,
-  });
+  try {
+    const count = await prisma.content.count({
+      where,
+      take: 100,
+    });
 
-  contentsCountCache.set(normalizedKey, {
-    value: count,
-    expiresAt: now + COUNT_CACHE_TTL_MS,
-  });
-  if (contentsCountCache.size > MAX_COUNT_CACHE_ENTRIES) {
-    const oldestKey = contentsCountCache.keys().next().value as
-      | string
-      | undefined;
-    if (oldestKey) {
-      contentsCountCache.delete(oldestKey);
+    contentsCountCache.set(normalizedKey, {
+      value: count,
+      expiresAt: now + COUNT_CACHE_TTL_MS,
+    });
+    if (contentsCountCache.size > MAX_COUNT_CACHE_ENTRIES) {
+      const oldestKey = contentsCountCache.keys().next().value as
+        | string
+        | undefined;
+      if (oldestKey) {
+        contentsCountCache.delete(oldestKey);
+      }
     }
-  }
 
-  return count;
+    return count;
+  } catch (error) {
+    // Handle connection pool exhaustion
+    const { code, message } = getErrorInfo(error);
+    if (
+      code === "P2024" ||
+      message?.includes("max clients") ||
+      message?.includes("Connection")
+    ) {
+      console.error("Database connection pool exhausted:", {
+        message,
+        code,
+        timestamp: new Date().toISOString(),
+      });
+      throw new Error("Service temporarily unavailable. Please try again.");
+    }
+    // Re-throw other errors
+    throw error;
+  }
 }
