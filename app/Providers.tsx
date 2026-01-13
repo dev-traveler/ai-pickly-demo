@@ -6,6 +6,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { getQueryClient } from "@/lib/get-query-client";
 import { initMixpanel } from "@/lib/mixpanel-client";
+import { Analytics } from "@vercel/analytics/next";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => getQueryClient());
@@ -19,6 +20,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <QueryClientProvider client={queryClient}>
         {children}
         <ReactQueryDevtools initialIsOpen={false} />
+        <Analytics />
       </QueryClientProvider>
     </NuqsAdapter>
   );
