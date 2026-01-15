@@ -9,6 +9,7 @@ import { getErrorInfo } from "@/lib/utils/error-utils";
 
 const COUNT_CACHE_TTL_MS = 1000 * 30;
 const MAX_COUNT_CACHE_ENTRIES = 200;
+const MAX_CONTENTS_COUNT = 100;
 const contentsCountCache = new Map<
   string,
   { value: number; expiresAt: number }
@@ -283,11 +284,12 @@ export async function getContentsCount(
   try {
     const count = await prisma.content.count({
       where,
-      take: 100,
+      take: MAX_CONTENTS_COUNT,
     });
+    const cappedCount = Math.min(count, MAX_CONTENTS_COUNT);
 
     contentsCountCache.set(normalizedKey, {
-      value: count,
+      value: cappedCount,
       expiresAt: now + COUNT_CACHE_TTL_MS,
     });
     if (contentsCountCache.size > MAX_COUNT_CACHE_ENTRIES) {
@@ -299,7 +301,7 @@ export async function getContentsCount(
       }
     }
 
-    return count;
+    return cappedCount;
   } catch (error) {
     // Handle connection pool exhaustion
     const { code, message } = getErrorInfo(error);

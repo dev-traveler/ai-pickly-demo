@@ -25,6 +25,10 @@ export function FilterBar({
   aiTools,
   onOpenFilter,
 }: FilterBarProps) {
+  const displayTotalResults =
+    typeof totalResults === "number" && totalResults >= 100
+      ? "99+"
+      : totalResults;
   const [category, setCategory] = useQueryState("category");
   const [difficulty, setDifficulty] = useQueryState("difficulty");
   const [time, setTime] = useQueryState("time");
@@ -128,7 +132,7 @@ export function FilterBar({
       <div className="flex items-center justify-between">
         <div className="flex items-center md:gap-4 flex-1">
           <h2 className="text-lg font-semibold text-gray-900">
-            결과 <span className="text-gray-500">{totalResults}</span>
+            결과 <span className="text-gray-500">{displayTotalResults}</span>
           </h2>
 
           <div className="hidden md:block">
