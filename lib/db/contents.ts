@@ -106,11 +106,7 @@ export async function getContents(
       where,
       skip,
       take: pageSize,
-      orderBy: [
-        { scrapCount: "desc" },
-        { viewCount: "desc" },
-        { publishedAt: "desc" },
-      ],
+      orderBy: [{ createdAt: "desc" }, { publishedAt: "desc" }],
       include: {
         estimatedTime: {
           select: {
