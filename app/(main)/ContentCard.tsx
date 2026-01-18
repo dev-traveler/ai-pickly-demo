@@ -56,7 +56,7 @@ const getSourceName = (url: string) => {
 
 const getDefaultThumbnail = (categories: ContentCardData["categories"]) => {
   // 첫 번째 카테고리의 slug를 기준으로 기본 이미지 결정
-  const primaryCategory = categories[0]?.category.slug;
+  const primaryCategory = categories[0]?.slug;
 
   switch (primaryCategory) {
     case "code":
@@ -138,13 +138,13 @@ export function ContentCard({
           object_id: content.id,
           object_name: content.title,
           object_position: String(index),
-          categories: content.categories.join(","),
-          ai_tools: content.aiTools.join(","),
+          categories: content.categories.map(cc => cc.name),
+          ai_tools: content.aiTools.map(cat => cat.slug),
           author: content.author,
           difficulty: content.difficulty,
           estimatedTime: content.estimatedTime,
           publishedAt: content.publishedAt,
-          tags: content.tags.join(","),
+          tags: content.tags.map(ct => ct.name),
           title: content.title,
         });
       }}
@@ -175,9 +175,9 @@ export function ContentCard({
             {/* AI tool logos positioned at bottom right of thumbnail */}
             <div className="absolute bottom-0 translate-y-2/5 inset-x-0 aspect-64/9">
               <div className="h-full flex items-center justify-end pr-[calc(10%)] -space-x-[calc(8%)] group-hover:-space-x-2">
-                {content.aiTools.map((data, toolIndex) => (
+                {content.aiTools.map((tool, toolIndex) => (
                   <div
-                    key={data.aiTool.id}
+                    key={tool.id}
                     className="h-full transition-[margin] duration-300"
                     style={{ zIndex: content.aiTools.length - toolIndex }}
                   >
@@ -188,8 +188,8 @@ export function ContentCard({
                           mixpanel.track("hover@tool_logo", {
                             page_name: "home",
                             object_section: "body",
-                            object_id: data.aiTool.id,
-                            object_name: data.aiTool.name,
+                            object_id: tool.id,
+                            object_name: tool.name,
                             object_position: String(index),
                           });
                         }
@@ -200,8 +200,8 @@ export function ContentCard({
                           <div className="relative rounded-full shadow-lg aspect-square w-full">
                             <Image
                               className="object-cover rounded-full"
-                              src={data.aiTool.logoUrl || DEFAULT_AI_TOOL_LOGO}
-                              alt={data.aiTool.name}
+                              src={tool.logoUrl || DEFAULT_AI_TOOL_LOGO}
+                              alt={tool.name}
                               fill
                               sizes="(max-width: 1024px) 12vw, 8vw"
                             />
@@ -209,7 +209,7 @@ export function ContentCard({
                         </div>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>{data.aiTool.name}</p>
+                        <p>{tool.name}</p>
                       </TooltipContent>
                     </Tooltip>
                   </div>
@@ -263,7 +263,7 @@ export function ContentCard({
           <CardFooter className="p-4 pt-0">
             <div className="flex flex-wrap gap-2">
               {/* Category Tags */}
-              {content.categories.map(({ category }) => (
+              {content.categories.map(( category ) => (
                 <Badge
                   key={category.id}
                   variant="secondary"
@@ -274,7 +274,7 @@ export function ContentCard({
               ))}
 
               {/* Regular Tags */}
-              {content.tags.map(({ tag }) => (
+              {content.tags.map(( tag ) => (
                 <Badge key={tag.id} variant="outline" className="text-xs">
                   # {tag.name}
                 </Badge>

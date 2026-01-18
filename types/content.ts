@@ -13,25 +13,19 @@ export type ContentCardData = {
     displayMinutes: number | null;
   } | null;
   categories: {
-    category: {
-      id: string;
-      name: string;
-      slug: string;
-    };
+    id: string;
+    name: string;
+    slug: string;
   }[];
   tags: {
-    tag: {
-      id: string;
-      name: string;
-      slug: string;
-    };
+    id: string;
+    name: string;
+    slug: string;
   }[];
   aiTools: {
-    aiTool: {
-      id: string;
-      name: string;
-      slug: string;
-      logoUrl: string | null;
-    };
+    id: string;
+    name: string;
+    slug: string;
+    logoUrl: string | null;
   }[];
 };

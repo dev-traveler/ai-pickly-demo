@@ -162,13 +162,13 @@ export async function getContents(
       difficulty: content.difficulty,
       estimatedTime: content.estimatedTime,
       categories: content.categories.map((cc) => ({
-        category: cc.category,
+        ...cc.category,
       })),
       tags: content.tags.map((ct) => ({
-        tag: ct.tag,
+        ...ct.tag,
       })),
       aiTools: content.aiTools.map((cat) => ({
-        aiTool: cat.aiTool,
+        ...cat.aiTool,
       })),
     }));
   } catch (error: unknown) {
