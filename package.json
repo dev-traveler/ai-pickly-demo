@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "db:seed": "tsx prisma/seed.ts",
+    "test:concurrency": "tsx scripts/test-concurrency.ts",
     "postinstall": "prisma generate"
   },
   "prisma": {
