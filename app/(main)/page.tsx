@@ -18,34 +18,34 @@ export default async function Home({ searchParams }: PageProps) {
   const contentsSearchParams = await loadContentsSearchParams(searchParams);
   const queryClient = getQueryClient();
 
-  // Prefetch infinite query (첫 페이지만)
-  await queryClient.prefetchInfiniteQuery({
-    queryKey: ["contents", { ...contentsSearchParams }, PAGE_SIZE],
-    queryFn: ({ pageParam = 1 }) =>
-      getContents({
-        page: pageParam,
-        pageSize: PAGE_SIZE,
-        ...contentsSearchParams,
-      }),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages) => {
-      if (lastPage.length < PAGE_SIZE) return undefined;
-      return allPages.length + 1;
-    },
-    pages: 1,
-  });
-
-  // Prefetch count
-  await queryClient.prefetchQuery({
-    queryKey: ["contents-count", { ...contentsSearchParams }],
-    queryFn: () => getContentsCount({ ...contentsSearchParams }),
-  });
-
-  // Prefetch AI tools
-  await queryClient.prefetchQuery({
-    queryKey: ["ai-tools"],
-    queryFn: () => getAITools(),
-  });
+  await Promise.all([
+    // Prefetch infinite query (첫 페이지만)
+    queryClient.prefetchInfiniteQuery({
+      queryKey: ["contents", { ...contentsSearchParams }, PAGE_SIZE],
+      queryFn: ({ pageParam = 1 }) =>
+        getContents({
+          page: pageParam,
+          pageSize: PAGE_SIZE,
+          ...contentsSearchParams,
+        }),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage, allPages) => {
+        if (lastPage.length < PAGE_SIZE) return undefined;
+        return allPages.length + 1;
+      },
+      pages: 1,
+    }),
+    // Prefetch count
+    queryClient.prefetchQuery({
+      queryKey: ["contents-count", { ...contentsSearchParams }],
+      queryFn: () => getContentsCount({ ...contentsSearchParams }),
+    }),
+    // Prefetch AI tools
+    queryClient.prefetchQuery({
+      queryKey: ["ai-tools"],
+      queryFn: () => getAITools(),
+    }),
+  ]);
 
   return (
     <>
