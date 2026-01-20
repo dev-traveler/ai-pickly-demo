@@ -1,7 +1,7 @@
 import { ContentCardData } from "@/types/content";
-import { ContentCard } from "@/app/(main)/ContentCard";
-import { ContentCardSkeleton } from "@/app/(main)/ContentCardSkeleton";
-import { PAGE_SIZE } from "./page";
+import { ContentCard } from "@/components/ContentCard";
+import { ContentCardSkeleton } from "@/components/ContentCardSkeleton";
+import { PAGE_SIZE } from "@/lib/constants/content";
 
 interface ContentGridProps {
   contents: ContentCardData[];

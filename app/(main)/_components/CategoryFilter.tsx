@@ -2,7 +2,7 @@
 
 import { useQueryState } from "nuqs";
 import { CATEGORIES } from "@/lib/constants/filters";
-import { FilterOptionButton } from "@/app/(main)/FilterOptionButton";
+import { FilterOptionButton } from "@/app/(main)/search/_components/FilterOptionButton";
 import mixpanel from "mixpanel-browser";
 
 export function CategoryFilter() {

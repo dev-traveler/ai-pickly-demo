@@ -1,5 +1,5 @@
 import { LinkableFullLogo } from "./LinkableFullLogo";
-import { TrackedLink } from "./TrackedLink";
+import { TrackedLink } from "../../../components/TrackedLink";
 
 export function Footer() {
   return (

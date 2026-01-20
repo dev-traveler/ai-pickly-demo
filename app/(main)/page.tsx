@@ -1,51 +1,8 @@
-import type { SearchParams } from "nuqs/server";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { getContents, getContentsCount } from "@/lib/db/contents";
-import { getAITools } from "@/lib/db/ai-tools";
-import { getQueryClient } from "@/lib/get-query-client";
-import { NewsletterBanner } from "./NewsletterBanner";
-import { ContentFeedClient } from "./ContentFeedClient";
-import { loadContentsSearchParams } from "./search-params";
+import { NewsletterBanner } from "./_components/NewsletterBanner";
 import { PageViewTracker } from "@/components/PageViewTracker";
+import { CategoryFilter } from "./_components/CategoryFilter";
 
-type PageProps = {
-  searchParams: Promise<SearchParams>;
-};
-
-export const PAGE_SIZE = 24;
-
-export default async function Home({ searchParams }: PageProps) {
-  const contentsSearchParams = await loadContentsSearchParams(searchParams);
-  const queryClient = getQueryClient();
-
-  await Promise.all([
-    // Prefetch infinite query (첫 페이지만)
-    queryClient.prefetchInfiniteQuery({
-      queryKey: ["contents", { ...contentsSearchParams }, PAGE_SIZE],
-      queryFn: ({ pageParam = 1 }) =>
-        getContents({
-          page: pageParam,
-          pageSize: PAGE_SIZE,
-          ...contentsSearchParams,
-        }),
-      initialPageParam: 1,
-      getNextPageParam: (lastPage, allPages) => {
-        if (lastPage.length < PAGE_SIZE) return undefined;
-        return allPages.length + 1;
-      },
-      pages: 1,
-    }),
-    // Prefetch count
-    queryClient.prefetchQuery({
-      queryKey: ["contents-count", { ...contentsSearchParams }],
-      queryFn: () => getContentsCount({ ...contentsSearchParams }),
-    }),
-    // Prefetch AI tools
-    queryClient.prefetchQuery({
-      queryKey: ["ai-tools"],
-      queryFn: () => getAITools(),
-    }),
-  ]);
+export default async function Home() {
 
   return (
     <>
@@ -53,10 +10,7 @@ export default async function Home({ searchParams }: PageProps) {
         <NewsletterBanner />
         <div className="container mx-auto px-4 py-8">
           <div className="space-y-6">
-            {/* HydrationBoundary가 prefetch된 데이터를 클라이언트에 전달 */}
-            <HydrationBoundary state={dehydrate(queryClient)}>
-              <ContentFeedClient />
-            </HydrationBoundary>
+            <CategoryFilter />
           </div>
         </div>
       </div>

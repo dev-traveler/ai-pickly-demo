@@ -1,7 +1,7 @@
 "use client";
 
 import { createSerializer, useQueryStates, UseQueryStatesReturn } from "nuqs";
-import { filtersSearchParams } from "@/app/(main)/search-params";
+import { filtersSearchParams } from "@/app/(main)/search/search-params";
 
 type Return = UseQueryStatesReturn<typeof filtersSearchParams>;
 

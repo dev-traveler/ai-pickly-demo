@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { SubscribeNewsletterDialog } from "@/app/(main)/SubscribeNewsletterDialog";
+import { SubscribeNewsletterDialog } from "@/app/(main)/_components/SubscribeNewsletterDialog";
 
 export function NewsletterBanner() {
   return (

@@ -1,4 +1,4 @@
-import { ContentGridSkeleton } from "@/app/(main)/ContentGrid";
+import { ContentGridSkeleton } from "@/app/(main)/search/_components/ContentGrid";
 
 export default function Loading() {
   return (

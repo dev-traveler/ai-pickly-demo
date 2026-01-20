@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
-import { SearchBar } from "@/app/(main)/SearchBar";
-import { SearchBarSkeleton } from "@/app/(main)/SearchBarSkeleton";
-import { SubscribeNewsletterDialog } from "@/app/(main)/SubscribeNewsletterDialog";
+import { SearchBar } from "@/app/(main)/_components/SearchBar";
+import { SearchBarSkeleton } from "@/app/(main)/_components/SearchBarSkeleton";
+import { SubscribeNewsletterDialog } from "@/app/(main)/_components/SubscribeNewsletterDialog";
 import { LinkableFullLogo } from "./LinkableFullLogo";
 
 export function Header() {

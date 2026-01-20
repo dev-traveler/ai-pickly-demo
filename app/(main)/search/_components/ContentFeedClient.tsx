@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
-import { CategoryFilter } from "./CategoryFilter";
-import { FilterBar } from "@/app/(main)/FilterBar";
-import { FilterButton } from "@/app/(main)/FilterButton";
-import { FilterSheet } from "@/app/(main)/FilterSheet";
-import { InfiniteContentGrid } from "@/app/(main)/InfiniteContentGrid";
+import { FilterBar } from "@/app/(main)/search/_components/FilterBar";
+import { FilterButton } from "@/app/(main)/search/_components/FilterButton";
+import { FilterSheet } from "@/app/(main)/search/_components/FilterSheet";
+import { InfiniteContentGrid } from "@/app/(main)/search/_components/InfiniteContentGrid";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { OnboardingDialog } from "@/components/onboarding/OnboardingDialog";
 import { useContentsCount, useAITools } from "@/hooks/useContentsQuery";
@@ -78,7 +77,6 @@ export function ContentFeedClient() {
   return (
     <>
       {/* 카테고리 필터 */}
-      <CategoryFilter />
 
       {/* 필터 바 (결과 개수 + 활성 필터 칩 + 필터 버튼) */}
       <FilterBar

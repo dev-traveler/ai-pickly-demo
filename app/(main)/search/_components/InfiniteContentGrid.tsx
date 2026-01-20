@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { ContentGrid, ContentGridSkeleton } from "@/app/(main)/ContentGrid";
+import { ContentGrid, ContentGridSkeleton } from "@/app/(main)/search/_components/ContentGrid";
 import { useInfiniteContents } from "@/hooks/useContentsQuery";
 
 interface InfiniteContentGridProps {

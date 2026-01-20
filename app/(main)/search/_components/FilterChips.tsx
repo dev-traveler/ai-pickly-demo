@@ -1,4 +1,4 @@
-import { FilterChip } from "./FilterChip";
+import { FilterChip } from "../../../../components/FilterChip";
 import type { filterChip } from "@/types/filter";
 
 interface FilterChipsProps {

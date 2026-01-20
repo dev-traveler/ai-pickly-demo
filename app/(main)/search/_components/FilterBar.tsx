@@ -2,8 +2,8 @@
 
 import { useQueryState } from "nuqs";
 import { XIcon } from "lucide-react";
-import { FilterChips } from "@/app/(main)/FilterChips";
-import { FilterButton } from "@/app/(main)/FilterButton";
+import { FilterChips } from "@/app/(main)/search/_components/FilterChips";
+import { FilterButton } from "@/app/(main)/search/_components/FilterButton";
 import type { AIToolData } from "@/lib/db/ai-tools";
 import { filterChip } from "@/types/filter";
 import {

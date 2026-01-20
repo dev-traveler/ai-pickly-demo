@@ -4,7 +4,7 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { getContents, getContentsCount } from "@/lib/db/contents";
 import { getAITools } from "@/lib/db/ai-tools";
 import { useContentsSearchParams } from "./useContentsSearchParams";
-import { PAGE_SIZE } from "@/app/(main)/page";
+import { PAGE_SIZE } from "@/lib/constants/content";
 
 /**
  * 무한 스크롤 콘텐츠 쿼리 hook

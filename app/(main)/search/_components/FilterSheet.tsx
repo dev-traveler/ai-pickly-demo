@@ -15,7 +15,7 @@ import {
   TIME_RANGE_OPTIONS,
 } from "@/lib/constants/filters";
 import type { AIToolData } from "@/lib/db/ai-tools";
-import { FilterOptionButton } from "@/app/(main)/FilterOptionButton";
+import { FilterOptionButton } from "@/app/(main)/search/_components/FilterOptionButton";
 import { useFiltersSearchParams } from "@/hooks/useFiltersSearchParams";
 import mixpanel from "mixpanel-browser";
 
