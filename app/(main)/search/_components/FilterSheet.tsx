@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useQueryState } from "nuqs";
 import {
   Sheet,
@@ -13,6 +14,8 @@ import {
   DIFFICULTY_OPTIONS,
   TIME_RANGE_OPTIONS,
 } from "@/lib/constants/filters";
+import { Difficulty } from "@prisma/client";
+import { TimeRange } from "@/types/filter";
 import type { AIToolData } from "@/lib/db/ai-tools";
 import { FilterOptionButton } from "@/app/(main)/search/_components/FilterOptionButton";
 import { useFiltersSearchParams } from "@/hooks/useFiltersSearchParams";
@@ -25,10 +28,25 @@ interface FilterSheetProps {
 }
 
 export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
-  const [difficulty, setDifficulty] = useQueryState("difficulty");
-  const [time, setTime] = useQueryState("time");
-  const [tool, setTool] = useQueryState("tool");
+  const [difficulty] = useQueryState("difficulty");
+  const [time] = useQueryState("time");
+  const [tool] = useQueryState("tool");
   const [, setFilterSearchParams] = useFiltersSearchParams();
+
+  // 로컬 상태: 버튼 클릭 전까지 임시 저장
+  const [localDifficulty, setLocalDifficulty] = useState<Difficulty | null>(null);
+  const [localTime, setLocalTime] = useState<TimeRange | null>(null);
+  const [localTool, setLocalTool] = useState<string | null>(null);
+
+  // 시트가 열릴 때 현재 URL 파라미터로 로컬 상태 동기화
+  useEffect(() => {
+    if (open) {
+      setLocalDifficulty(difficulty as Difficulty | null);
+      setLocalTime(time as TimeRange | null);
+      setLocalTool(tool);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   const resetFilterChips = () => setFilterSearchParams(null);
   const handleOpenChange = (nextOpen: boolean) => {
@@ -60,7 +78,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
             <h3 className="text-sm font-semibold text-gray-900">난이도</h3>
             <div className="flex gap-2">
               {DIFFICULTY_OPTIONS.map((difficultyOption) => {
-                const isSelected = difficulty === difficultyOption.value;
+                const isSelected = localDifficulty === difficultyOption.value;
                 return (
                   <FilterOptionButton
                     key={difficultyOption.value}
@@ -72,7 +90,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
                         object_id: difficultyOption.value,
                         object_name: difficultyOption.label,
                       });
-                      setDifficulty(isSelected ? null : difficultyOption.value);
+                      setLocalDifficulty(isSelected ? null : difficultyOption.value);
                     }}
                   >
                     {difficultyOption.label}
@@ -87,7 +105,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
             <h3 className="text-sm font-semibold text-gray-900">소요시간</h3>
             <div className="flex gap-2">
               {TIME_RANGE_OPTIONS.map((timeRangeOption) => {
-                const isSelected = time === timeRangeOption.value;
+                const isSelected = localTime === timeRangeOption.value;
                 return (
                   <FilterOptionButton
                     key={timeRangeOption.value}
@@ -99,7 +117,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
                         object_id: timeRangeOption.value,
                         object_name: timeRangeOption.label,
                       });
-                      setTime(isSelected ? null : timeRangeOption.value);
+                      setLocalTime(isSelected ? null : timeRangeOption.value);
                     }}
                   >
                     {timeRangeOption.label}
@@ -114,7 +132,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
             <h3 className="text-sm font-semibold text-gray-900">AI 툴</h3>
             <div className="flex flex-wrap gap-2">
               {aiTools.map((aiToolData) => {
-                const isSelected = tool === aiToolData.id;
+                const isSelected = localTool === aiToolData.id;
                 return (
                   <FilterOptionButton
                     key={aiToolData.id}
@@ -126,7 +144,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
                         object_id: aiToolData.id,
                         object_name: aiToolData.name,
                       });
-                      setTool(isSelected ? null : aiToolData.id);
+                      setLocalTool(isSelected ? null : aiToolData.id);
                     }}
                   >
                     {aiToolData.name}
@@ -148,6 +166,11 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
                 object_id: "필터 적용",
                 object_name: "필터 적용",
               });
+              setFilterSearchParams({
+                difficulty: localDifficulty,
+                time: localTime,
+                tool: localTool,
+              });
               onOpenChange(false);
             }}
             className="w-full h-10 rounded-full font-semibold"
@@ -164,8 +187,11 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
                 object_id: "필터 초기화",
                 object_name: "필터 초기화",
               });
-              onOpenChange(false);
+              setLocalDifficulty(null);
+              setLocalTime(null);
+              setLocalTool(null);
               resetFilterChips();
+              onOpenChange(false);
             }}
             className="w-full h-10 rounded-full"
           >
