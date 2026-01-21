@@ -1,13 +1,15 @@
 "use client";
 
-import { SearchBar } from "@/app/(main)/_components/SearchBar";
+import { usePathname } from "next/navigation";
 import { useContentsSearchParams } from "@/hooks/useContentsSearchParams";
+import { SearchBar } from "@/app/(main)/_components/SearchBar";
 
 export function ConditionalSearchBar() {
+  const pathname = usePathname();
   const [searchParams] = useContentsSearchParams();
   const hasSearchParams = Object.values(searchParams).some((v) => !!v);
 
-  if (!hasSearchParams) return null;
+  if (pathname !== "/search" || !hasSearchParams) return null;
 
   return <SearchBar />;
 }
