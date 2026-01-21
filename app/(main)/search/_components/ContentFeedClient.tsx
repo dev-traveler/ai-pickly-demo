@@ -6,7 +6,6 @@ import { FilterButton } from "@/app/(main)/search/_components/FilterButton";
 import { FilterSheet } from "@/app/(main)/search/_components/FilterSheet";
 import { InfiniteContentGrid } from "@/app/(main)/search/_components/InfiniteContentGrid";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
-import { OnboardingDialog } from "@/components/onboarding/OnboardingDialog";
 import { useContentsCount, useAITools } from "@/hooks/useContentsQuery";
 import mixpanel from "mixpanel-browser";
 
@@ -62,9 +61,6 @@ export function ContentFeedClient() {
         onOpenChange={setSheetOpen}
         aiTools={aiTools}
       />
-
-      {/* 온보딩 다이얼로그 */}
-      <OnboardingDialog />
     </>
   );
 }

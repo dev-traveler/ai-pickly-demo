@@ -1,11 +1,18 @@
 import type { SearchParams } from "nuqs/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { getContents, getContentsCount } from "@/lib/db/contents";
+import {
+  getContents,
+  getContentsCount,
+  GetContentsResult,
+} from "@/lib/db/contents";
 import { getAITools } from "@/lib/db/ai-tools";
 import { getQueryClient } from "@/lib/get-query-client";
 import { NewsletterBanner } from "../_components/NewsletterBanner";
 import { ContentFeedClient } from "./_components/ContentFeedClient";
-import { loadContentsSearchParams } from "./search-params";
+import {
+  loadContentsSearchParams,
+  normalizeSearchParams,
+} from "./search-params";
 import { PageViewTracker } from "@/components/PageViewTracker";
 import { CategoryFilter } from "../_components/CategoryFilter";
 import { PAGE_SIZE } from "@/lib/constants/content";
@@ -16,29 +23,30 @@ type PageProps = {
 
 export default async function Home({ searchParams }: PageProps) {
   const contentsSearchParams = await loadContentsSearchParams(searchParams);
+  // cursor는 prefetch에서 별도 관리, 필터 params만 추출
+  const { cursor: _, ...filterParams } = contentsSearchParams;
+  const normalizedParams = normalizeSearchParams(filterParams);
   const queryClient = getQueryClient();
 
   await Promise.all([
-    // Prefetch infinite query (첫 페이지만)
-    queryClient.prefetchInfiniteQuery({
-      queryKey: ["contents", { ...contentsSearchParams }, PAGE_SIZE],
-      queryFn: ({ pageParam = 1 }) =>
+    // Prefetch infinite query (첫 페이지만, cursor 기반)
+    queryClient.prefetchInfiniteQuery<GetContentsResult>({
+      queryKey: ["contents", normalizedParams, PAGE_SIZE],
+      queryFn: ({ pageParam }) =>
         getContents({
-          page: pageParam,
+          cursor: pageParam as string | null,
           pageSize: PAGE_SIZE,
-          ...contentsSearchParams,
+          ...filterParams,
         }),
-      initialPageParam: 1,
-      getNextPageParam: (lastPage, allPages) => {
-        if (lastPage.length < PAGE_SIZE) return undefined;
-        return allPages.length + 1;
-      },
+      initialPageParam: null,
+      getNextPageParam: (lastPage) =>
+        lastPage.hasMore ? lastPage.nextCursor : undefined,
       pages: 1,
     }),
-    // Prefetch count
+    // Prefetch count (정규화된 params 사용)
     queryClient.prefetchQuery({
-      queryKey: ["contents-count", { ...contentsSearchParams }],
-      queryFn: () => getContentsCount({ ...contentsSearchParams }),
+      queryKey: ["contents-count", normalizedParams],
+      queryFn: () => getContentsCount({ ...filterParams }),
     }),
     // Prefetch AI tools
     queryClient.prefetchQuery({

@@ -72,7 +72,8 @@ export function InfiniteContentGrid({
     );
   }
 
-  const allContents = data?.pages.flatMap((page) => page) || [];
+  // 응답 구조 변경에 따른 flatMap 수정: page.data 사용
+  const allContents = data?.pages.flatMap((page) => page.data) || [];
 
   return (
     <div className="space-y-8">

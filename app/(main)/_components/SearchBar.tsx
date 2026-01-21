@@ -49,7 +49,7 @@ export function SearchBar() {
       e.currentTarget.blur();
 
       // 현재 경로가 루트가 아니면 루트로 이동
-      if (pathname !== "/") {
+      if (pathname !== "/search") {
         const searchParams = new URLSearchParams(serialize(filters));
 
         if (trimmedQuery) {
@@ -59,7 +59,7 @@ export function SearchBar() {
         }
 
         const queryString = searchParams.toString();
-        router.push(queryString ? `/?${queryString}` : "/");
+        router.push(queryString ? `/search?${queryString}` : "/search");
         return;
       }
 

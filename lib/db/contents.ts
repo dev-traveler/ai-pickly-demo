@@ -16,27 +16,34 @@ const contentsCountCache = new Map<
 >();
 
 export interface GetContentsOptions {
-  page?: number;
+  cursor?: string | null;
   pageSize: number;
   category?: string | null;
   difficulty?: Difficulty | null;
   time?: TimeRange | null;
   tool?: string | null;
   q?: string | null;
+  sort?: "latest" | "popular";
+}
+
+export interface GetContentsResult {
+  data: ContentCardData[];
+  nextCursor: string | null;
+  hasMore: boolean;
 }
 
 /**
  * 콘텐츠 목록을 가져옵니다.
- * 기본적으로 인기순(scrapCount, viewCount)과 최신순(publishedAt)으로 정렬됩니다.
+ * Cursor 기반 페이지네이션을 사용합니다.
+ * 기본적으로 최신순(publishedAt)으로 정렬되며, 옵션으로 인기순을 선택할 수 있습니다.
  */
 export async function getContents(
   options: GetContentsOptions
-): Promise<ContentCardData[]> {
-  const { page = 1, pageSize, category, difficulty, time, tool, q } = options;
+): Promise<GetContentsResult> {
+  const { cursor, pageSize, category, difficulty, time, tool, q, sort} =
+    options;
 
   const { minMinutes, maxMinutes } = mapTimeRangeToMinutes(time);
-
-  const skip = (page - 1) * pageSize;
 
   const where: Prisma.ContentWhereInput = {};
 
@@ -101,12 +108,20 @@ export async function getContents(
     ];
   }
 
+  const orderBy: Prisma.ContentOrderByWithRelationInput[] =
+    sort === "popular"
+      ? [{ viewCount: "desc" }, { publishedAt: "desc" }]
+      : [{ publishedAt: "desc" }];
+
   try {
     const contents = await prisma.content.findMany({
       where,
-      skip,
-      take: pageSize,
-      orderBy: [{ createdAt: "desc" }, { publishedAt: "desc" }],
+      take: pageSize + 1, // hasMore 판단용 +1
+      ...(cursor && {
+        cursor: { id: cursor },
+        skip: 1, // cursor 아이템 자체는 건너뜀
+      }),
+      orderBy,
       include: {
         estimatedTime: {
           select: {
@@ -150,8 +165,11 @@ export async function getContents(
       },
     });
 
+    const hasMore = contents.length > pageSize;
+    const actualContents = hasMore ? contents.slice(0, pageSize) : contents;
+
     // Prisma 결과를 ContentCardData 타입으로 변환
-    return contents.map((content) => ({
+    const data = actualContents.map((content) => ({
       id: content.id,
       title: content.title,
       description: content.description,
@@ -171,6 +189,11 @@ export async function getContents(
         ...cat.aiTool,
       })),
     }));
+
+    const nextCursor =
+      hasMore && data.length > 0 ? data[data.length - 1].id : null;
+
+    return { data, nextCursor, hasMore };
   } catch (error: unknown) {
     // Handle connection pool exhaustion
     const { code, message } = getErrorInfo(error);
@@ -195,7 +218,7 @@ export async function getContents(
  * 콘텐츠 총 개수를 가져옵니다.
  */
 export async function getContentsCount(
-  options: Omit<GetContentsOptions, "page" | "pageSize"> = {}
+  options: Omit<GetContentsOptions, "cursor" | "pageSize"> = {}
 ): Promise<number> {
   const { category, difficulty, time, tool, q } = options;
   const { minMinutes, maxMinutes } = mapTimeRangeToMinutes(time);
