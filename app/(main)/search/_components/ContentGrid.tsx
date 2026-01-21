@@ -2,6 +2,7 @@ import { ContentCardData } from "@/types/content";
 import { ContentCard } from "@/components/ContentCard";
 import { ContentCardSkeleton } from "@/components/ContentCardSkeleton";
 import { PAGE_SIZE } from "@/lib/constants/content";
+import { cn } from "@/lib/utils";
 
 interface ContentGridProps {
   contents: ContentCardData[];
@@ -39,10 +40,15 @@ export function ContentGrid({
   );
 }
 
-export function ContentGridSkeleton() {
+interface ContentGridSkeletonProps {
+  length?: number;
+  className?: string;
+}
+
+export function ContentGridSkeleton({ length = PAGE_SIZE, className }: ContentGridSkeletonProps) {
   return (
-    <div className={contentGrid}>
-      {Array.from({ length: PAGE_SIZE }).map((_, i) => (
+    <div className={cn(contentGrid, className)}>
+      {Array.from({ length }).map((_, i) => (
         <ContentCardSkeleton key={`loading-skeleton-${i}`} />
       ))}
     </div>
