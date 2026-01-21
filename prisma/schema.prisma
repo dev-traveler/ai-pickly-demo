@@ -108,6 +108,16 @@ model NewsletterSubscriber {
   statusChangedAt DateTime @default(now())
 }
 
+model ContentFeedback {
+  id          String   @id
+  email       String
+  request     String
+  createdAt   DateTime @default(now())
+
+  @@index([email])
+  @@index([createdAt])
+}
+
 model ResultPreview {
   id          String      @id
   contentId   String
