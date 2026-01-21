@@ -7,24 +7,47 @@ import {
 } from "@/lib/db/contents";
 import { getAITools } from "@/lib/db/ai-tools";
 import { getQueryClient } from "@/lib/get-query-client";
-import { NewsletterBanner } from "../_components/NewsletterBanner";
 import { ContentFeedClient } from "./_components/ContentFeedClient";
 import {
   loadContentsSearchParams,
   normalizeSearchParams,
 } from "./search-params";
 import { PageViewTracker } from "@/components/PageViewTracker";
-import { CategoryFilter } from "../_components/CategoryFilter";
 import { PAGE_SIZE } from "@/lib/constants/content";
+import { HeroSearchSection } from "../_components/HeroSearchSection";
 
 type PageProps = {
   searchParams: Promise<SearchParams>;
 };
 
+/**
+ * searchParams에 유효한 필터 값이 있는지 확인합니다.
+ */
+function hasSearchFilters(params: {
+  q?: string | null;
+  category?: string | null;
+  difficulty?: string | null;
+  time?: string | null;
+  tool?: string | null;
+}): boolean {
+  return Boolean(params.q || params.category || params.difficulty || params.time || params.tool);
+}
+
 export default async function Home({ searchParams }: PageProps) {
   const contentsSearchParams = await loadContentsSearchParams(searchParams);
   // cursor는 prefetch에서 별도 관리, 필터 params만 추출
   const { cursor: _, ...filterParams } = contentsSearchParams;
+
+  // searchParams가 없으면 HeroSearchSection만 보여주고 data fetch 안함
+  if (!hasSearchFilters(filterParams)) {
+    return (
+      <>
+        <HeroSearchSection />
+        <PageViewTracker pageName="search" />
+      </>
+    );
+  }
+
   const normalizedParams = normalizeSearchParams(filterParams);
   const queryClient = getQueryClient();
 
@@ -58,11 +81,8 @@ export default async function Home({ searchParams }: PageProps) {
   return (
     <>
       <div>
-        <NewsletterBanner />
         <div className="container mx-auto px-4 py-8">
           <div className="space-y-6">
-            <CategoryFilter />
-
             {/* HydrationBoundary가 prefetch된 데이터를 클라이언트에 전달 */}
             <HydrationBoundary state={dehydrate(queryClient)}>
               <ContentFeedClient />
@@ -71,7 +91,7 @@ export default async function Home({ searchParams }: PageProps) {
         </div>
       </div>
 
-      <PageViewTracker pageName="home" />
+      <PageViewTracker pageName="search" />
     </>
   );
 }

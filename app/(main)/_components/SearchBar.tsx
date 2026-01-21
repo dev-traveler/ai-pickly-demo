@@ -19,15 +19,26 @@ export function SearchBar() {
   const pathname = usePathname();
 
   const handleClickX = () => {
-    mixpanel.track("search@keyword", {
-      page_name: "home",
+    mixpanel.track("click@button", {
+      page_name: "search",
       object_section: "header",
-      object_id: "searchbar_x_icon",
-      object_name: "searchbar_x_icon",
+      object_id: "searchbar_clear_icon",
+      object_name: "searchbar_clear_icon",
       keyword: localQuery,
     });
-    setQ(null);
+
     setLocalQuery("");
+
+    // 다른 필터가 없으면 /search로 전체 네비게이션 (HeroSearchSection 표시, data fetch 안함)
+    const hasOtherFilters = Boolean(
+      filters.category || filters.difficulty || filters.time || filters.tool
+    );
+    if (!hasOtherFilters) {
+      router.push("/search");
+      return;
+    }
+
+    setQ(null);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

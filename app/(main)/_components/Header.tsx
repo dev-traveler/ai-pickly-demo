@@ -1,11 +1,17 @@
+"use client";
+
 import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { SearchBar } from "@/app/(main)/_components/SearchBar";
 import { SearchBarSkeleton } from "@/app/(main)/_components/SearchBarSkeleton";
 import { SubscribeNewsletterDialog } from "@/app/(main)/_components/SubscribeNewsletterDialog";
 import { LinkableFullLogo } from "./LinkableFullLogo";
+import { useContentsSearchParams } from "@/hooks/useContentsSearchParams";
 
 export function Header() {
+  const [searchParams] = useContentsSearchParams();
+  const hasSearchParams = Object.values(searchParams).some(v => !!v);
+
   return (
     <header className="flex justify-center sticky top-0 z-50 w-full bg-background shadow-xs">
       <div className="container flex flex-col md:flex-row max-w-screen-2xl p-4 md:h-16 md:items-center gap-3 md:gap-6">
@@ -39,9 +45,11 @@ export function Header() {
 
         {/* Second Row on Mobile: Search Bar */}
         <div className="flex-1 max-w-2xl mx-auto w-full md:w-auto">
-          <Suspense fallback={<SearchBarSkeleton />}>
-            <SearchBar />
-          </Suspense>
+          {hasSearchParams && (
+            <Suspense fallback={<SearchBarSkeleton />}>
+              <SearchBar />
+            </Suspense>
+          )}
         </div>
 
         {/* Navigation - visible on desktop */}
