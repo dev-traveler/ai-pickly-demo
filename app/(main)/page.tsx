@@ -4,7 +4,6 @@ import { PageViewTracker } from "@/components/PageViewTracker";
 import { NewsletterBanner } from "./_components/NewsletterBanner";
 import { getContents } from "@/lib/db/contents";
 import { HeroSearchSection } from "./_components/HeroSearchSection";
-import { OnboardingDialog2 } from "@/components/onboarding2/OnboardingDialog2";
 
 export default async function Home() {
   const recentContents = await getContents({ pageSize: 4, sort: "latest" });
@@ -23,9 +22,6 @@ export default async function Home() {
         <NewsletterBanner />
       </div>
 
-      {/* 온보딩 다이얼로그 */}
-      {/* <OnboardingDialog /> */}
-      <OnboardingDialog2 />
       <PageViewTracker pageName="home" />
     </>
   );
