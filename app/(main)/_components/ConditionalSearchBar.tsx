@@ -9,7 +9,10 @@ export function ConditionalSearchBar() {
   const [searchParams] = useContentsSearchParams();
   const hasSearchParams = Object.values(searchParams).some((v) => !!v);
 
-  if (pathname !== "/search" || !hasSearchParams) return null;
+  const isSearchPage = pathname === "/search" && hasSearchParams;
+  const isCategoryPage = pathname.startsWith("/category/");
+
+  if (!isSearchPage && !isCategoryPage) return null;
 
   return <SearchBar />;
 }

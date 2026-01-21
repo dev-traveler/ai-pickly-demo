@@ -81,7 +81,7 @@ export function FeedbackHeroSection() {
     return (
       <div className="w-full mt-8 rounded-2xl bg-linear-to-br from-primary/5 to-primary/10 border border-primary/20 p-6">
         <div className="flex flex-col items-center text-center space-y-3">
-          <div className="rounded-full bg-primary/10 p-3">
+          <div className="p-1">
             <MailIcon className="h-6 w-6 text-primary" />
           </div>
           <div className="space-y-1">
@@ -103,14 +103,14 @@ export function FeedbackHeroSection() {
         {/* 헤더 */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <div className="rounded-full bg-primary/10 p-2 shrink-0">
+            <div className="p-1 shrink-0">
               <MailIcon className="h-5 w-5 text-primary" />
             </div>
-            <h4 className="font-semibold text-foreground">
+            <h4 className="text-base font-semibold text-foreground">
               원하는 콘텐츠를 요청해 보세요
             </h4>
           </div>
-          <p className="text-xs text-muted-foreground leading-relaxed text-left">
+          <p className="text-sm text-muted-foreground leading-relaxed text-left">
             찾고 계신 작업이나 카테고리를 알려주시면, 피클리 에디터가 좋은 콘텐츠를 모아서 이메일로 보내드릴게요.
           </p>
         </div>

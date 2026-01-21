@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import {
-  CATEGORIES,
   DIFFICULTY_OPTIONS,
   TIME_RANGE_OPTIONS,
 } from "@/lib/constants/filters";
@@ -26,7 +25,6 @@ interface FilterSheetProps {
 }
 
 export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
-  const [category, setCategory] = useQueryState("category");
   const [difficulty, setDifficulty] = useQueryState("difficulty");
   const [time, setTime] = useQueryState("time");
   const [tool, setTool] = useQueryState("tool");
@@ -57,35 +55,6 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
         </SheetHeader>
 
         <div className="flex-1 space-y-8 overflow-y-auto px-6 pb-10 pt-2">
-          {/* Category Filter */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-gray-900">카테고리</h3>
-            <div className="flex flex-wrap gap-2">
-              {CATEGORIES.map((categoryOption) => {
-                const isSelected = category === categoryOption.id;
-                return (
-                  <FilterOptionButton
-                    key={categoryOption.id}
-                    selected={isSelected}
-                    onClick={() => {
-                      mixpanel.track("click@button", {
-                        page_name: "home",
-                        object_section: "filter_sheet",
-                        object_id: categoryOption.id,
-                        object_name: categoryOption.label,
-                      });
-                      isSelected
-                        ? setCategory(null)
-                        : setCategory(categoryOption.id);
-                    }}
-                  >
-                    {categoryOption.label}
-                  </FilterOptionButton>
-                );
-              })}
-            </div>
-          </div>
-
           {/* Difficulty Filter */}
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-900">난이도</h3>
@@ -103,9 +72,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
                         object_id: difficultyOption.value,
                         object_name: difficultyOption.label,
                       });
-                      isSelected
-                        ? setDifficulty(null)
-                        : setDifficulty(difficultyOption.value);
+                      setDifficulty(isSelected ? null : difficultyOption.value);
                     }}
                   >
                     {difficultyOption.label}
@@ -132,9 +99,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
                         object_id: timeRangeOption.value,
                         object_name: timeRangeOption.label,
                       });
-                      isSelected
-                        ? setTime(null)
-                        : setTime(timeRangeOption.value);
+                      setTime(isSelected ? null : timeRangeOption.value);
                     }}
                   >
                     {timeRangeOption.label}
@@ -161,7 +126,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
                         object_id: aiToolData.id,
                         object_name: aiToolData.name,
                       });
-                      isSelected ? setTool(null) : setTool(aiToolData.id);
+                      setTool(isSelected ? null : aiToolData.id);
                     }}
                   >
                     {aiToolData.name}

@@ -11,13 +11,19 @@ import { useContentsSearchParams } from "./useContentsSearchParams";
 import { normalizeSearchParams } from "@/app/(main)/search/search-params";
 import { PAGE_SIZE } from "@/lib/constants/content";
 
+interface UseContentsOptions {
+  defaultCategory?: string;
+}
+
 /**
  * 무한 스크롤 콘텐츠 쿼리 hook
  * URL search params를 자동으로 읽어 queryKey 구성
  * 정규화된 params로 캐시 키를 안정화
  */
-export function useInfiniteContents() {
-  const [searchParams] = useContentsSearchParams();
+export function useInfiniteContents(options?: UseContentsOptions) {
+  const [searchParams] = useContentsSearchParams({
+    defaultCategory: options?.defaultCategory,
+  });
   // cursor는 페이지네이션에서 별도 관리, 필터 params만 추출
   const { cursor: _, ...filterParams } = searchParams;
   const normalizedParams = normalizeSearchParams(filterParams);
@@ -43,8 +49,10 @@ export function useInfiniteContents() {
  * 필터 변경 시 자동으로 새로운 count를 fetch
  * 정규화된 params로 캐시 키를 안정화
  */
-export function useContentsCount() {
-  const [searchParams] = useContentsSearchParams();
+export function useContentsCount(options?: UseContentsOptions) {
+  const [searchParams] = useContentsSearchParams({
+    defaultCategory: options?.defaultCategory,
+  });
   // cursor는 count에 영향 없음, 필터 params만 추출
   const { cursor: _, ...filterParams } = searchParams;
   const normalizedParams = normalizeSearchParams(filterParams);

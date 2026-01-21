@@ -5,10 +5,12 @@ import { ContentGrid, ContentGridSkeleton } from "@/app/(main)/search/_component
 import { useInfiniteContents } from "@/hooks/useContentsQuery";
 
 interface InfiniteContentGridProps {
+  defaultCategory?: string;
   emptyMessage?: string;
 }
 
 export function InfiniteContentGrid({
+  defaultCategory,
   emptyMessage = "콘텐츠가 없습니다.",
 }: InfiniteContentGridProps) {
   const loadMoreRef = useRef<HTMLDivElement>(null);
@@ -20,7 +22,7 @@ export function InfiniteContentGrid({
     isFetchingNextPage,
     isLoading,
     isError,
-  } = useInfiniteContents();
+  } = useInfiniteContents({ defaultCategory });
 
   // Intersection Observer로 무한 스크롤 구현
   useEffect(() => {

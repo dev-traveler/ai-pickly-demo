@@ -14,7 +14,14 @@ import {
 export function SearchBar() {
   const [q, setQ] = useQueryState("q", { shallow: true });
   const [localQuery, setLocalQuery] = useState(q ?? "");
+  const [prevQ, setPrevQ] = useState(q);
   const [filters] = useFiltersSearchParams();
+
+  // 렌더링 중 상태 조정 - q가 외부에서 변경되면 localQuery 동기화
+  if (q !== prevQ) {
+    setPrevQ(q);
+    setLocalQuery(q ?? "");
+  }
   const router = useRouter();
   const pathname = usePathname();
 

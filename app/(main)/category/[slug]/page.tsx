@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import type { SearchParams } from "nuqs/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import {
@@ -7,48 +8,48 @@ import {
 } from "@/lib/db/contents";
 import { getAITools } from "@/lib/db/ai-tools";
 import { getQueryClient } from "@/lib/get-query-client";
-import { ContentFeedClient } from "./_components/ContentFeedClient";
+import { ContentFeedClient } from "@/app/(main)/search/_components/ContentFeedClient";
 import {
   loadContentsSearchParams,
   normalizeSearchParams,
-} from "./search-params";
+} from "@/app/(main)/search/search-params";
 import { PageViewTracker } from "@/components/PageViewTracker";
 import { PAGE_SIZE } from "@/lib/constants/content";
-import { HeroSearchSection } from "../_components/HeroSearchSection";
+import { CATEGORIES } from "@/lib/constants/filters";
+import { CategoryLinkList } from "../../search/_components/CategoryLinkList";
 
 type PageProps = {
+  params: Promise<{ slug: string }>;
   searchParams: Promise<SearchParams>;
 };
 
 /**
- * searchParams에 유효한 필터 값이 있는지 확인합니다.
+ * 유효한 카테고리 slug인지 확인합니다.
  */
-function hasSearchFilters(params: {
-  q?: string | null;
-  category?: string | null;
-  difficulty?: string | null;
-  time?: string | null;
-  tool?: string | null;
-}): boolean {
-  return Boolean(params.q || params.category || params.difficulty || params.time || params.tool);
+function isValidCategorySlug(slug: string): boolean {
+  return CATEGORIES.some((category) => category.id === slug);
 }
 
-export default async function SearchPage({ searchParams }: PageProps) {
-  const contentsSearchParams = await loadContentsSearchParams(searchParams);
-  // cursor는 prefetch에서 별도 관리, 필터 params만 추출
-  const { cursor: _, ...filterParams } = contentsSearchParams;
+export default async function CategoryPage({ params, searchParams }: PageProps) {
+  const { slug } = await params;
 
-  // searchParams가 없으면 HeroSearchSection만 보여주고 data fetch 안함
-  if (!hasSearchFilters(filterParams)) {
-    return (
-      <>
-        <HeroSearchSection />
-        <PageViewTracker pageName="search" />
-      </>
-    );
+  // 유효하지 않은 카테고리 slug인 경우 404
+  if (!isValidCategorySlug(slug)) {
+    notFound();
   }
 
-  const normalizedParams = normalizeSearchParams(filterParams);
+  // URL searchParams 로드 (추가 필터: 난이도, 소요시간, AI 툴)
+  const contentsSearchParams = await loadContentsSearchParams(searchParams);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { cursor: _cursor, ...filterParams } = contentsSearchParams;
+
+  // slug를 category로 설정 (URL params보다 slug 우선)
+  const categoryFilterParams = {
+    ...filterParams,
+    category: slug,
+  };
+
+  const normalizedParams = normalizeSearchParams(categoryFilterParams);
   const queryClient = getQueryClient();
 
   await Promise.all([
@@ -59,7 +60,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
         getContents({
           cursor: pageParam as string | null,
           pageSize: PAGE_SIZE,
-          ...filterParams,
+          ...categoryFilterParams,
         }),
       initialPageParam: null,
       getNextPageParam: (lastPage) =>
@@ -69,7 +70,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
     // Prefetch count (정규화된 params 사용)
     queryClient.prefetchQuery({
       queryKey: ["contents-count", normalizedParams],
-      queryFn: () => getContentsCount({ ...filterParams }),
+      queryFn: () => getContentsCount({ ...categoryFilterParams }),
     }),
     // Prefetch AI tools
     queryClient.prefetchQuery({
@@ -83,15 +84,18 @@ export default async function SearchPage({ searchParams }: PageProps) {
       <div>
         <div className="container mx-auto px-4 py-8">
           <div className="space-y-6">
+            <div className="flex flex-wrap gap-3">
+              <CategoryLinkList pageName={`category/${slug}`} />
+            </div>
             {/* HydrationBoundary가 prefetch된 데이터를 클라이언트에 전달 */}
             <HydrationBoundary state={dehydrate(queryClient)}>
-              <ContentFeedClient />
+              <ContentFeedClient defaultCategory={slug} pageName="category" />
             </HydrationBoundary>
           </div>
         </div>
       </div>
 
-      <PageViewTracker pageName="search" />
+      <PageViewTracker pageName="category" />
     </>
   );
 }

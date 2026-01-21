@@ -10,23 +10,20 @@ import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { useContentsCount, useAITools } from "@/hooks/useContentsQuery";
 import { useContentsSearchParams } from "@/hooks/useContentsSearchParams";
 import mixpanel from "mixpanel-browser";
-import { SearchX, Sparkles, FileText, Image, Video, Code } from "lucide-react";
-import { useQueryState } from "nuqs";
+import { SearchX, Sparkles } from "lucide-react";
+import { CategoryLinkList } from "./CategoryLinkList";
 
-const CATEGORY_ITEMS = [
-  { id: "text", label: "텍스트 생성", icon: FileText },
-  { id: "image", label: "이미지 생성", icon: Image },
-  { id: "video", label: "영상 생성", icon: Video },
-  { id: "code", label: "바이블 코딩", icon: Code },
-];
+interface ContentFeedClientProps {
+  defaultCategory?: string;
+  pageName?: string;
+}
 
-export function ContentFeedClient() {
+export function ContentFeedClient({ defaultCategory, pageName = "search" }: ContentFeedClientProps) {
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [searchParams] = useContentsSearchParams();
-  const [, setCategoryQuery] = useQueryState("category");
+  const [searchParams] = useContentsSearchParams({ defaultCategory });
 
   // prefetch된 캐시에서 데이터 읽기
-  const { data: totalCount } = useContentsCount();
+  const { data: totalCount } = useContentsCount({ defaultCategory });
   const { data: aiTools = [] } = useAITools();
 
   const searchQuery = searchParams.q;
@@ -75,27 +72,7 @@ export function ContentFeedClient() {
               <span className="text-sm font-medium">카테고리별 콘텐츠 둘러보기</span>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              {CATEGORY_ITEMS.map((category) => {
-                const Icon = category.icon;
-                return (
-                  <button
-                    key={category.id}
-                    onClick={() => {
-                      mixpanel.track("click@button", {
-                        page_name: "search",
-                        object_section: "empty_state",
-                        object_id: category.id,
-                        object_name: category.label,
-                      });
-                      setCategoryQuery(category.id);
-                    }}
-                    className="flex items-center gap-3 px-4 py-3.5 bg-background border border-border rounded-xl hover:bg-muted/50 transition-colors text-left"
-                  >
-                    <Icon className="h-5 w-5 text-muted-foreground" />
-                    <span className="text-sm font-medium text-foreground">{category.label}</span>
-                  </button>
-                );
-              })}
+              <CategoryLinkList pageName={pageName} />
             </div>
           </div>
         </div>
@@ -112,7 +89,7 @@ export function ContentFeedClient() {
         aiTools={aiTools}
         onOpenFilter={() => {
           mixpanel.track("click@button", {
-            page_name: "home",
+            page_name: pageName,
             object_section: "body",
             object_id: "open_filter_sheet",
             object_name: "open_filter_sheet",
@@ -122,7 +99,7 @@ export function ContentFeedClient() {
       />
 
       {/* 무한 스크롤 콘텐츠 그리드 */}
-      <InfiniteContentGrid />
+      <InfiniteContentGrid defaultCategory={defaultCategory} />
 
       <div className="w-full fixed bottom-6 left-1/2 z-50 -translate-x-1/2 md:hidden">
         <div className="flex items-center justify-center w-full">
@@ -130,7 +107,7 @@ export function ContentFeedClient() {
             responsive
             onClick={() => {
               mixpanel.track("click@button", {
-                page_name: "home",
+                page_name: pageName,
                 object_section: "body",
                 object_id: "open_filter_sheet",
                 object_name: "open_filter_sheet",
