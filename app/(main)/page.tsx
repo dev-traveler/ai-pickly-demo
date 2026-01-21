@@ -7,10 +7,7 @@ import { HeroSearchSection } from "./_components/HeroSearchSection";
 import { OnboardingDialog2 } from "@/components/onboarding2/OnboardingDialog2";
 
 export default async function Home() {
-  const [recentContents, recommendedContents] = await Promise.all([
-    getContents({ pageSize: 4, sort: "latest" }),
-    getContents({ pageSize: 4 }),
-  ]);
+  const recentContents = await getContents({ pageSize: 4, sort: "latest" });
 
   return (
     <>
@@ -20,9 +17,6 @@ export default async function Home() {
             <HeroSearchSection />
             <Suspense fallback={<ContentCardSectionSkeleton itemCount={4} />}>
               <ContentCardSection title={"최근 업로드된 콘텐츠"} contents={recentContents.data} />
-            </Suspense>
-            <Suspense fallback={<ContentCardSectionSkeleton itemCount={4} />}>
-              <ContentCardSection title={"당신에게 꼭 필요한 콘텐츠"} contents={recommendedContents.data} />
             </Suspense>
           </div>
         </div>
