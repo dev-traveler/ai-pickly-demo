@@ -17,7 +17,7 @@ export function HeroSearchSection() {
     if (trimmedQuery) {
       mixpanel.track("search@keyword", {
         page_name: "home",
-        object_section: "hero",
+        object_section: "body",
         object_id: trimmedQuery,
         object_name: trimmedQuery,
       });

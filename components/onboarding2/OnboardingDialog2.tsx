@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, Check, Sparkles } from "lucide-react";
+import { ChevronLeft, Sparkles } from "lucide-react";
+import mixpanel from "mixpanel-browser";
+import { usePathname } from "next/navigation";
 
 // ============================================================================
 // Types & Constants
@@ -137,6 +139,40 @@ interface JobRoleStepProps {
 }
 
 function JobRoleStep({ selectedRole, onSelect, onNext }: JobRoleStepProps) {
+  const pathname = usePathname()
+  const page_name = pathname.split("?")[0]
+
+  useEffect(() => {
+    mixpanel.track("impression@modal", {
+      page_name,
+      object_section: "onboarding_modal",
+      object_id: "Step1.직무",
+      object_name: "Step1.직무",
+      object_position: 0,
+    });
+  }, [page_name]);
+
+  const handleSelectRole = (roleId: string, roleLabel: string, index: number) => {
+    mixpanel.track("click@button", {
+      page_name,
+      object_section: "onboarding_modal",
+      object_id: roleId,
+      object_name: roleLabel,
+      object_position: index,
+    });
+    onSelect(roleId);
+  };
+
+  const handleNext = () => {
+    mixpanel.track("click@button", {
+      page_name,
+      object_section: "onboarding_modal",
+      object_id: "다음",
+      object_name: "다음",
+    });
+    onNext();
+  };
+
   return (
     <div className="animate-in fade-in slide-in-from-right-4 duration-300">
       <div className="text-center mb-6">
@@ -147,7 +183,7 @@ function JobRoleStep({ selectedRole, onSelect, onNext }: JobRoleStepProps) {
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-6">
-        {JOB_ROLES.map((role) => (
+        {JOB_ROLES.map((role, index) => (
           <Button
             key={role.id}
             variant={selectedRole === role.id ? "default" : "outline"}
@@ -155,7 +191,7 @@ function JobRoleStep({ selectedRole, onSelect, onNext }: JobRoleStepProps) {
               "h-12 transition-all duration-200",
               selectedRole === role.id && "ring-2 ring-primary/20"
             )}
-            onClick={() => onSelect(role.id)}
+            onClick={() => handleSelectRole(role.id, role.label, index)}
           >
             {role.label}
           </Button>
@@ -166,7 +202,7 @@ function JobRoleStep({ selectedRole, onSelect, onNext }: JobRoleStepProps) {
         className="w-full"
         size="lg"
         disabled={!selectedRole}
-        onClick={onNext}
+        onClick={handleNext}
       >
         다음
       </Button>
@@ -187,6 +223,49 @@ function ExperienceStep({
   onNext,
   onBack,
 }: ExperienceStepProps) {
+  const pathname = usePathname()
+  const page_name = pathname.split("?")[0]
+  useEffect(() => {
+    mixpanel.track("impression@modal", {
+      page_name,
+      object_section: "onboarding_modal",
+      object_id: "Step2.경력",
+      object_name: "Step2.경력",
+      object_position: 1,
+    });
+  }, [page_name]);
+
+  const handleSelectExperience = (levelId: string, levelLabel: string, index: number) => {
+    mixpanel.track("click@button", {
+      page_name,
+      object_section: "onboarding_modal",
+      object_id: levelId,
+      object_name: levelLabel,
+      object_position: index,
+    });
+    onSelect(levelId);
+  };
+
+  const handleBack = () => {
+    mixpanel.track("click@button", {
+      page_name,
+      object_section: "onboarding_modal",
+      object_id: "이전",
+      object_name: "이전",
+    });
+    onBack();
+  };
+
+  const handleComplete = () => {
+    mixpanel.track("click@button", {
+      page_name,
+      object_section: "onboarding_modal",
+      object_id: "완료",
+      object_name: "완료",
+    });
+    onNext();
+  };
+
   return (
     <div className="animate-in fade-in slide-in-from-right-4 duration-300">
       <div className="text-center mb-6">
@@ -197,7 +276,7 @@ function ExperienceStep({
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-6">
-        {EXPERIENCE_LEVELS.map((level) => (
+        {EXPERIENCE_LEVELS.map((level, index) => (
           <Button
             key={level.id}
             variant={selectedExperience === level.id ? "default" : "outline"}
@@ -205,7 +284,7 @@ function ExperienceStep({
               "h-16 flex-col gap-0.5 transition-all duration-200",
               selectedExperience === level.id && "ring-2 ring-primary/20"
             )}
-            onClick={() => onSelect(level.id)}
+            onClick={() => handleSelectExperience(level.id, level.label, index)}
           >
             <span className="font-medium">{level.label}</span>
             <span className="text-xs opacity-70">{level.description}</span>
@@ -214,14 +293,14 @@ function ExperienceStep({
       </div>
 
       <div className="flex gap-3">
-        <Button variant="outline" size="lg" onClick={onBack} className="px-4">
+        <Button variant="outline" size="lg" onClick={handleBack} className="px-4">
           <ChevronLeft className="size-4" />
         </Button>
         <Button
           className="flex-1"
           size="lg"
           disabled={!selectedExperience}
-          onClick={onNext}
+          onClick={handleComplete}
         >
           완료
         </Button>
@@ -236,12 +315,34 @@ interface WelcomeStepProps {
 }
 
 function WelcomeStep({ profile, onStart }: WelcomeStepProps) {
+  const pathname = usePathname()
+  const page_name = pathname.split("?")[0]
   const jobLabel =
     JOB_ROLES.find((r) => r.id === profile.jobRole)?.label ?? profile.jobRole;
   const expLevel = EXPERIENCE_LEVELS.find((e) => e.id === profile.experience);
   const expLabel = expLevel
     ? `${expLevel.label} (${expLevel.description})`
     : profile.experience;
+
+  useEffect(() => {
+    mixpanel.track("impression@modal", {
+      page_name,
+      object_section: "onboarding_modal",
+      object_id: "환영합니다",
+      object_name: "환영합니다",
+      object_position: 2,
+    });
+  }, [page_name]);
+
+  const handleStart = () => {
+    mixpanel.track("click@button", {
+      page_name: "home",
+      object_section: "onboarding_modal",
+      object_id: "시작하기",
+      object_name: "시작하기",
+    });
+    onStart();
+  };
 
   return (
     <div className="animate-in fade-in zoom-in-95 duration-300">
@@ -267,7 +368,7 @@ function WelcomeStep({ profile, onStart }: WelcomeStepProps) {
         </div>
       </div>
 
-      <Button className="w-full" size="lg" onClick={onStart}>
+      <Button className="w-full" size="lg" onClick={handleStart}>
         시작하기
       </Button>
     </div>

@@ -20,6 +20,7 @@ import type { AIToolData } from "@/lib/db/ai-tools";
 import { FilterOptionButton } from "@/app/(main)/search/_components/FilterOptionButton";
 import { useFiltersSearchParams } from "@/hooks/useFiltersSearchParams";
 import mixpanel from "mixpanel-browser";
+import { usePathname } from "next/navigation";
 
 interface FilterSheetProps {
   open: boolean;
@@ -28,6 +29,10 @@ interface FilterSheetProps {
 }
 
 export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
+
+  const pathname = usePathname()
+  const page_name = pathname.split("?")[0]
+
   const [difficulty] = useQueryState("difficulty");
   const [time] = useQueryState("time");
   const [tool] = useQueryState("tool");
@@ -52,7 +57,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
       mixpanel.track("close@sheet", {
-        page_name: "home",
+        page_name,
         object_section: "filter_sheet",
         object_id: "filter_sheet",
         object_name: "filter_sheet",
@@ -77,7 +82,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-900">난이도</h3>
             <div className="flex gap-2">
-              {DIFFICULTY_OPTIONS.map((difficultyOption) => {
+              {DIFFICULTY_OPTIONS.map((difficultyOption, index) => {
                 const isSelected = localDifficulty === difficultyOption.value;
                 return (
                   <FilterOptionButton
@@ -85,10 +90,11 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
                     selected={isSelected}
                     onClick={() => {
                       mixpanel.track("click@button", {
-                        page_name: "home",
+                        page_name,
                         object_section: "filter_sheet",
                         object_id: difficultyOption.value,
                         object_name: difficultyOption.label,
+                        object_position: index,
                       });
                       setLocalDifficulty(isSelected ? null : difficultyOption.value);
                     }}
@@ -104,7 +110,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-900">소요시간</h3>
             <div className="flex gap-2">
-              {TIME_RANGE_OPTIONS.map((timeRangeOption) => {
+              {TIME_RANGE_OPTIONS.map((timeRangeOption, index) => {
                 const isSelected = localTime === timeRangeOption.value;
                 return (
                   <FilterOptionButton
@@ -112,10 +118,11 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
                     selected={isSelected}
                     onClick={() => {
                       mixpanel.track("click@button", {
-                        page_name: "home",
+                        page_name,
                         object_section: "filter_sheet",
                         object_id: timeRangeOption.value,
                         object_name: timeRangeOption.label,
+                        object_position: index,
                       });
                       setLocalTime(isSelected ? null : timeRangeOption.value);
                     }}
@@ -131,7 +138,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-900">AI 툴</h3>
             <div className="flex flex-wrap gap-2">
-              {aiTools.map((aiToolData) => {
+              {aiTools.map((aiToolData, index) => {
                 const isSelected = localTool === aiToolData.id;
                 return (
                   <FilterOptionButton
@@ -139,10 +146,11 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
                     selected={isSelected}
                     onClick={() => {
                       mixpanel.track("click@button", {
-                        page_name: "home",
+                        page_name,
                         object_section: "filter_sheet",
                         object_id: aiToolData.id,
                         object_name: aiToolData.name,
+                        object_position: index,
                       });
                       setLocalTool(isSelected ? null : aiToolData.id);
                     }}
@@ -161,7 +169,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
             variant="cta"
             onClick={() => {
               mixpanel.track("click@button", {
-                page_name: "home",
+                page_name,
                 object_section: "filter_sheet",
                 object_id: "필터 적용",
                 object_name: "필터 적용",
@@ -182,7 +190,7 @@ export function FilterSheet({ open, onOpenChange, aiTools }: FilterSheetProps) {
             variant="outline"
             onClick={() => {
               mixpanel.track("click@button", {
-                page_name: "home",
+                page_name,
                 object_section: "filter_sheet",
                 object_id: "필터 초기화",
                 object_name: "필터 초기화",

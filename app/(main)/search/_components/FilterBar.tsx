@@ -37,7 +37,7 @@ export function FilterBar({
 
   const resetFilterChips = () => {
     mixpanel.track("click@button", {
-      page_name: "home",
+      page_name: "search",
       object_section: "body",
       object_id: "refresh_filters",
       object_name: "refresh_filters",
@@ -56,7 +56,7 @@ export function FilterBar({
         label: c.label,
         onRemove: () => {
           mixpanel.track("click@button", {
-            page_name: "home",
+            page_name: "search",
             object_section: "body",
             object_id: c.id,
             object_name: c.label,
@@ -76,7 +76,7 @@ export function FilterBar({
         label: d.label,
         onRemove: () => {
           mixpanel.track("click@button", {
-            page_name: "home",
+            page_name: "search",
             object_section: "body",
             object_id: d.value,
             object_name: d.label,
@@ -96,7 +96,7 @@ export function FilterBar({
         label: t.label,
         onRemove: () => {
           mixpanel.track("click@button", {
-            page_name: "home",
+            page_name: "search",
             object_section: "body",
             object_id: t.value,
             object_name: t.label,
@@ -116,7 +116,7 @@ export function FilterBar({
         label: t.name,
         onRemove: () => {
           mixpanel.track("click@button", {
-            page_name: "home",
+            page_name: "search",
             object_section: "body",
             object_id: t.id,
             object_name: t.name,

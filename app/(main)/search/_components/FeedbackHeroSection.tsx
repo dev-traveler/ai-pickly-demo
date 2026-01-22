@@ -18,6 +18,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { submitContentFeedback } from "@/lib/db/feedback";
+import { subscribeToNewsletter } from "@/lib/db/newsletter";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import mixpanel from "mixpanel-browser";
 
 const formSchema = z.object({
@@ -32,6 +41,9 @@ type FormValues = z.infer<typeof formSchema>;
 
 export function FeedbackHeroSection() {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showNewsletterDialog, setShowNewsletterDialog] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState("");
+  const [isSubscribing, setIsSubscribing] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -50,14 +62,15 @@ export function FeedbackHeroSection() {
     if (result.success) {
       mixpanel.track("submit@feedback", {
         page_name: "search",
-        object_section: "feedback_hero",
+        object_section: "body",
         object_id: "content_feedback",
         object_name: "content_feedback",
         request_content: values.request,
       });
       toast.success("요청이 접수되었습니다. 좋은 콘텐츠로 찾아뵐게요!");
+      setSubmittedEmail(values.email);
       form.reset();
-      setIsSubmitted(true);
+      setShowNewsletterDialog(true);
     } else {
       switch (result.error) {
         case "INVALID_EMAIL":
@@ -75,6 +88,30 @@ export function FeedbackHeroSection() {
           break;
       }
     }
+  }
+
+  async function handleNewsletterSubscribe() {
+    setIsSubscribing(true);
+    const result = await subscribeToNewsletter(submittedEmail);
+    setIsSubscribing(false);
+
+    if (result.success) {
+      toast.success("뉴스레터 구독이 완료되었습니다!");
+    } else {
+      switch (result.error) {
+        case "DUPLICATE_EMAIL":
+          toast.info("이미 구독중인 이메일입니다.");
+          break;
+      }
+    }
+
+    setShowNewsletterDialog(false);
+    setIsSubmitted(true);
+  }
+
+  function handleNewsletterDecline() {
+    setShowNewsletterDialog(false);
+    setIsSubmitted(true);
   }
 
   if (isSubmitted) {
@@ -136,10 +173,9 @@ export function FeedbackHeroSection() {
                         if (!field.value) return;
                         mixpanel.track("input@request", {
                           page_name: "search",
-                          object_section: "feedback_hero",
-                          object_id: "content_request",
-                          object_name: "content_request",
-                          request_content: field.value,
+                          object_section: "body",
+                          object_id: field.value,
+                          object_name: field.value,
                         });
                       }}
                     />
@@ -163,14 +199,14 @@ export function FeedbackHeroSection() {
                       placeholder="your@email.com"
                       className="h-12 bg-background"
                       {...field}
-                      onBlur={(e) => {
+                      onBlur={() => {
                         field.onBlur();
                         if (!field.value) return;
                         mixpanel.track("input@email", {
                           page_name: "search",
-                          object_section: "feedback_hero",
-                          object_id: "feedback_email",
-                          object_name: "feedback_email",
+                          object_section: "body",
+                          object_id: "콘텐츠 요청 이메일",
+                          object_name: "콘텐츠 요청 이메일",
                         });
                       }}
                     />
@@ -186,9 +222,10 @@ export function FeedbackHeroSection() {
               onClick={() => {
                 mixpanel.track("click@button", {
                   page_name: "search",
-                  object_section: "feedback_hero",
-                  object_id: "submit_feedback",
+                  object_section: "body",
+                  object_id: "콘텐츠 요청하기",
                   object_name: "콘텐츠 요청하기",
+                  request_content: form.getValues("request"),
                 });
               }}
             >
@@ -201,6 +238,48 @@ export function FeedbackHeroSection() {
           </form>
         </Form>
       </div>
+
+      <Dialog open={showNewsletterDialog} onOpenChange={setShowNewsletterDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>뉴스레터 구독</DialogTitle>
+            <DialogDescription>
+              최신 AI 콘텐츠를 가장 빠르게 받아볼 수 있는 뉴스레터도 함께 구독하시겠어요?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                mixpanel.track("click@button", {
+                  page_name: "search",
+                  object_section: "modal",
+                  object_id: "아니오",
+                  object_name: "아니오",
+                });
+                handleNewsletterDecline();
+              }}
+              disabled={isSubscribing}
+            >
+              아니오
+            </Button>
+            <Button
+              onClick={() => {
+                mixpanel.track("click@button", {
+                  page_name: "search",
+                  object_section: "modal",
+                  object_id: "무료 구독 시작하기",
+                  object_name: "무료 구독 시작하기",
+                });
+                handleNewsletterSubscribe();
+              }}
+              disabled={isSubscribing}
+            >
+              무료 구독 시작하기
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

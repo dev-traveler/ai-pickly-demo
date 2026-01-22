@@ -29,9 +29,8 @@ export function SearchBar() {
     mixpanel.track("click@button", {
       page_name: "search",
       object_section: "header",
-      object_id: "searchbar_clear_icon",
-      object_name: "searchbar_clear_icon",
-      keyword: localQuery,
+      object_id: "searchbar_x_icon",
+      object_name: "searchbar_x_icon",
     });
 
     setLocalQuery("");
