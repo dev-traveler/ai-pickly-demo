@@ -64,7 +64,7 @@ export function HeroSearchSection() {
               {" "}사용 방법을 알려드립니다
             </p>
             <p className="text-gray-500 text-sm max-w-xs sm:max-w-md text-center leading-relaxed">
-              예: 프레젠테이션 만들기, 이미지 배경 제거, 영상 편집...
+              예: 게임 만들기, 업무 자동화, 유튜브 쇼츠...
             </p>
           </div>
 
