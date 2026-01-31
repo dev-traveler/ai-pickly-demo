@@ -1,0 +1,30 @@
+[Unit]
+Description=AI Content Collector Auto Crawler
+After=network.target
+
+[Service]
+Type=simple
+User=your-username
+WorkingDirectory=/absolute/path/to/ai-content-collector-mcp-server
+ExecStart=/usr/bin/node /absolute/path/to/ai-content-collector-mcp-server/dist/crawler.js
+Restart=always
+RestartSec=10
+
+# Environment variables
+Environment="SUPABASE_URL=https://your-project.supabase.co"
+Environment="SUPABASE_KEY=your-supabase-key"
+Environment="GEMINI_API_KEY=your-gemini-key"
+Environment="YOUTUBE_API_KEY=your-youtube-key"
+Environment="GOOGLE_API_KEY=your-google-key"
+Environment="GOOGLE_CSE_ID=your-cse-id"
+Environment="ITEMS_PER_CATEGORY=5"
+Environment="CRAWL_INTERVAL_HOURS=24"
+Environment="RUN_ONCE=false"
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ai-content-crawler
+
+[Install]
+WantedBy=multi-user.target

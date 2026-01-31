@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  ai-content-crawler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai-content-crawler
+    restart: unless-stopped
+    environment:
+      # Required
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      
+      # Optional (for search)
+      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - GOOGLE_CSE_ID=${GOOGLE_CSE_ID}
+      
+      # Crawler config
+      - ITEMS_PER_CATEGORY=5
+      - CRAWL_INTERVAL_HOURS=24
+      - RUN_ONCE=false
+    
+    command: node dist/crawler.js
+    
+    # Logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
