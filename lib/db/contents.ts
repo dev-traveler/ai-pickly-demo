@@ -6,6 +6,7 @@ import { ContentCardData } from "@/types/content";
 import { TimeRange } from "@/types/filter";
 import { mapTimeRangeToMinutes } from "@/lib/utils/filter-mapper";
 import { getErrorInfo } from "@/lib/utils/error-utils";
+import { parseSearchQuery } from "@/lib/utils/search-utils";
 
 const COUNT_CACHE_TTL_MS = 1000 * 30;
 const MAX_COUNT_CACHE_ENTRIES = 200;
@@ -84,28 +85,30 @@ export async function getContents(
     };
   }
 
-  // 검색 필터 (OR 로직 across multiple fields)
+  // 검색 필터 (단어별 AND 검색)
+  // 각 단어가 title, description, author, tags 중 하나에서 매칭되어야 함 (OR)
+  // 모든 단어가 매칭되어야 함 (AND)
   if (q && q.trim().length > 0) {
-    const trimmedQuery = q.trim();
+    const words = parseSearchQuery(q);
 
-    where.OR = [
-      // Search in title (has GIN index)
-      { title: { contains: trimmedQuery, mode: "insensitive" } },
-      // Search in description (has GIN index)
-      { description: { contains: trimmedQuery, mode: "insensitive" } },
-      // Search in author (has GIN index)
-      { author: { contains: trimmedQuery, mode: "insensitive" } },
-      // Search in tag names (has GIN index, requires junction table)
-      {
-        tags: {
-          some: {
-            tag: {
-              name: { contains: trimmedQuery, mode: "insensitive" },
+    if (words.length > 0) {
+      where.AND = words.map((word) => ({
+        OR: [
+          { title: { contains: word, mode: "insensitive" } },
+          { description: { contains: word, mode: "insensitive" } },
+          { author: { contains: word, mode: "insensitive" } },
+          {
+            tags: {
+              some: {
+                tag: {
+                  name: { contains: word, mode: "insensitive" },
+                },
+              },
             },
           },
-        },
-      },
-    ];
+        ],
+      }));
+    }
   }
 
   const orderBy: Prisma.ContentOrderByWithRelationInput[] =
@@ -276,28 +279,30 @@ export async function getContentsCount(
     };
   }
 
-  // 검색 필터 (OR 로직 across multiple fields)
+  // 검색 필터 (단어별 AND 검색)
+  // 각 단어가 title, description, author, tags 중 하나에서 매칭되어야 함 (OR)
+  // 모든 단어가 매칭되어야 함 (AND)
   if (q && q.trim().length > 0) {
-    const trimmedQuery = q.trim();
+    const words = parseSearchQuery(q);
 
-    where.OR = [
-      // Search in title (has GIN index)
-      { title: { contains: trimmedQuery, mode: "insensitive" } },
-      // Search in description (has GIN index)
-      { description: { contains: trimmedQuery, mode: "insensitive" } },
-      // Search in author (has GIN index)
-      { author: { contains: trimmedQuery, mode: "insensitive" } },
-      // Search in tag names (has GIN index, requires junction table)
-      {
-        tags: {
-          some: {
-            tag: {
-              name: { contains: trimmedQuery, mode: "insensitive" },
+    if (words.length > 0) {
+      where.AND = words.map((word) => ({
+        OR: [
+          { title: { contains: word, mode: "insensitive" } },
+          { description: { contains: word, mode: "insensitive" } },
+          { author: { contains: word, mode: "insensitive" } },
+          {
+            tags: {
+              some: {
+                tag: {
+                  name: { contains: word, mode: "insensitive" },
+                },
+              },
             },
           },
-        },
-      },
-    ];
+        ],
+      }));
+    }
   }
 
   try {
